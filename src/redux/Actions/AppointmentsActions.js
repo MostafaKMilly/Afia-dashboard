@@ -8,13 +8,15 @@ export const loadAppointments = (appointments) => ({
     payload: appointments
 })
 
+const updateAppointment =(payload) => ({
+    type : ActionTypes.UPDATE_APPOINTMENT ,
+    payload
+})
+
 export const loadingAppointments = () => ({
     type: ActionTypes.LOADING_APPOINTMENTS
 })
 
-export const loadingAcceptedAppointment = () => ({
-    type: ActionTypes.LOADING_ACCPETED_APPOINTMENT_DOCTOR
-})
 
 export const appointmentsFailed = (error) => ({
     type: ActionTypes.APPOINTMENTS_FAILED,
@@ -26,8 +28,8 @@ export const postAppointment = (appointment) => ({
     payload: appointment
 })
 
-const loadAcceptedAppointmentForDoctor = (payload) => ({
-    type : ActionTypes.LOAD_ACCPETED_APPOINTMENT_DOCTOR , 
+const loadAccpetedAppointments = (payload) => ({
+    type : ActionTypes.LOAD_ACCEPTED_APPOINTMENTS , 
     payload
 })
 
@@ -36,10 +38,9 @@ const LoadAcceptedAppointmentFailed = (payload) => ({
     payload
 })
 
-export const fetchAppointments = () => (dispatch) => {
-    dispatch(loadingAppointments())
-    setTimeout(() => dispatch(loadAppointments(APPOINTMENTS)), 2000)
-}
+export const clearErrorMessages = () => ({
+    type : ActionTypes.CLEAR_APPOINTMENT_ERROR_MESSAGES
+})
 
 export const acceptAppointment = (id) => ({
     type: ActionTypes.ACCEPT_APPOINTMENT,
@@ -103,7 +104,6 @@ export const updateAppointmetns = (doctorId) => (dispatch) => {
 }
 
 export const getAllAcceptedAppointmentsForDoctor = (doctorId) => dispatch => {
-    dispatch(loadingAcceptedAppointment())
     return fetch (baseUrl + 'api/appointments/accepted/doctorId/'+doctorId , {
         method : "GET" ,
         headers : {
@@ -126,6 +126,65 @@ export const getAllAcceptedAppointmentsForDoctor = (doctorId) => dispatch => {
         throw error;
     })
     .then(response => response.json())
-    .then(appoitnmetns => dispatch(loadAcceptedAppointmentForDoctor(appoitnmetns)))
+    .then(appoitnmetns => dispatch(loadAccpetedAppointments(appoitnmetns)))
     .catch(e => dispatch(LoadAcceptedAppointmentFailed(e.message)))
 }
+
+export const updateAcceptAppointment =  (values , appointmentId) => dispatch => {
+    fetch(baseUrl + 'api/appointments/id/'+appointmentId , {
+        method : "PATCH" , 
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body : JSON.stringify(values)
+    }).then(response => {
+        if (response.ok) {
+            return response
+        }
+        else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+        }
+    }, err => {
+        let error = new Error(err.message)
+        throw error;
+    })
+        .then(() => dispatch(updateAppointment({appointmentId , ...values })))
+        .catch((error) => console.log(error))
+}
+
+
+export const getAcceptedAppointmentForClinic = (clinicId , date) => dispatch => {
+    let requestUrl = date ? baseUrl + 'api/appointments/accepted/clinicId/' + clinicId + '/date=' + date : 
+    baseUrl + 'api/appointments/accepted/clinicId/' + clinicId
+    fetch(requestUrl ,{
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            'Accept': "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    }).then(response => {
+        if (response.ok) {
+            return response
+        }
+        else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+        }
+    }, err => {
+        let error = new Error(err.message)
+        throw error;
+    })
+    .then(response => response.json())
+    .then(appoitnmetns => dispatch(loadAccpetedAppointments(appoitnmetns)))
+    .catch(e => dispatch(LoadAcceptedAppointmentFailed(e.message)))
+}
+
+export const clearAccetptedAppointments = () => ({
+    type : ActionTypes.CLEAR_ACCPETED_APPOINTMENTS
+})

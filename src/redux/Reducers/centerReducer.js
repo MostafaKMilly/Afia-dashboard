@@ -24,6 +24,14 @@ export const Center = (state = {
             return {...state , errorsMessges : []}
         case ActionTypes.CLEAR_ERR_MESS : 
             return {...state , errMess : null}
+        case ActionTypes.DELETE_WORKING_DAY: 
+            let newWorkingDay = state.workingDays.filter((workingDay) => workingDay.day !==action.payload)
+            return {...state , workingDays : newWorkingDay}
+        case ActionTypes.UPDATE_WORKING_DAY :
+            let index =state.workingDays.findIndex((workingDay) => workingDay.day === action.payload.day)
+            let newWorkingDayArr = [...state.workingDays]
+            newWorkingDayArr[index] = {...newWorkingDayArr[index] , ...action.payload}
+            return {...state , workingDays : newWorkingDayArr}
         default:
             return state
     }

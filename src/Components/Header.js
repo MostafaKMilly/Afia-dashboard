@@ -11,12 +11,12 @@ class Header extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showPopover : false
+            showPopover: false
         }
     }
     render() {
         const url = this.props.match.url
-        
+
         const nextPath = (path) => {
             this.props.history.push(path)
         }
@@ -24,37 +24,35 @@ class Header extends Component {
             return <Loading />
         }
         const loadPhoto = (user) => {
-            if (user.user.type ==="Admin" || user.user.type ==="Doctor") {
-                if (user.photo ===undefined || user.photo===null) {
+            if (user.user.type === "Doctor") {
+                if (user.photo === undefined || user.photo === null) {
                     return 'assets/images/doctor.svg'
                 }
                 else {
-                    return  user.photo.url
+                    return user.photo.url
                 }
             }
-            else if (user.user.type ==="Patient" && user.gender ==="male") {
-                if (user.photo ===undefined || user.photo===null) {
+            else if (user.user.type === "Patient" && user.gender === "male") {
+                if (user.photo === undefined || user.photo === null) {
                     return 'assets/images/maleavatar.svg'
                 }
                 else {
-                    return  user.photo.url
+                    return user.photo.url
                 }
             }
-            else if (user.user.type ==="Patient" && user.gender ==="female") {
-                if (user.photo ===undefined || user.photo===null) {
+            else if (user.user.type === "Patient" && user.gender === "female") {
+                if (user.photo === undefined || user.photo === null) {
                     return 'assets/images/femaleavatar.svg'
                 }
                 else {
-                    return  user.photo.url
+                    return user.photo.url
                 }
             }
-            else {
-                if (user.photo ===undefined || user.photo===null) {
-                    return 'assets/images/nurse.svg'
-                }
-                else {
-                    return  user.photo.url
-                }
+            else if (user.user.type==="Nurse") {
+                return 'assets/images/nurse.svg'
+            }
+            else if (user.user.type ==="Admin") {
+                return 'assets/images/admin.svg'
             }
         }
         return (
@@ -70,14 +68,14 @@ class Header extends Component {
                         trigger="click"
                         placement="bottom"
                         show={this.state.showPopover}
-                        onToggle={() => this.state.showPopover ? this.setState({showPopover : false}) : this.setState({showPopover : true})  }
+                        onToggle={() => this.state.showPopover ? this.setState({ showPopover: false }) : this.setState({ showPopover: true })}
                         overlay={
                             <Popover  >
                                 <Popover.Title as="h3" className="text-center">{this.props.user.user.username}</Popover.Title>
                                 <Popover.Content className="text-center">
-                                    <Button variant="link" onClick={() =>{
-                                         this.setState({showPopover : false})
-                                         nextPath(`${url}/${'settings'}`)
+                                    <Button variant="link" onClick={() => {
+                                        this.setState({ showPopover: false })
+                                        nextPath(`${url}/${'settings'}`)
                                     }}>Settings</Button>
                                     <br />
                                     <Button variant="link" onClick={(event) => {
@@ -89,7 +87,7 @@ class Header extends Component {
                             </Popover>
                         }>
                         <Image src={loadPhoto(this.props.user)}
-                             alt="adminPhoto" className="adminPhoto" width="30" height="32" roundedCircle />
+                            alt="adminPhoto" className="adminPhoto" width="30" height="32" roundedCircle />
                     </OverlayTrigger>
 
                 </Nav>

@@ -1,20 +1,20 @@
 import React from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap';
 
-function ErrorAlert({ messege , color , isButtonVisible}) {
-  let visible 
+function ErrorAlert({ messege, color, isButtonVisible }) {
+  let visible
   if (isButtonVisible) {
     visible = "visible"
   }
   else {
-    visible ="hidden"
+    visible = "hidden"
   }
   if (!color) {
     color = "#e9ecef"
   }
   return (
     <div className="vertical-center" style={{
-      backgroundColor : color
+      backgroundColor: color
     }}>
       <Container>
         <Row>
@@ -34,10 +34,10 @@ function ErrorAlert({ messege , color , isButtonVisible}) {
             "textAlign": "center"
           }}>
             <Button className="btn3" onClick={() => window.location.reload()} style={{
-              visibility : visible
+              visibility: visible
             }}>
               Refresh
-              </Button>
+            </Button>
           </Col>
         </Row>
       </Container>

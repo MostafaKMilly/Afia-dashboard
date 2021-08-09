@@ -10,12 +10,17 @@ function AddWorkingDays(props) {
     const [workingDaysList, setWoringDaysList] = useState([])
     const [errorMess, setErrorMess] = useState(undefined)
     const [show, setShow] = useState(true)
+
     const handleSubmit = (items) => {
         let list = [...workingDaysList]
         props.resetForm()
         setErrorMess(undefined)
         if (workingDaysList.filter((workingDay) => workingDay.day === items.day).length !== 0 || items.day === 'Choose Day') {
             setErrorMess("Day must be unique")
+            return
+        }
+        if (items.openTime > items.closeTime) {
+            setErrorMess("open time is greater than close time !")
             return
         }
         list.push(items)
@@ -86,12 +91,12 @@ function AddWorkingDays(props) {
     }
     return (
         <div>
-            
+
             <h5 style={{ fontWeight: 450 }} className="mt-3 ms-3 mb-4">Add Working days</h5>
             <Container>
                 <Row>
                     <Col className="col-12 text-center mb-3">
-                    <SubmitAlert />
+                        <SubmitAlert />
                         <div style={{ position: 'relative', width: '132px', margin: '0 auto' }}>
                             <Image roundedCircle width={148} src='./assets/images/Work time-cuate.svg'></Image>
                         </div>
@@ -104,7 +109,7 @@ function AddWorkingDays(props) {
                                         className="text-danger"
                                     >
                                         {errorMess}
-                                       
+
                                     </p>
                                 </div>
                                 <LocalForm model="workingDaysForm" className="mb-4 mt-2 row row-cols-lg-auto g-3 align-items-center" onSubmit={handleSubmit} style={{ placeContent: 'center' }}>
@@ -166,7 +171,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     resetForm: () => dispatch(actions.reset('workingDaysForm')),
     addCenterWorkingDays: (list) => dispatch(addCenterWorkingDays(list)),
-    clearErrorMessages : () => dispatch(clearErrorMessages())
+    clearErrorMessages: () => dispatch(clearErrorMessages())
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AddWorkingDays));

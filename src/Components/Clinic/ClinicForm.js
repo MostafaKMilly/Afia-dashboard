@@ -72,9 +72,9 @@ function ClinicForm(props) {
                 <Breadcrumb.Item active className="mr-auto" href="#">
                     Add Clinic
                 </Breadcrumb.Item>
-                <Button onClick={() => { props.resetForm(); props.closeRegisterDialog() }} style={{
+                <Button className="d-md-inline-block d-none" onClick={() => { props.resetForm(); props.closeRegisterDialog() }} style={{
                     "backgroundColor": "#ff2e63f2", "border": "1px solid gray",
-                    "marginBottom": "-13px", "marginRight": "7px"
+                    "marginBottom": "-13px", "marginRight": "18px"
                 }}><span className="fa fa-trash-alt"></span></Button>
             </Breadcrumb>
             <Container fluid >

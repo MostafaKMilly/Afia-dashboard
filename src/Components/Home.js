@@ -14,32 +14,82 @@ import { fetchCenterDays } from '../redux/Actions/CenterActions';
 import Loading from './Loading';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
+import HideForType from '../helpers/HideForType';
+import { baseUrl } from '../shared/baseUrl';
 class Home extends Component {
-    componentDidMount() {
-        this.props.fetchCenterDays()
+    constructor(props) {
+        super(props)
+        this.state = {
+            statistics : {},
+            statisticsIsLoading : true,
+            errMess : null
+        }
     }
-    render() {
-        const data = [
-            { day: 'Su', appointments: 2.525 },
-            { day: 'Mo', appointments: 3.018 },
-            { day: 'Tu', appointments: 3.682 },
-            { day: 'We', appointments: 4.440 },
-            { day: 'Th', appointments: 5.310 },
-            { day: 'Fr', appointments: 6.127 },
-            { day: 'Sa', appointments: 6.930 },
-        ];
-        const dataPieChart = [
-            { gender: 'female', area: 25 },
-            { gender: 'male', area: 75 },
-        ];
-        if (this.props.center.isLoading) {
+    getStatistics () {
+        return fetch(baseUrl + 'api/statistics/public' , {
+            method : "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Accept': "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+            .then(response => response.json())
+    }
+    componentDidMount() {
+        this.getStatistics().then((statistics) => {
+            this.setState({statistics})
+            console.log(this.state.statistics)
+            this.setState({statisticsIsLoading : false})
+        })
+        .catch(error => {
+            this.setState({errMess : error})
+            this.setState({statisticsIsLoading : false})
+        })
+    }
+    render()  {
+        if (this.props.center.isLoading || this.props.patients.isLoading || this.state.statisticsIsLoading) {
             return <Loading />
         }
+        const nextPath = (path) => {
+            this.props.history.push(path)
+        }
+        const totalPaitnets = this.props.patients.patients.length
+        const dataPieChart = [
+            { gender: 'female', area:this.state.statistics.Gender.female / totalPaitnets *100 },
+            { gender: 'male', area:this.state.statistics.Gender.male / totalPaitnets *100 },
+        ];
+        let monthlyPatientsPrecentage = Math.ceil(this.state.statistics.MonthlyPatient.count / this.state.statistics.MonthlyPatient.totalPatient * 100)
+        let totalPendingAppointment = this.state.statistics.TotalPendingAppointment.count
+        let todayPendingAppointmentPrecentage = Math.ceil(this.state.statistics.TodayPendingAppointment.count / this.state.statistics.TodayPendingAppointment.totalPendingAppointment * 100) 
+        let acceptedAppointmentsPrecentage = Math.ceil(this.state.statistics.AcceptedAppointment.count / this.state.statistics.AcceptedAppointment.totalPendingAppointment * 100)
+        let totalAcceptedAppointments = this.state.statistics.AcceptedAppointmentPerWeek.totalAcceptedAppointments
+        const data = [
+            { day: 'Su', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Sunday / totalAcceptedAppointments * 100) },
+            { day: 'Mo', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Monday / totalAcceptedAppointments * 100) },
+            { day: 'Tu', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Tuesday / totalAcceptedAppointments * 100) },
+            { day: 'We', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Wednesday / totalAcceptedAppointments * 100) },
+            { day: 'Th', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Thursday / totalAcceptedAppointments * 100) },
+            { day: 'Fr', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Friday / totalAcceptedAppointments * 100) },
+            { day: 'Sa', appointments: Math.ceil(this.state.statistics.AcceptedAppointmentPerWeek.Saturday / totalAcceptedAppointments * 100) },
+        ];
         const ErrorAlert = () => {
             return <Alert variant="danger">
                 <span className="fa fa-exclamation-triangle me-2"></span>
                 {this.props.center.errMess}
-          </Alert>
+            </Alert>
         }
         return (
             <div>
@@ -48,36 +98,45 @@ class Home extends Component {
                         <Col className="col-12 col-md-6 text-center text-md-left mb-3 mb-md-0">
                             <h2 style={{ fontWeight: 450 }}>Overview</h2>
                         </Col>
-                        
 
-                            {this.props.center.errMess ? <Col className="col-12 col-md-auto offset-md-1 ms-md-auto text-center text-md-right">
-                                <ErrorAlert/>
-                            </Col> :
+
+                        {this.props.center.errMess ? <Col className="col-12 col-md-auto offset-md-1 ms-md-auto text-center text-md-right">
+                            <ErrorAlert />
+                        </Col> :
                             <Col className="col-12 col-md-6 text-center text-md-right">
-                          
-                                <button className="btn me-2 mb-2 mb-md-0 text-white" style={{ backgroundColor: "#ff2e63f2" }}>
+
+                                <button className="btn me-2 mb-2 mb-md-0 text-white" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/appointments`)}>
                                     Pending Appointments
                                 </button>
-                                <button className="btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }}>
+                                <HideForType type={["Nurse"]}>
+                                <button className="btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/patients/add`)}>
                                     Add Patients
                                 </button>
-                                <button className="btn text-white" style={{ backgroundColor: "#ff2e63f2" }}>
+                                <button className="btn text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/doctors/add`)}>
                                     Add Doctors
                                 </button>
-                            
-    
+                                    </HideForType>
+                                    <HideForType type={["Admin"]}>
+                                    <button className="btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/addAppointments`)}>
+                                    Add appointment
+                                </button>
+                                    <button className="btn text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/calender`)}>
+                                    Calender
+                                </button>
+                                    </HideForType>
+
                             </Col>
-    }
-                        
+                        }
+
 
                     </Row>
                     <Row className="row-content">
                         <Col className="col-12 col-md-3 mb-3 mb-md-0">
                             <Card>
-                                <Card.Header className="bg-primary text-white text-left p-3 pl-4 lead">Appointments</Card.Header>
+                                <Card.Header className="bg-primary text-white text-left p-3 pl-4 lead" style={{fontSize : '19px'}}>Accepted Appointments</Card.Header>
                                 <Card.Body>
                                     <Card.Text className="d-flex">
-                                        <div className="c100 p90 small me-3">
+                                        <div className={`c100 ${'p'+acceptedAppointmentsPrecentage} small me-3`}>
                                             <span className="fa fa-calendar-check fa-lg text-primary"></span>
                                             <div className="slice">
                                                 <div className="bar"></div>
@@ -86,12 +145,12 @@ class Home extends Component {
                                         </div>
                                         <div className="text-center cardPrecentageDetail" >
                                             <h2 style={{ fontWeight: 400 }} >
-                                                190
+                                                {this.state.statistics.AcceptedAppointment.count}
                                             </h2>
-                                            <p className="lead">Today</p>
+                                            <p className="lead">Total</p>
                                         </div>
                                         <div className="precentage">
-                                            90%
+                                            {acceptedAppointmentsPrecentage+'%'}
                                         </div>
 
                                     </Card.Text>
@@ -106,7 +165,7 @@ class Home extends Component {
                                 }}>Patients</Card.Header>
                                 <Card.Body>
                                     <Card.Text className="d-flex">
-                                        <div className="c100 p12 small me-3">
+                                        <div className={`c100 ${'p'+monthlyPatientsPrecentage} small me-3`}>
                                             <span className="fa fa-user-injured fa-lg " style={{
                                                 color: '#e01447f2'
                                             }}></span>
@@ -114,50 +173,17 @@ class Home extends Component {
                                                 <div className="bar" style={{
                                                     borderColor: '#e01447f2'
                                                 }}></div>
-                                                <div className="fill"></div>
+                                                <div className="fill" style={{ borderColor: '#e01447f2'}}></div>
                                             </div>
                                         </div>
                                         <div className="text-center cardPrecentageDetail" >
                                             <h2 style={{ fontWeight: 400 }} >
-                                                190
+                                                {this.state.statistics.MonthlyPatient.count}
                                             </h2>
                                             <p className="lead">Monthly</p>
                                         </div>
                                         <div className="precentage">
-                                            90%
-                                        </div>
-
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-
-                        </Col>
-                        <Col className="col-12 col-md-3 mb-3 mb-md-0">
-                            <Card>
-                                <Card.Header className="text-white text-left p-3 pl-4 lead" style={{
-                                    backgroundColor: "#F29339"
-                                }}>Pending Appointments</Card.Header>
-                                <Card.Body>
-                                    <Card.Text className="d-flex">
-                                        <div className="c100 p12 small me-3">
-                                            <span className="fa fa-calendar fa-lg " style={{
-                                                color: "#F29339"
-                                            }}></span>
-                                            <div className="slice">
-                                                <div className="bar" style={{
-                                                    borderColor: '#F29339'
-                                                }}></div>
-                                                <div className="fill"></div>
-                                            </div>
-                                        </div>
-                                        <div className="text-center cardPrecentageDetail" >
-                                            <h2 style={{ fontWeight: 400 }} >
-                                                190
-                                            </h2>
-                                            <p className="lead">Total</p>
-                                        </div>
-                                        <div className="precentage">
-                                            90%
+                                            {monthlyPatientsPrecentage+'%'}
                                         </div>
 
                                     </Card.Text>
@@ -169,10 +195,10 @@ class Home extends Component {
                             <Card>
                                 <Card.Header className="text-white text-left p-3 pl-4 lead" style={{
                                     backgroundColor: "#182783"
-                                }}>Doctors</Card.Header>
+                                }}>Pending appointments</Card.Header>
                                 <Card.Body>
                                     <Card.Text className="d-flex">
-                                        <div className="c100 p12 small me-3">
+                                        <div className={`c100 ${'p'+todayPendingAppointmentPrecentage} small me-3`}>
                                             <span className="fa fa-user-nurse fa-lg" style={{
                                                 color: '#182783'
                                             }}></span>
@@ -180,17 +206,17 @@ class Home extends Component {
                                                 <div className="bar" style={{
                                                     borderColor: '#182783'
                                                 }}></div>
-                                                <div className="fill"></div>
+                                                <div className="fill" style={{borderColor: '#182783'}}></div>
                                             </div>
                                         </div>
                                         <div className="text-center cardPrecentageDetail" >
                                             <h2 style={{ fontWeight: 400 }} >
-                                                190
+                                                {this.state.statistics.TodayPendingAppointment.count}
                                             </h2>
-                                            <p className="lead">Total</p>
+                                            <p className="lead">Today</p>
                                         </div>
                                         <div className="precentage">
-                                            90%
+                                            {todayPendingAppointmentPrecentage+'%'}
                                         </div>
 
                                     </Card.Text>
@@ -198,6 +224,38 @@ class Home extends Component {
                             </Card>
 
                         </Col>
+                                                    <Col className="col-12 col-md-3 mb-3 mb-md-0">
+                                                        <Card>
+                                                            <Card.Header className="text-white text-left p-3 pl-4 lead" style={{
+                                                                backgroundColor: "#F29339"
+                                                            }}>Pending Appointments</Card.Header>
+                                                            <Card.Body>
+                                                                <Card.Text className="d-flex">
+                                                                    <div className="c100 p100 small me-3">
+                                                                        <span className="fa fa-calendar fa-lg " style={{
+                                                                            color: "#F29339"
+                                                                        }}></span>
+                                                                        <div className="slice">
+                                                                            <div className="bar" style={{
+                                                                                borderColor: '#F29339'
+                                                                            }}></div>
+                                                                            <div className="fill" style={{borderColor: '#F29339'}}></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="text-center cardPrecentageDetail" >
+                                                                        <h2 style={{ fontWeight: 400 }} >
+                                                                            {totalPendingAppointment}
+                                                                        </h2>
+                                                                        <p className="lead">Total</p>
+                                                                    </div>
+                                                                    <div className="precentage">
+                                                                        
+                                                                    </div>
+                                                                </Card.Text>
+                                                            </Card.Body>
+                                                        </Card>
+                            
+                                                    </Col>
                     </Row>
                     <Row className="row-content">
                         <Col className="col-12 col-md-7 mb-3 mb-md-0" >
@@ -281,11 +339,9 @@ class Home extends Component {
 }
 
 const mapStateTopProps = (state) => ({
-    center: state.center
+    center: state.center,
+    patients : state.patients
 })
 
-const mapDispatchToProps = (dispatch) => ({
-    fetchCenterDays: () => dispatch(fetchCenterDays())
-})
 
-export default withRouter(connect(mapStateTopProps, mapDispatchToProps)(Home));
+export default withRouter(connect(mapStateTopProps)(Home));

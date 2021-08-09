@@ -126,6 +126,31 @@ const addDoctorPhoto = (id , image) => {
     })
 }
 
+export const addTagForDoctor = (doctorId , tags) => {
+    fetch(baseUrl + 'api/doctors/'+doctorId+'/tags' , {
+        method : "POST",
+        headers : {
+            'Content-Type' : 'application/json' ,
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body : JSON.stringify(tags)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response
+        }
+        else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+        }
+    }, err => {
+        let error = new Error(err.message)
+        throw error;
+    })
+    .then(res => res.json())
+}
 export const clearDoctorErrorMessages = () => ({
     type : ActionTypes.CLEAR_DOCTOR_REGISTER_ERROR_MESSAGES
 })
@@ -187,6 +212,7 @@ export const addDoctor = (doctorInfo) => (dispatch) => {
             })
             .catch(e =>dispatch(addDoctorFailed(workingDay.day +': '+ e.message)))
         }))
+        addTagForDoctor(doctor.DoctorData.id , doctorInfo.tags)
         dispatch(fetchDoctors())
     })
     .catch(e => dispatch(addDoctorFailed(e.message)))

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 function LoginFailed({ messege }) {
   return (
-    <div style={{ "marginBottom": "-24px" , "margintop": "-6px"}}>
+    <div style={{ "marginBottom": "-24px", "margintop": "-6px" }}>
       <Alert variant="danger">
         <Alert.Heading>You got an error!</Alert.Heading>
         <p>{messege}</p>

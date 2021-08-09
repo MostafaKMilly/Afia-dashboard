@@ -6,13 +6,13 @@ import Dashboard from './Dashboard';
 
 class Main extends Component {
     render() {
-        if (!Boolean(localStorage.getItem('token')) || localStorage.getItem("token") ==="undefined") {
+        if (!Boolean(localStorage.getItem('token')) || localStorage.getItem("token") === "undefined") {
             return (<Login />)
         }
         return (
             <Switch>
-               <Route path="/dashboard" component={Dashboard}/>
-               <Redirect from="/" to="/dashboard"/>
+                <Route path="/dashboard" component={Dashboard} />
+                <Redirect from="/" to="/dashboard" />
             </Switch>
         );
     }
@@ -21,4 +21,4 @@ class Main extends Component {
 const mapStateToProps = (state) => ({
     user: state.user
 })
-export default withRouter(connect(mapStateToProps,null)(Main))
+export default withRouter(connect(mapStateToProps, null)(Main))

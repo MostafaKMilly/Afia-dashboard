@@ -15,13 +15,15 @@ import ClinicForm from './Clinic/ClinicForm';
 import PatientForm from './Patient/PatientForm';
 import PatientsSection from './Patient/PatientsSection';
 import { fetchPatients } from '../redux/Actions/PatientAction';
-import Appointments from './Appointments';
+import Appointments from './Appointment/Appointments';
 import { autoLogin } from '../redux/Actions/userActions';
 import Calender from './calender';
 import PatientDetail from './Patient/PatientDetail';
 import Settings from './Settings/Settings';
 import Loading from './Loading';
 import { Redirect } from 'react-router-dom';
+import { fetchCenterDays } from '../redux/Actions/CenterActions';
+import AppointmentForm from './Appointment/AppointmentForm';
 
 class Dashboard extends Component {
     componentDidMount() {
@@ -29,6 +31,7 @@ class Dashboard extends Component {
         this.props.fetchDoctors()
         this.props.fetchClinics()
         this.props.fetchPatients()
+        this.props.fetchCenterDays()
     }
     render() {
         const doctorWithId = ({ match }) => {
@@ -65,32 +68,33 @@ class Dashboard extends Component {
                 return <div></div>
             }
         }
-        if(this.props.clinics.isLoading) {
-            return <Loading/>
+        if (this.props.clinics.isLoading) {
+            return <Loading />
         }
         return (
             <Switch>
                 <>
-                <div className="d-flex" style={{ "height": "100vh" }}>
-                    <Sidebar />
-                    <div className="dash-container">
-                        <Header user={this.props.user.userData}/>
-                        <Route exact path={`${this.props.match.path}/doctors`} component={() => <DoctorsSection />} />
-                        <Route exact path={`${this.props.match.path}/clinics`} component={() => <ClinicsSection />} />
-                        <Route exact path={`${this.props.match.path}/patients`} component={() => <PatientsSection />} />
-                        <Route exact path={`${this.props.match.path}/`} component={Home} />
-                        <Route exact path={`${this.props.match.path}/doctors/add`} component={() => <DoctorForm clinics={this.props.clinics}/>} />
-                        <Route exact path={`${this.props.match.path}/clinics/add`}  component={() => <ClinicForm />} />
-                        <Route exact path={`${this.props.match.path}/patients/add`}  component={() => <PatientForm />} />
-                        <Route path={`${this.props.match.path}/doctors/:doctorId`} component={doctorWithId} />
-                        <Route path={`${this.props.match.path}/clinics/:clinicId`} component={clinicWithId} />
-                        <Route path={`${this.props.match.path}/patients/:patientId`} component={patientWithId} />
-                        <Route path={`${this.props.match.path}/appointments`} component={() => <Appointments/>}/>
-                        <Route path={`${this.props.match.path}/calender`} component={() => <Calender/>}/>
-                        <Route path={`${this.props.match.path}/settings`} component={() => <Settings/>}/>
-                        <Redirect from={`${this.props.match.path}/`} to="/dashboard"/>
+                    <div className="d-flex" style={{ "height": "100vh" }}>
+                        <Sidebar />
+                        <div className="dash-container">
+                            <Header user={this.props.user.userData} />
+                            <Route exact path={`${this.props.match.path}/doctors`} component={() => <DoctorsSection />} />
+                            <Route exact path={`${this.props.match.path}/clinics`} component={() => <ClinicsSection />} />
+                            <Route exact path={`${this.props.match.path}/patients`} component={() => <PatientsSection />} />
+                            <Route exact path={`${this.props.match.path}/`} component={Home} />
+                            <Route exact path={`${this.props.match.path}/doctors/add`} component={() => <DoctorForm clinics={this.props.clinics} />} />
+                            <Route exact path={`${this.props.match.path}/clinics/add`} component={() => <ClinicForm />} />
+                            <Route exact path={`${this.props.match.path}/patients/add`} component={() => <PatientForm />} />
+                            <Route exact path={`${this.props.match.path}/doctors/:doctorId`} component={doctorWithId} />
+                            <Route exact path={`${this.props.match.path}/clinics/:clinicId`} component={clinicWithId} />
+                            <Route exact path={`${this.props.match.path}/patients/:patientId`} component={patientWithId} />
+                            <Route exact path={`${this.props.match.path}/appointments`} component={() => <Appointments />} />
+                            <Route path={`${this.props.match.path}/addAppointments`} component={() => <AppointmentForm />} />
+                            <Route exact path={`${this.props.match.path}/calender`} component={() => <Calender />} />
+                            <Route path={`${this.props.match.path}/settings`} component={() => <Settings />} />
+                            <Redirect from={`${this.props.match.path}/`} to="/dashboard" />
+                        </div>
                     </div>
-                </div>
                 </>
             </Switch>
         );
@@ -100,15 +104,16 @@ class Dashboard extends Component {
 const mapDispatchToProps = (dispatch) => ({
     fetchClinics: () => { dispatch(fetchClinics()) },
     fetchDoctors: () => { dispatch(fetchDoctors()) },
-    autoLogin: () => dispatch(autoLogin()) ,
-    fetchPatients : () => dispatch(fetchPatients())
+    autoLogin: () => dispatch(autoLogin()),
+    fetchPatients: () => dispatch(fetchPatients()),
+    fetchCenterDays: () => dispatch(fetchCenterDays())
 })
 
 const mapStateToProps = (state) => ({
     doctors: state.doctors,
     clinics: state.clinics,
-    user: state.user ,
-    patients : state.patients
+    user: state.user,
+    patients: state.patients
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))

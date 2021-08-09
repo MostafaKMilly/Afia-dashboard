@@ -1,4 +1,4 @@
-export const Columns = (actionsFormatter) =>[{
+export const Columns = (actionsFormatter) => [{
     dataField: "doctor.id",
     text: "ID",
     sort: true

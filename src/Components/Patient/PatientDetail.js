@@ -1,5 +1,5 @@
-import React from 'react';
-import { Breadcrumb, Col, Container, Row, Image, Card } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Breadcrumb, Col, Container, Row, Image, Card ,Alert} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { baseUrl } from '../../shared/baseUrl';
@@ -10,8 +10,46 @@ import {pageButtonRenderer} from '../../helpers/pageButtonRenderer'
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
 function PatientDetail(props) {
+    const [cancelledAppointments , setCancelledAppointments] = useState([])
+    const [cancelledAppointmentsIsLoading , setCancelledAppointmentsIsLoading] = useState(true)
+    const [errMess , setErrMess] = useState()
 
-    if (props.patients.isLoading) {
+    useEffect(() => {
+        const getCannceledAppoinments = () => {
+            fetch(baseUrl + 'api/statistics/canceled_appointments/id/'+props.patient.patient.id , {
+                method : "GET" ,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+                .then(cannceledAppoinments => {
+                    setCancelledAppointments(cannceledAppoinments)
+                    setCancelledAppointmentsIsLoading(false)
+                })
+                .catch(error => {
+                    setErrMess(error.message)
+                    setCancelledAppointmentsIsLoading(false)
+                })
+        }
+        getCannceledAppoinments()
+    },[])
+    if (props.patients.isLoading || cancelledAppointmentsIsLoading) {
         return <Loading />
     }
     const customTotal = (from, to, size) => (
@@ -88,9 +126,28 @@ function PatientDetail(props) {
             );
         }
     };
-
+     const ErrorAlert = () => {
+    if (errMess) {
+        return <Alert variant="danger" className="mt-2 mb-1" style={{
+         width: "fit-content",
+         margin: "0 auto",
+         position : "absolute",
+         top: "-1%",
+        transform: "translate(-50% , 0)"
+        ,left: "50%"
+        ,zIndex: 1
+     }} dismissible onClose={() =>setErrMess(undefined)}>
+         <Alert.Heading>Error !</Alert.Heading>
+         {errMess}
+     </Alert>
+    }
+    else {
+      return <></>
+    }
+  }
     return (
         <div className="mt-2">
+        <ErrorAlert/>
             <Breadcrumb>
                 <Breadcrumb.Item className="pl-3" href="#">
                     <Link to="/dashboard">
@@ -167,13 +224,13 @@ function PatientDetail(props) {
                                                 color : "#ec3535"
                                             }}></span>
                                             <div className="slice">
-                                                <div className="bar"></div>
-                                                <div className="fill"></div>
+                                                <div className="bar" style={{ borderColor: '#ec3535'}}></div>
+                                                <div className="fill" style={{ borderColor: '#ec3535'}}></div>
                                             </div>
                                         </div>
                                         <div className="text-center ms-3" >
                                             <h2 style={{ fontWeight: 400 }} >
-                                                190
+                                                {cancelledAppointments.count}
                                             </h2>
                                             <p className="lead">Total</p>
                                         </div>

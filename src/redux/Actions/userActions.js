@@ -11,12 +11,12 @@ export const logUserOut = () => ({
 })
 
 export const logFailed = (payload) => ({
-    type : ActionTypes.LOG_FAILED ,
+    type: ActionTypes.LOG_FAILED,
     payload
-})  
+})
 
 export const failedToFetchUserData = (payload) => ({
-    type : ActionTypes.FAILED_FETCH_USER_DATA ,
+    type: ActionTypes.FAILED_FETCH_USER_DATA,
     payload
 })
 
@@ -29,14 +29,15 @@ export const fetchUser = (userInfo) => dispatch => {
         },
         body: JSON.stringify(userInfo)
     })
-        .then (response => {
-            let token = response.headers.get("x-token").split(" ")[1]
-            localStorage.setItem("token", token)
+        .then(response => {
+
             if (response.ok) {
+                let token = response.headers.get("x-token").split(" ")[1]
+                localStorage.setItem("token", token)
                 return response
             }
             else {
-                let error = new Error("Error " + response.status + ":" + response.statusText)
+                let error = new Error(response.statusText)
                 throw error
             }
         })
@@ -51,7 +52,7 @@ export const fetchUser = (userInfo) => dispatch => {
                 object.user = data
             }
             dispatch(setUser(object))
-        }).catch(e =>dispatch(logFailed(e.message)))
+        }).catch(e => dispatch(logFailed(e.message)))
 }
 
 
@@ -79,7 +80,7 @@ export const autoLogin = () => dispatch => {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
     })
-        .then (response => {
+        .then(response => {
             if (response.ok) {
                 return response
             }
@@ -104,6 +105,6 @@ export const autoLogin = () => dispatch => {
             }
             console.log(object)
             dispatch(setUser(object))
-        }).catch(e => dispatch (failedToFetchUserData(e.message)))
+        }).catch(e => dispatch(failedToFetchUserData(e.message)))
 
 }

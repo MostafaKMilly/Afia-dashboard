@@ -14,6 +14,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import {Columns} from '../../helpers/PatientsTableColumns'
 import {pageButtonRenderer} from '../../helpers/pageButtonRenderer'
+import HideForType from '../../helpers/HideForType';
 
 function PatientSection(props) {
     let {path , url } = useRouteMatch()
@@ -154,10 +155,12 @@ function PatientSection(props) {
                                                     </Container>
                                                 </Col>
                                                 <Col xs="auto" className="customBtnGroup">
-                                                    <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
+                                                <HideForType type={["Nurse"]}>
+                                                <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
                                                         <span className="fas fa-user-plus"></span>
                                                             Add
                                                     </Button>
+                                    </HideForType>
                                                     <ExportCSVButton {...props.csvProps} className="btn2 text-white">
                                                         Export CSV
                                                     </ExportCSVButton>

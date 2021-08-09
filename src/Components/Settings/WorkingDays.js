@@ -4,6 +4,7 @@ import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { clearErrMess, deleteWorkingDay, updateWorkingDay } from '../../redux/Actions/CenterActions';
 import { Control, LocalForm } from 'react-redux-form'
+import HideForType from '../../helpers/HideForType';
 function WorkingDays(props) {
     const [showModal, setShowModal] = useState(false)
     const [selectDay, setSelectedDay] = useState('')
@@ -22,12 +23,14 @@ function WorkingDays(props) {
             <td>{workingDays.day}</td>
             <td>{formatAMPM(workingDays.openTime)}</td>
             <td>{formatAMPM(workingDays.closeTime)}</td>
-            <td><span className="fa fa-edit me-3" type="button" onClick={() => {
-                setSelectedDay(workingDays.day)
-                setShowModal(true)
-            }} style={{ color: '#010A43' }}></span>
-                <span className="fa fa-trash-alt" type="button" onClick={() => props.deleteWorkingDay(workingDays.day)} style={{ color: '#010A43' }}></span>
-            </td>
+            <HideForType type={["Nurse"]}>
+                <td><span className="fa fa-edit me-3" type="button" onClick={() => {
+                    setSelectedDay(workingDays.day)
+                    setShowModal(true)
+                }} style={{ color: '#010A43' }}></span>
+                    <span className="fa fa-trash-alt" type="button" onClick={() => props.deleteWorkingDay(workingDays.day)} style={{ color: '#010A43' }}></span>
+                </td>
+            </HideForType>
         </tr>
     ))
     let emptyMessage
@@ -38,62 +41,50 @@ function WorkingDays(props) {
         props.history.push(path)
     }
     const handleSubmit = (values) => {
-        console.log(selectDay)
-        if (values.day === undefined || values.openTime === undefined || values.closeTime === undefined) {
+        if (values.openTime === undefined || values.closeTime === undefined) {
             return
         }
         props.updateWorkingDay(selectDay, values)
         setShowModal(false)
     }
+    const selectedDayValues = props.center.workingDays.filter((workingDay) => workingDay.day === selectDay)[0]
+    let defaultStartTime = selectedDayValues ? selectedDayValues.openTime : undefined
+    let defaultEndTime = selectedDayValues ? selectedDayValues.closeTime : undefined
+
     const ErrorAlert = () => {
-       if (props.center.errMess) {
-           return <Alert variant="danger" className="mt-2 mb-4" style={{
-            width: "fit-content",
-            margin: "0 auto"
-        }} onClose={() => props.clearErrMess()} dismissible>
-            <Alert.Heading>Error !</Alert.Heading>
-            {props.center.errMess}
-        </Alert>
-       } 
+        if (props.center.errMess) {
+            return <Alert variant="danger" className="mt-2 mb-4" style={{
+                width: "fit-content",
+                margin: "0 auto"
+            }} onClose={() => props.clearErrMess()} dismissible>
+                <Alert.Heading>Error !</Alert.Heading>
+                {props.center.errMess}
+            </Alert>
+        }
         else {
             return <></>
         }
     }
     return (
         <div>
-            <ErrorAlert/>
+            <ErrorAlert />
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit working day</Modal.Title>
                 </Modal.Header>
                 <LocalForm model="updateForm" onSubmit={handleSubmit}>
                     <Modal.Body>
-                        <FormGroup className="mb-3" controlId="dayInput">
-                            <Control.select model=".day" name="day" className="form-select" validators={{
-                            }}>
-                                <option selected>Choose Day</option>
-                                <option>Saturday</option>
-                                <option>Sunday</option>
-                                <option>Monday</option>
-                                <option>Tuesday</option>
-                                <option>Wednesday</option>
-                                <option>Thursday</option>
-                                <option>Friday</option>
-                            </Control.select>
-                        </FormGroup>
                         <FormGroup className="mb-3" controlId="startTimeInput">
                             <div className="input-group">
                                 <div className="input-group-text">Open Time</div>
-                                <Control model=".openTime" type="time" className="form-control" validators={{
-
+                                <Control model=".openTime" type="time" defaultValue={defaultStartTime} className="form-control" validators={{
                                 }} />
                             </div>
                         </FormGroup>
                         <FormGroup className="mb-3" controlId="startTimeInput">
                             <div className="input-group">
                                 <div className="input-group-text">Close Time</div>
-                                <Control model=".closeTime" type="time" className="form-control" validators={{
-
+                                <Control model=".closeTime" type="time" defaultValue={defaultEndTime} className="form-control" validators={{
                                 }} />
                             </div>
                         </FormGroup>
@@ -126,7 +117,9 @@ function WorkingDays(props) {
                                     <th>Day</th>
                                     <th>Open time</th>
                                     <th>Close Time</th>
-                                    <th>Actions</th>
+                                    <HideForType type={["Nurse"]}>
+                                        <th>Actions</th>
+                                    </HideForType>
                                 </tr>
                             </thead>
                             <tbody>
@@ -134,16 +127,25 @@ function WorkingDays(props) {
                             </tbody>
                             {emptyMessage ? <tbody>
                                 <tr>
-                                    <td colSpan={4}>
-                                        {emptyMessage}
-                                    </td>
+                                    <HideForType type={["Nurse"]}>
+                                        <td colSpan={4}>
+                                            {emptyMessage}
+                                        </td>
+                                    </HideForType>
+                                    <HideForType type={["Admin"]}>
+                                        <td colSpan={3}>
+                                            {emptyMessage}
+                                        </td>
+                                    </HideForType>
                                 </tr>
                             </tbody> : <></>}
 
                         </Table>
-                        <center>
-                            <Link className="mt-2 btn btn-outline-secondary" to="/dashboard/settings/addWorkingDays">Add</Link>
-                        </center>
+                        <HideForType type={["Nurse"]}>
+                            <center className="mt-4 mt-md-0">
+                                <Link className="mt-2 btn btn-outline-secondary" to="/dashboard/settings/addWorkingDays">Add</Link>
+                            </center>
+                        </HideForType>
                     </Col>
                 </Row>
             </Container>
@@ -154,7 +156,7 @@ function WorkingDays(props) {
 const mapDispatchTopProps = (dispatch) => ({
     deleteWorkingDay: (day) => dispatch(deleteWorkingDay(day)),
     updateWorkingDay: (day, values) => dispatch(updateWorkingDay(day, values)),
-    clearErrMess : () => dispatch(clearErrMess())
+    clearErrMess: () => dispatch(clearErrMess())
 })
 
 const mapStateTopProps = (state) => ({

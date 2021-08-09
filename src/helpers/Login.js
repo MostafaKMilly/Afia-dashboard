@@ -13,7 +13,7 @@ class Login extends Component {
     super(props)
     this.state = {
       username: "",
-      password: "" ,
+      password: "",
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -29,7 +29,7 @@ class Login extends Component {
     this.props.fetchUser(values);
     this.nextPath("dashboard")
   }
-  nextPath (path) {
+  nextPath(path) {
     this.props.history.push(path)
   }
   render() {
@@ -41,11 +41,11 @@ class Login extends Component {
       <div>
         <div className="vertical-center">
           <Container>
-            <Row style={{"alignItems" :"center"}}>
+            <Row style={{ "alignItems": "center" }}>
               <Col md={5} className="p-4">
                 <h5>Welocme back</h5>
                 <h3 className="mt-2 mb-4">Login to your account</h3>
-                {errMess ? <LoginFailed messege={errMess}/> : <></>}
+                {errMess ? <LoginFailed messege={errMess} /> : <></>}
                 <LocalForm onSubmit={(values) => this.handleSubmit(values)}
                   style={{ "marginTop": "41px" }}
                 >
@@ -69,25 +69,25 @@ class Login extends Component {
                     <Col xs={6}>
                       <FormLabel check>
                         <Control.checkbox model=".rememberMe" name="rememberMe" className="form-check-input" />
-                      Remember me
-                    </FormLabel>
+                        Remember me
+                      </FormLabel>
                     </Col>
                     <Col xs={6} className="ml-auto text-right">
                       <a href="" color="inherent">
                         Forget password ?
-                         </a>
+                      </a>
                     </Col>
 
                   </Row>
                   <Row className="pl-3 pr-3">
                     <Button className="loginBtn m-0 pt-2 pb-3" style={{ "width": "100%" }} type="submit">
                       Login
-                 </Button>
+                    </Button>
                   </Row>
                 </LocalForm>
               </Col>
-              <Col md={{size :6 , offset :1}} className="d-md-block d-none">
-                <Image fluid  src={'assets/images/Medical care-bro.svg'}
+              <Col md={{ size: 6, offset: 1 }} className="d-md-block d-none">
+                <Image fluid src={'assets/images/Medical care-bro.svg'}
                   alt="login" className="img-fluid"
                 />
               </Col>

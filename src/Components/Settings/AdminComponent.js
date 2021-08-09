@@ -6,17 +6,17 @@ import { clearErrMess, deleteWorkingDay, updateWorkingDay } from '../../redux/Ac
 import { Control, LocalForm } from 'react-redux-form'
 import { baseUrl } from '../../shared/baseUrl';
 import Loading from '../Loading';
-function NurseComponent(props) {
+function AdminComponent(props) {
     const [showEditModal, setEditShowModal] = useState(false)
-    const [selectedNurse, setSelectedNurse] = useState('')
-    const [nurses, setNurses] = useState([])
+    const [selectedAdmin, setselectedAdmin] = useState('')
+    const [admins, setAdmins] = useState([])
     const [showAddModal, setAddShowModal] = useState(false)
     const [error, setError] = useState()
     const [isloading, setIsLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(4)
-    const getNurses = () => {
-        return fetch(baseUrl + 'api/nurses/', {
+    const getAdmins = () => {
+        return fetch(baseUrl + 'api/admins/', {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -40,16 +40,16 @@ function NurseComponent(props) {
             
     }
     useEffect(() => {
-        getNurses().then((nurses) => {
-            setNurses(nurses)
+        getAdmins().then((admins) => {
+            setAdmins(admins)
             setIsLoading(false)
         }).catch(error => {
             setError(error.message)
             setIsLoading(false)
         })
     }, [])
-    const addNurse = (values) => {
-        return fetch(baseUrl + 'api/nurses/Signup', {
+    const addAdmin = (values) => {
+        return fetch(baseUrl + 'api/admins/Signup', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -73,8 +73,8 @@ function NurseComponent(props) {
             .then(response => response.json())
             
     }
-    const updateNurse = (nurseId, values) => {
-        return fetch(baseUrl + 'api/nurses/' + nurseId, {
+    const updateAdmin = (adminId, values) => {
+        return fetch(baseUrl + 'api/admins/' + adminId, {
             method: 'PATCH',
             headers: {
                 "Content-Type": "application/json",
@@ -97,8 +97,8 @@ function NurseComponent(props) {
         })
             .then(response => response.json())
     }
-    const deleteNurse = (nurseId) => {
-        return fetch(baseUrl + 'api/nurses/' + nurseId, {
+    const deleteAdmin = (adminId) => {
+        return fetch(baseUrl + 'api/admins/' + adminId, {
             method: 'DELETE',
             headers: {
                 "Content-Type": "application/json",
@@ -118,42 +118,41 @@ function NurseComponent(props) {
             let error = new Error(err.message)
             throw error;
         })
-            .then(response => response.json())
+        .then(response => response.json())
     }
     const handleClick = (event) => {
         setCurrentPage(parseInt(event.target.id, 10))
     }
     const lastIndex = currentPage * itemsPerPage
     const firstIndex = lastIndex - itemsPerPage
-    const nursesArray = nurses?.slice(firstIndex, lastIndex)
+    const adminsArray = admins.slice(firstIndex, lastIndex)
     let items = []
-    for (let i = 1; i <= Math.ceil(nurses?.length / itemsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(admins.length / itemsPerPage); i++) {
         items.push(
             <Pagination.Item key={i} active={i === currentPage} id={i} onClick={handleClick}>
                 {i}
             </Pagination.Item>
         )
     }
-    const nursesList = nursesArray?.map((nurse) => (
-        <tr key={nurse.id}>
-            <td>{nurse.username}</td>
-            <td>{nurse.email}</td>
+    const adminsList = adminsArray.map((admin) => (
+        <tr key={admin.id}>
+            <td>{admin.username}</td>
+            <td>{admin.email}</td>
             <td><span className="fa fa-edit me-3" onClick={() => {
-                setSelectedNurse(nurse.id)
+                setselectedAdmin(admin.id)
                 setEditShowModal(true)
             }} type="button" style={{ color: '#010A43' }}></span>
-                <span className="fa fa-trash-alt" type="button" onClick={() => handleDelete(nurse.id)} style={{ color: '#010A43' }}></span>
+                <span className="fa fa-trash-alt" type="button" onClick={() => handleDelete(admin.id)} style={{ color: '#010A43' }}></span>
             </td>
         </tr>
     ))
     const handleEdit = (values) => {
         if (values.username || values.password || values.email) {
-            updateNurse(selectedNurse, values).then(() => {
-                
-                let tempoArray = [...nurses]
-                let i = tempoArray.findIndex((nurse) => nurse.id === selectedNurse)
+            updateAdmin(selectedAdmin, values).then(() => {
+                let tempoArray = [...admins]
+                let i = tempoArray.findIndex((admin) => admin.id === selectedAdmin)
                 tempoArray[i] = { ...tempoArray[i], ...values }
-                setNurses(tempoArray)
+                setAdmins(tempoArray)
             })
             .catch(error => {
                 setError(error.message)
@@ -165,27 +164,30 @@ function NurseComponent(props) {
         if (values.username === undefined || values.password === undefined || values.email === undefined) {
             return
         }
-        values = { ...values, type: "Nurse" }
-        addNurse(values).then((nurse) => {
-            console.log(nurses)
-            let tempoArray = [...nurses]
-            tempoArray.push(nurse.NurseData)
-            setNurses(tempoArray)
+        values = { ...values, type: "Admin" }
+        addAdmin(values).then((admin) => {
+            let tempoArray = [...admins]
+            tempoArray.push(admin.AdminData)
+            setAdmins(tempoArray)
         })
         .catch(error => {
             setError(error.message)
         })
         setAddShowModal(false)
     }
-    const handleDelete = (nurseId) => {
-        deleteNurse(nurseId).then(() => {
-            let tempArray = nurses.filter((nurse) => nurse.id !== nurseId)
-            setNurses(tempArray)
+    const handleDelete = (adminId) => {
+        deleteAdmin(adminId).then(() => {
+            let tempArray = admins.filter((admin) => admin.id !== adminId)
+            setAdmins(tempArray)
+        })
+        .catch(error => {
+            setError(error.message)
+            setIsLoading(false)
         })
     }
-    /*  const selectedNurseValues = nurses?.filter((nurse) => nurse.id ===selectedNurse)[0]
-     let defaultUserName = selectedNurseValues ? selectedNurseValues.username : undefined 
-     let defaultEmail = selectedNurseValues ? selectedNurseValues.email : undefined  
+    /*  const selectedAdminValues = admins?.filter((Admin) => Admin.id ===selectedAdmin)[0]
+     let defaultUserName = selectedAdminValues ? selectedAdminValues.username : undefined 
+     let defaultEmail = selectedAdminValues ? selectedAdminValues.email : undefined  
   */
     const ErrorAlert = () => {
         if (error) {
@@ -209,7 +211,7 @@ function NurseComponent(props) {
             <ErrorAlert />
             <Modal show={showEditModal} onHide={() => setEditShowModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Nurse data</Modal.Title>
+                    <Modal.Title>Edit Admin data</Modal.Title>
                 </Modal.Header>
                 <LocalForm model="updateForm" onSubmit={handleEdit}>
                     <Modal.Body>
@@ -238,7 +240,7 @@ function NurseComponent(props) {
             </Modal>
             <Modal show={showAddModal} onHide={() => setAddShowModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Nurse data</Modal.Title>
+                    <Modal.Title>Add Admin data</Modal.Title>
                 </Modal.Header>
                 <LocalForm model="addForm" onSubmit={handleSubmit}>
                     <Modal.Body>
@@ -266,12 +268,12 @@ function NurseComponent(props) {
                 </LocalForm>
             </Modal>
 
-            <h5 style={{ fontWeight: 450 }} className="mt-3 ms-3 mb-4">Manage Nurses</h5>
+            <h5 style={{ fontWeight: 450 }} className="mt-3 ms-3 mb-4">Manage Admins</h5>
             <Container>
                 <Row>
                     <Col className="col-12 text-center mb-3">
                         <div style={{ position: 'relative', width: '132px', margin: '0 auto' }}>
-                            <Image roundedCircle width={172} src='.\assets\images\undraw_doctors_hwty.svg'></Image>
+                            <Image roundedCircle width={172} src='.\assets\images\Admin-cuate.svg'></Image>
                         </div>
                     </Col>
                     <Col className="col-md-12 pe-md-4 pe-0" style={{ marginTop: '35px' }}>
@@ -284,12 +286,12 @@ function NurseComponent(props) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {nursesList}
+                                {adminsList}
                             </tbody>
-                            {nurses.length ===0 ? <tbody>
+                            {admins.length ===0 ? <tbody>
                                 <tr>
                                     <td colSpan={3}>
-                                        {"there are no nurses"}
+                                        {"there are no admins"}
                                     </td>
                                 </tr>
                             </tbody> : <></>}
@@ -318,4 +320,4 @@ const mapStateTopProps = (state) => ({
     center: state.center
 })
 
-export default withRouter(connect(mapStateTopProps, mapDispatchTopProps)(NurseComponent));
+export default withRouter(connect(mapStateTopProps, mapDispatchTopProps)(AdminComponent));

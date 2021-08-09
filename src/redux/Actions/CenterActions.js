@@ -26,7 +26,17 @@ export const clearErrorMessages = () => ({
 
 export const addWorkingDays = () => ({
     type : ActionsTypes.ADD_WORKING_DAYS,
-}) 
+})
+
+const deleteWorkingDayObj = (payload) => ({
+    type : ActionsTypes.DELETE_WORKING_DAY ,
+    payload
+})
+
+const updateWorkingDayObj= (payload) => ({
+    type : ActionsTypes.UPDATE_WORKING_DAY ,
+    payload
+})
 export const fetchCenterDays = () => dispatch => {
     dispatch(centerDaysLoading())
     fetch(baseUrl + 'api/center/work_days' , {
@@ -89,6 +99,7 @@ export const addCenterWorkingDays = (workingDaysList) => (dispatch) => {
     .catch(e => console.log(e))
 }
 
+
 export const deleteWorkingDay = (day) => dispatch => {
     fetch(baseUrl + 'api/center/work_days/day/'+day , {
         method : "DELETE",
@@ -112,7 +123,7 @@ export const deleteWorkingDay = (day) => dispatch => {
         throw error;
     })
     .then(response => response.json())
-    .then(workingDays => dispatch(loadCenterDays(workingDays)))
+    .then(() => dispatch(deleteWorkingDayObj(day)))
     .catch (error => dispatch(loadCenterDaysFailed(error.message)))
 }
 
@@ -144,7 +155,7 @@ export const updateWorkingDay = (day , values) => dispatch => {
         throw error;
     })
     .then(response => response.json())
-    .then(workingDays => dispatch(loadCenterDays(workingDays)))
+    .then(() => dispatch(updateWorkingDayObj({day , ...values})))
     .catch (error => dispatch(loadCenterDaysFailed(error.message)))
 }
 

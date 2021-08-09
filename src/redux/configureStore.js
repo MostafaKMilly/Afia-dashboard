@@ -13,6 +13,7 @@ import { DoctorRegisterStatus } from './Reducers/doctorRegisterStatus'
 import { PatientRegisterStatus } from './Reducers/patientRegisterStatus'
 import { intialPatientForm } from './Forms/patientForm'
 import { Center } from './Reducers/centerReducer'
+import { intialApppointmentForm } from './Forms/appointmentForm'
 export const configureStore = () => {
     const store = createStore(
         combineReducers({
@@ -27,7 +28,8 @@ export const configureStore = () => {
             ...createForms ({
                 doctorForm : intialDotorForm ,
                 clinicForm : intialClinicForm,
-                patientForm : intialPatientForm
+                patientForm : intialPatientForm,
+                appointmentForm : intialApppointmentForm
             })
         }),
         applyMiddleware(thunk , logger) 

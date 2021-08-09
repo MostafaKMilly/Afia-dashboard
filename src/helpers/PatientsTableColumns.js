@@ -1,4 +1,4 @@
-export const Columns = (actionsFormatter) =>[{
+export const Columns = (actionsFormatter) => [{
     dataField: "patient.id",
     text: "ID",
     sort: true
@@ -13,7 +13,7 @@ export const Columns = (actionsFormatter) =>[{
     sort: true,
 
 }
-, {
+    , {
     dataField: "patient.lastName",
     text: "Last Name",
     sort: true,
@@ -26,16 +26,16 @@ export const Columns = (actionsFormatter) =>[{
 {
     dataField: "patient.number",
     text: "Land Line Number",
-    sort : true ,
-    hidden : true
+    sort: true,
+    hidden: true
 },
 {
     dataField: "patient.user.email",
     text: "Email",
-    sort : true ,
-    hidden : true
+    sort: true,
+    hidden: true
 }
-, {
+    , {
     dataField: "patient.user.username",
     text: "User Name",
     hidden: true
@@ -48,8 +48,8 @@ export const Columns = (actionsFormatter) =>[{
     dataField: "patient.weight",
     text: "Weight",
     hidden: true
-} 
-, {
+}
+    , {
     dataField: "patient.length",
     text: "Height",
     hidden: true
@@ -63,7 +63,7 @@ export const Columns = (actionsFormatter) =>[{
     text: "UserID",
     hidden: true
 }
-, {
+    , {
     dataField: "actions",
     text: "Actions",
     formatter: actionsFormatter,

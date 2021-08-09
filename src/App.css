@@ -69,6 +69,14 @@
     width: 134px  !important;
     border: none !important;
 }
+
+.btn6 {
+    padding: 6px !important;
+    padding-left: 17px  !important;
+    padding-right: 17px  !important;
+    width: 134px  !important;
+    border: none !important;
+}
 table {
     text-align: center !important;
 }
@@ -168,6 +176,11 @@ background-color:#3f3d56 !important
     }
     .btn2 {
         background-color: #ff2e63f2  !important;
+        padding: .375rem .75rem !important;
+        width: auto  !important;
+        border: none !important;
+    }
+    .btn6 {
         padding: .375rem .75rem !important;
         width: auto  !important;
         border: none !important;
@@ -328,7 +341,15 @@ background-color:#3f3d56 !important
 
   @media (max-width:393px) {
     .SelectionDiv {
-        visibility: hidden !important;
+        display: none !important;
+    }
+    .SelectionDivMob {
+      display: block !important;
+    }
+  }
+  @media (min-width:393px) {
+    .SelectionDivMob {
+      display: none !important;
     }
   }
 
@@ -368,6 +389,14 @@ td {
 .pagination .active span {
   color : white !important
 }
+
+.timesContainer {
+  border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    height: auto;
+    min-height: calc(10.0em + .75rem + 2px)
+}
+
 rect {
   fill: #a0a0a0;
 }

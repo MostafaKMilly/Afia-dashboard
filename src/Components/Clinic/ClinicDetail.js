@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Col, Jumbotron, Row, Container, Image, Card, useAccordionToggle, Accordion, Pagination } from 'react-bootstrap';
+import { Breadcrumb, BreadcrumbItem, Col, Jumbotron, Row, Container, Image, Card, useAccordionToggle, Accordion, Pagination, Alert } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { baseUrl } from '../../shared/baseUrl';
@@ -55,6 +55,10 @@ function ClinicDetail(props) {
     const [errMess, setErrMess] = useState(null)
     const [workingDayError , setWorkingDayError] = useState()
     const [workingDays , setWorkingDays] = useState([])
+    const [statistics , setStatistics] = useState()
+    const [statisticsIsLoading , setStatisticsIsLoading] = useState(true)
+    const [appointmentsPerWeek , setAppointmentPerWeek] = useState([])
+    const [appointmentsPerWeekIsLoading , setAppointmentsPerWeekIsLoading] = useState(true)
     const getWorkingDay = (doctorId) => {
         return fetch(baseUrl + 'api/doctors/work_days/id/' + doctorId, {
             method: "GET",
@@ -114,6 +118,72 @@ function ClinicDetail(props) {
                 setErrMess(error.message)
             })
         getDoctorsForClinic()
+        const getStatistics = () => {
+        return fetch(baseUrl + 'api/statistics/clinic/'+props.clinic.clinic.id , {
+        method : "GET" ,
+        headers: {
+                "Content-Type": "application/json",
+                'Accept': "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+    })
+     .then(response => {
+                if (response.ok) {
+                    return response
+                }
+                else {
+                    let error = new Error(response.statusText)
+                    error.response = response
+                    throw error
+                }
+            }, err => {
+                let error = new Error(err.message)
+                throw error;
+            })
+            .then(response => response.json())
+            .then(statistics => {
+                setStatistics(statistics)
+                setStatisticsIsLoading(false)
+            })
+            .catch(error => {
+                setErrMess(error.message)
+                setStatisticsIsLoading(false)
+            })
+    }
+    getStatistics()
+        const getAppointmentsPerWeek = () => {
+        return fetch(baseUrl + 'api/statistics/accepted_appointments_per_week/id/'+props.clinic.clinic.id , {
+        method : "GET" ,
+        headers: {
+                "Content-Type": "application/json",
+                'Accept': "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+    })
+     .then(response => {
+                if (response.ok) {
+                    return response
+                }
+                else {
+                    let error = new Error(response.statusText)
+                    error.response = response
+                    throw error
+                }
+            }, err => {
+                let error = new Error(err.message)
+                throw error;
+            })
+            .then(response => response.json())
+            .then(statistics => {
+                setAppointmentPerWeek(statistics)
+                setAppointmentsPerWeekIsLoading(false)
+            })
+            .catch(error => {
+                setErrMess(error.message)
+                setAppointmentsPerWeekIsLoading(false)
+            })
+    }
+    getAppointmentsPerWeek()
     }, [])
     function formatAMPM(date) {
         var hours = date.split(':')[0]
@@ -125,7 +195,7 @@ function ClinicDetail(props) {
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
     }
-    if (props.clinics.isLoading || doctorIsLoading) {
+    if (props.clinics.isLoading || doctorIsLoading || props.statisticsIsLoading ||appointmentsPerWeekIsLoading) {
         return <Loading />
     }
     const lastIndex = currentPage * itemsPerPage
@@ -230,17 +300,37 @@ function ClinicDetail(props) {
         }
     ];
     const data = [
-        { day: 'Su', appointments: 2.525 },
-        { day: 'Mo', appointments: 3.018 },
-        { day: 'Tu', appointments: 3.682 },
-        { day: 'We', appointments: 4.440 },
-        { day: 'Th', appointments: 5.310 },
-        { day: 'Fr', appointments: 6.127 },
-        { day: 'Sa', appointments: 6.930 },
+        { day: 'Su', appointments: appointmentsPerWeek.Sunday },
+        { day: 'Mo', appointments: appointmentsPerWeek.Monday },
+        { day: 'Tu', appointments: appointmentsPerWeek.Tuesday },
+        { day: 'We', appointments: appointmentsPerWeek.Wednesday },
+        { day: 'Th', appointments: appointmentsPerWeek.Thursday },
+        { day: 'Fr', appointments: appointmentsPerWeek.Friday },
+        { day: 'Sa', appointments: appointmentsPerWeek.Saturda },
     ];
     const { classes } = props;
+      const ErrorAlert = () => {
+    if (errMess) {
+        return <Alert variant="danger" className="mt-2 mb-1" style={{
+         width: "fit-content",
+         margin: "0 auto",
+         position : "absolute",
+         top: "2%",
+        transform: "translate(-50% , 0)"
+        ,left: "50%"
+        ,zIndex: 1
+     }} dismissible onClose={() =>setErrMess(undefined)}>
+         <Alert.Heading>Error !</Alert.Heading>
+         {errMess}
+     </Alert>
+    }
+    else {
+      return <></>
+    }
+  }
     return (
         <div className="mt-2">
+        <ErrorAlert/>
             <Breadcrumb >
                 <Breadcrumb.Item className="pl-3" href="#">
                     <Link to={`/dashboard`}>
@@ -280,7 +370,7 @@ function ClinicDetail(props) {
                                                 textAlignLast: 'start'
                                             }}>
                                                 <h3 style={{ fontWeight: 400 }} className="mb-0" >
-                                                    190
+                                                    {statistics.PendingAppointments}
                                                 </h3>
                                                 <p className="lead mt-0">Appointment</p>
                                             </div>
@@ -296,7 +386,7 @@ function ClinicDetail(props) {
                                                 textAlignLast: 'start'
                                             }}>
                                                 <h3 style={{ fontWeight: 400 }} className="mb-0" >
-                                                    4
+                                                    {statistics.Doctors}
                                                 </h3>
                                                 <p className="lead mt-0">Doctors</p>
 
@@ -313,7 +403,7 @@ function ClinicDetail(props) {
                                                 textAlignLast: 'start'
                                             }}>
                                                 <h3 style={{ fontWeight: 400 }} className="mb-0" >
-                                                    30
+                                                    {statistics.Patients}
                                                 </h3>
                                                 <p className="lead mt-0">Patients</p>
                                             </div>

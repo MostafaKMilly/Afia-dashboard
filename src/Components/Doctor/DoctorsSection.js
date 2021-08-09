@@ -12,11 +12,12 @@ import { deleteDoctor, searchDoctor } from '../../redux/Actions/DoctorActions';
 import BootstrapTable from "react-bootstrap-table-next"
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
-import {Columns} from '../../helpers/DoctorsTableColumns'
-import {pageButtonRenderer} from '../../helpers/pageButtonRenderer'
+import { Columns } from '../../helpers/DoctorsTableColumns'
+import { pageButtonRenderer } from '../../helpers/pageButtonRenderer'
+import HideForType from '../../helpers/HideForType';
 
 function DoctorsSection(props) {
-    let {path , url } = useRouteMatch()
+    let { path, url } = useRouteMatch()
     const nextPath = (path) => {
         props.history.push(path)
     }
@@ -40,13 +41,13 @@ function DoctorsSection(props) {
                             <div>
                                 <Button variant="link" onClick={() => nextPath(`${path}/${row.doctor.id}`)}>
                                     View
-                            </Button>
+                                </Button>
                                 <Button variant="link" onClick={() => props.deleteDoctor(row.doctor.id)}>
                                     Delete
-                            </Button>
+                                </Button>
                                 <Button variant="link" onClick={() => nextPath(`${path}/${row.doctor.id}`)}>
                                     Edit
-                            </Button>
+                                </Button>
                             </div>
                         </Popover.Content>
                     </Popover>
@@ -58,7 +59,7 @@ function DoctorsSection(props) {
     const columns = Columns(actionsFormatter)
     const customTotal = (from, to, size) => (
         <span className="react-bootstrap-table-pagination-total ml-2">
-            Showing { from} to { to} of { size} Results
+            Showing {from} to {to} of {size} Results
         </span>
     );
     const options = {
@@ -98,18 +99,18 @@ function DoctorsSection(props) {
         return (<ErrorAlert messege={props.doctors.errMess} />)
     }
     else {
-        
+
         return (
             <div className="mt-2">
                 <Breadcrumb >
                     <Breadcrumb.Item className="pl-3" href="#">
                         <Link to="/dashboard">
                             Home
-                    </Link>
+                        </Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item className="mr-auto" active href="#">
                         Doctors
-                </Breadcrumb.Item>
+                    </Breadcrumb.Item>
                 </Breadcrumb>
                 <Container fluid >
                     <div className="pageContainer">
@@ -153,10 +154,12 @@ function DoctorsSection(props) {
                                                     </Container>
                                                 </Col>
                                                 <Col xs="auto" className="customBtnGroup" >
-                                                    <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
-                                                        <span className="fas fa-user-plus"></span>
+                                                    <HideForType type={["Nurse"]}>
+                                                        <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
+                                                            <span className="fas fa-user-plus"></span>
                                                             Add
-                                                    </Button>
+                                                        </Button>
+                                                    </HideForType>
                                                     <ExportCSVButton {...props.csvProps} className="btn2 text-white">
                                                         Export CSV
                                                     </ExportCSVButton>

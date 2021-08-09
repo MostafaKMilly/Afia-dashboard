@@ -168,12 +168,10 @@ function DoctorDetail(props) {
                                                 props.clinics.clinics.filter((clinic) =>
                                                     clinic.clinic.id === parseInt(props.doctor.doctor.clinicId, 10))[0].clinic.name
                                             }</Button>
-                                            <p>{"this is sepecialize: " + props.doctor.doctor.sepecialize}</p>
-                                            <div style={{ "color": "#ffc107" }} className="mb-3">
-                                                <i color="yellow" className="fas fa-star"></i>
-                                                <i className="fas fa-star"></i>
-                                                <i className="fas fa-star"></i>
-                                                <i className="fas fa-star"></i>
+                                            <p>{props.doctor.doctor.sepecialize}</p>
+        
+                                            <div className="mb-2">
+                                                <span className="fa fa-language mr-2"></span> {props.doctor.doctor.language}
                                             </div>
                                             <div className="mb-2">
                                                 <span className="fa fa-phone mr-2"></span> {props.doctor.doctor.phoneNumber}
