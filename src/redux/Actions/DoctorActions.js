@@ -1,3 +1,4 @@
+import { actions } from 'react-redux-form'
 import { baseUrl } from '../../shared/baseUrl'
 import * as ActionTypes from './ActionTypes'
 
@@ -32,6 +33,11 @@ export const doctorUserNameisValid = () => ({
 export const doctorUserNameisNotValid = () => ({
     type : ActionTypes.DOCTOR_USERNAME_IS_NOT_VALID
 }) 
+
+export const updateDoctorTags = (payload) => ({
+    type : ActionTypes.UPDATE_DOCTOR_TAG,
+    payload
+})
 
 export const checkDoctorUserName = (userName) => dispatch => {
     const obj = {}
@@ -127,7 +133,7 @@ const addDoctorPhoto = (id , image) => {
 }
 
 export const addTagForDoctor = (doctorId , tags) => {
-    fetch(baseUrl + 'api/doctors/'+doctorId+'/tags' , {
+    fetch(baseUrl + 'api/doctors/tags/id/'+doctorId , {
         method : "POST",
         headers : {
             'Content-Type' : 'application/json' ,
@@ -187,7 +193,7 @@ export const addDoctor = (doctorInfo) => (dispatch) => {
     .then(doctor => {
         dispatch(postDoctor(doctor))
         Promise.all(doctorInfo.workingDaysList.map((workingDay) => {
-            workingDay = {...workingDay , doctorId : doctor.DoctorData.id} 
+            workingDay = {...workingDay , doctorId : doctor.DoctorData.id , startTime : workingDay.startTime+":00" , endTime : workingDay.endTime+":00"} 
             return fetch(baseUrl + 'api/doctors/work_days' , {
                 method : "POST" ,
                 headers : {
@@ -213,9 +219,46 @@ export const addDoctor = (doctorInfo) => (dispatch) => {
             .catch(e =>dispatch(addDoctorFailed(workingDay.day +': '+ e.message)))
         }))
         addTagForDoctor(doctor.DoctorData.id , doctorInfo.tags)
+        dispatch(actions.reset('doctorForm'))
         dispatch(fetchDoctors())
     })
     .catch(e => dispatch(addDoctorFailed(e.message)))
+}
+
+const updatedDoctorFailed = (payload) => ({
+    type : ActionTypes.UPDATE_DOCTOR_FAILED , 
+    payload
+})
+
+
+
+export const updateDoctorDetail = (values) => dispatch => {
+    fetch (baseUrl + 'api/doctors/profile/id/'+values.id , {
+        method : "PATCH" ,
+        headers: {
+            "Content-Type": "application/json",
+            'Accept': "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(values)
+    })
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(() => {
+            dispatch(fetchDoctors())
+        })
+        .catch((error) => alert(error.message))
 }
 
 export const deleteDoctor = (id) => (dispatch) => {

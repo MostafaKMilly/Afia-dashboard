@@ -15,8 +15,12 @@ function AddWorkingDays(props) {
         let list = [...workingDaysList]
         props.resetForm()
         setErrorMess(undefined)
+        if (!items.day || !items.openTime || !items.closeTime) {
+            setErrorMess("working day should not be empty")
+            return
+        }
         if (workingDaysList.filter((workingDay) => workingDay.day === items.day).length !== 0 || items.day === 'Choose Day') {
-            setErrorMess("Day must be unique")
+            setErrorMess("Working day must be unique")
             return
         }
         if (items.openTime > items.closeTime) {

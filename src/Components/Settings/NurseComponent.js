@@ -74,7 +74,7 @@ function NurseComponent(props) {
             
     }
     const updateNurse = (nurseId, values) => {
-        return fetch(baseUrl + 'api/nurses/' + nurseId, {
+        return fetch(baseUrl + 'api/nurses/id/' + nurseId, {
             method: 'PATCH',
             headers: {
                 "Content-Type": "application/json",
@@ -98,7 +98,7 @@ function NurseComponent(props) {
             .then(response => response.json())
     }
     const deleteNurse = (nurseId) => {
-        return fetch(baseUrl + 'api/nurses/' + nurseId, {
+        return fetch(baseUrl + 'api/nurses/id/' + nurseId, {
             method: 'DELETE',
             headers: {
                 "Content-Type": "application/json",

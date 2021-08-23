@@ -42,7 +42,7 @@ const Sidebar = (props) => {
               <NavLink to={`${url}/patients`} style={{ color: 'inherit' }}
                 className="text-decoration-none" activeClassName="activeClicked">
                 <CDBSidebarMenuItem icon="user-injured">
-                  patients
+                  Patients
                 </CDBSidebarMenuItem>
               </NavLink>
               <NavLink to={`${url}/clinics`} style={{ color: 'inherit' }}
@@ -63,6 +63,7 @@ const Sidebar = (props) => {
                   Calender
                 </CDBSidebarMenuItem>
               </NavLink>
+              
             </CDBSidebarMenu>
 
           </CDBSidebarContent>

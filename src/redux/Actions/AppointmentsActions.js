@@ -38,13 +38,24 @@ const LoadAcceptedAppointmentFailed = (payload) => ({
     payload
 })
 
-export const clearErrorMessages = () => ({
-    type : ActionTypes.CLEAR_APPOINTMENT_ERROR_MESSAGES
+export const clearErrorMessages = (payload) => ({
+    type : ActionTypes.CLEAR_APPOINTMENT_ERROR_MESSAGES,
+    payload
 })
 
 export const acceptAppointment = (id) => ({
     type: ActionTypes.ACCEPT_APPOINTMENT,
     payload: id
+})
+
+export const rejectAppointment = (id) => ({
+    type: ActionTypes.REJECT_APPOINTMENT,
+    payload: id
+})
+
+export const deleteAppointment = (payload) => ({
+    type : ActionTypes.DELETE_APPOINTMENT , 
+    payload
 })
 
 export const fetchPendingAppointments = (clinicId) => (dispatch) => {
@@ -153,6 +164,32 @@ export const updateAcceptAppointment =  (values , appointmentId) => dispatch => 
         throw error;
     })
         .then(() => dispatch(updateAppointment({appointmentId , ...values })))
+        .catch((error) => console.log(error))
+}
+
+export const updateAppointmentToGoneStatus =  (values , appointmentId) => dispatch => {
+    fetch(baseUrl + 'api/appointments/id/'+appointmentId , {
+        method : "PATCH" , 
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body : JSON.stringify(values)
+    }).then(response => {
+        if (response.ok) {
+            return response
+        }
+        else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+        }
+    }, err => {
+        let error = new Error(err.message)
+        throw error;
+    })
+        .then(() => dispatch(deleteAppointment(appointmentId)))
         .catch((error) => console.log(error))
 }
 

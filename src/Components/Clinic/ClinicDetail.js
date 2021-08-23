@@ -59,6 +59,9 @@ function ClinicDetail(props) {
     const [statisticsIsLoading , setStatisticsIsLoading] = useState(true)
     const [appointmentsPerWeek , setAppointmentPerWeek] = useState([])
     const [appointmentsPerWeekIsLoading , setAppointmentsPerWeekIsLoading] = useState(true)
+    const [patientStatistics,setPatientStatistics] = useState([])
+    const [patientStatisticsIsLoading,setPatientStatisticsIsLoading] = useState(true)
+
     const getWorkingDay = (doctorId) => {
         return fetch(baseUrl + 'api/doctors/work_days/id/' + doctorId, {
             method: "GET",
@@ -152,7 +155,7 @@ function ClinicDetail(props) {
     }
     getStatistics()
         const getAppointmentsPerWeek = () => {
-        return fetch(baseUrl + 'api/statistics/accepted_appointments_per_week/id/'+props.clinic.clinic.id , {
+        return fetch(baseUrl + 'api/statistics/done_appointments_per_week/id/'+props.clinic.clinic.id , {
         method : "GET" ,
         headers: {
                 "Content-Type": "application/json",
@@ -184,6 +187,39 @@ function ClinicDetail(props) {
             })
     }
     getAppointmentsPerWeek()
+    const getPatientPerMonth = () => {
+        fetch(baseUrl + 'api/statistics/monthly_patient_per_year/id/'+props.clinic.clinic.id ,{
+            method : "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Accept': "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+    })
+     .then(response => {
+                if (response.ok) {
+                    return response
+                }
+                else {
+                    let error = new Error(response.statusText)
+                    error.response = response
+                    throw error
+                }
+            }, err => {
+                let error = new Error(err.message)
+                throw error;
+            })
+            .then(response => response.json())
+            .then(patientsStatistics => {
+                setPatientStatistics(patientsStatistics)
+                setPatientStatisticsIsLoading(false)
+            })
+            .catch(error => {
+                setErrMess(error.message)
+                setPatientStatisticsIsLoading(false)
+            })
+    }
+    getPatientPerMonth()
     }, [])
     function formatAMPM(date) {
         var hours = date.split(':')[0]
@@ -195,7 +231,7 @@ function ClinicDetail(props) {
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
     }
-    if (props.clinics.isLoading || doctorIsLoading || props.statisticsIsLoading ||appointmentsPerWeekIsLoading) {
+    if (props.clinics.isLoading || doctorIsLoading || props.statisticsIsLoading ||appointmentsPerWeekIsLoading || patientStatisticsIsLoading) {
         return <Loading />
     }
     const lastIndex = currentPage * itemsPerPage
@@ -271,8 +307,12 @@ function ClinicDetail(props) {
         </Card>
     ))
 
+    const chartData = patientStatistics.map((statistics) => ({
+        month : statistics.name.slice(0,3) , patientsCount : statistics.count
+    }))
 
-    const chartData = [
+
+  /*   const chartData = [
         {
             month: "Jan", patientsCount: 20
         }, {
@@ -298,7 +338,7 @@ function ClinicDetail(props) {
         }, {
             month: "Dec", patientsCount: 10
         }
-    ];
+    ]; */
     const data = [
         { day: 'Su', appointments: appointmentsPerWeek.Sunday },
         { day: 'Mo', appointments: appointmentsPerWeek.Monday },

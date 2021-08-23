@@ -204,7 +204,7 @@ function AppointmentBasicInfo(props) {
                     </Col>
                     <Col md={4} className="mb-2">
                         <Control type="date" model=".date" name="date" className="form-control" validators={{
-                            validDate: (date) => new Date(date) > new Date()
+                            validDate: (date) => date ? new Date(date).toISOString().split('T')[0] >= new Date().toISOString().split('T')[0] : null
                         }} />
                         <Errors
                             className="text-danger" model=".date" show="touched" messages={{

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Col, FormLabel, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { actions, Form } from 'react-redux-form';
+import { actions } from 'react-redux-form';
 import { withRouter } from 'react-router-dom';
 import ErrorAlert from '../../helpers/ErrorAlert';
 import { baseUrl } from '../../shared/baseUrl';
@@ -88,6 +88,7 @@ function AppointmentAvailableTimes(props) {
             })
         }
         getDoctorTag()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
     
     function addMinutes(time, minsToAdd) {

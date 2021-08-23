@@ -11,7 +11,6 @@ function ModalPatient(props) {
         requestData.user = { ...requestData.user, type: "Patient" }
         console.log(requestData)
         props.addPatient(requestData)
-        props.resetPatientForm() 
         props.handleClose()
     }
     
@@ -142,7 +141,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     addPatient: (patientInfo) => dispatch(addPatient(patientInfo)),
     handleClose: () => dispatch(closePatientDialog()),
-    resetPatientForm : () => dispatch(actions.reset('patientForm'))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalPatient)

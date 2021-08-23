@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-pascal-case */
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Breadcrumb, Button, Row, Col, FormLabel, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux';
 import { Control, Form, Errors } from 'react-redux-form';
@@ -11,6 +11,8 @@ import { actions } from 'react-redux-form'
 import { intialDotorForm } from '../../redux/Forms/doctorform';
 
 function DoctorForm(props) {
+    const [addWorkingDaysErrMess , setWorkingDaysErrMess] = useState()
+
     const handleSubmit = (values) => {
         props.closeRegisterDialog()
         props.clearDoctorErrorMessages()
@@ -23,10 +25,23 @@ function DoctorForm(props) {
         props.changeClinicId(id)
     }
     const AddTimesIntoList = (e) => {
+        setWorkingDaysErrMess(undefined)
+        let exist = false
         const { day, startTime, endTime } = { ...props.doctorForm.workingDays }
+        props.doctorForm.workingDaysList.forEach((workingDay) => {
+            if (workingDay.day === day && workingDay.startTime <= startTime && workingDay.endTime >= endTime) {
+                exist = true
+            }
+        })
+        if (exist) {
+            setWorkingDaysErrMess("working day is invalid !")
+            return
+        }
+       
         if ((day !== '' && endTime !== '' && startTime !== '') && startTime < endTime) {
             props.addToWorkingDays({ ...props.doctorForm.workingDays })
         }
+        
         props.resetWorkinDays()
     }
     const required = (value) => value && value.length
@@ -367,6 +382,8 @@ function DoctorForm(props) {
                                 </Row>
                                 <Row>
                                     <Col md={{ offset: 2 }}>
+                                    {addWorkingDaysErrMess ? <p className="text-danger">{addWorkingDaysErrMess}</p> : <></>}
+
                                         <ul className="list-unstyled">
                                             {workingDaysList}
                                         </ul>

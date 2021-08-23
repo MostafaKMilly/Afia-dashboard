@@ -17,7 +17,7 @@ function ModalClinic(props) {
         props.handleClose()
     }
     return (
-        <Modal show={props.clinics.modelDialogIsOpen} onHide={props.handleClose}>
+        <Modal show={props.clinics.modelDialogIsOpen} onHide={() => props.handleClose()}>
             <Modal.Header closeButton>
                 <Modal.Title>Confirm Register</Modal.Title>
             </Modal.Header>

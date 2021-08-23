@@ -24,7 +24,7 @@ export const postClinic = (clinic) => ({
 })
 
 
-const addclinicPhoto = (id , image) => {
+const addclinicPhoto = (id , image) => dispatch => {
     fetch(baseUrl + 'api/clinics/photo/id/'+ id , {
         method : "POST" ,
         headers : {
@@ -38,9 +38,12 @@ const addclinicPhoto = (id , image) => {
             console.log("success")
         }
         else {
-            console.log("failed")
+            let error = new Error(res.statusText)
+            error.res = res
+            throw error
         }
     })
+    .catch((e) => dispatch(addclinicFailed(e.message)))
 }
 
 export const addclinicFailed = (payload) => ({
@@ -77,7 +80,15 @@ export const addClinic = (clinicInfo) => (dispatch) => {
     .then(res => res.json())
     .then(clinic => {
         dispatch(postClinic(clinic))
-        addclinicPhoto(clinic.id , clinicInfo.image)
+        let havePhoto = true
+        for (let val of clinicInfo.image.entries()) {
+            if (val[1] === "undefined") {
+                havePhoto = false
+            }
+        }
+        if (havePhoto) {
+            addclinicPhoto(clinic.id , clinicInfo.image)(dispatch)
+        }
         dispatch(fetchClinics())
     })
     .catch(e => dispatch(addclinicFailed(e.message)))

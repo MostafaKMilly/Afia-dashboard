@@ -5,7 +5,8 @@ export const Clinics = (state = {
     isLoading: true,
     errMess: null ,
     modelDialogIsOpen : false ,
-    isClinicAdded : null
+    isClinicAdded : null,
+    addClinicFailedErrMess : null
 }, action) => {
     switch (action.type) {
         case ActionTypes.LOAD_CLINICS:
@@ -26,7 +27,7 @@ export const Clinics = (state = {
         case ActionTypes.CLOSE_CLINIC_DIALOG :
             return {...state , modelDialogIsOpen:false}
         case ActionTypes.ADD_CLINIC_FAILED:
-            return { ...state, isClinicAdded: false , errMess : action.payload }
+            return { ...state, isClinicAdded: false , addClinicFailedErrMess : action.payload }
         case ActionTypes.CLOSE_CLINIC_FAILED_DIALOG :
             return {...state , isClinicAdded : null}
         default:

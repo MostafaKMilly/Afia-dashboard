@@ -44,12 +44,7 @@ function PatientSection(props) {
                                 <Button variant="link" onClick={() => nextPath(`${path}/${row.patient.id}`)}>
                                     View
                             </Button>
-                                <Button variant="link" onClick={() => props.deletePatient(row.patient.id)}>
-                                    Delete
-                            </Button>
-                                <Button variant="link" onClick={() => nextPath(`${path}/${row.patient.id}`)}>
-                                    Edit
-                            </Button>
+                            
                             </div>
                         </Popover.Content>
                     </Popover>
@@ -155,7 +150,7 @@ function PatientSection(props) {
                                                     </Container>
                                                 </Col>
                                                 <Col xs="auto" className="customBtnGroup">
-                                                <HideForType type={["Nurse"]}>
+                                                <HideForType type={["Admin"]}>
                                                 <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
                                                         <span className="fas fa-user-plus"></span>
                                                             Add

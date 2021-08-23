@@ -11,7 +11,7 @@ import Loading from '../Loading';
 import ErrorAlert from '../../helpers/ErrorAlert'
 import { deleteClinic } from '../../redux/Actions/ClinicActions';
 import { baseUrl } from '../../shared/baseUrl';
-
+import HideForType from '../../helpers/HideForType'
 
 
 function ClinicsSection(props) {
@@ -34,7 +34,7 @@ function ClinicsSection(props) {
                     <Button variant="outline-secondary" className="btn-sm" onClick={() => nextPath(`/dashboard/clinics/${clinic.clinic.id}`)}>Detail</Button>
                 </Media.Body>
             </Media>
-            <span className="fas fa-ellipsis-v clinicOptions"></span>
+            
 
         </Col>
     ))
@@ -68,10 +68,12 @@ function ClinicsSection(props) {
                     <BreadcrumbItem className="mr-auto mt-1" active href="#">
                         clinics
                     </BreadcrumbItem>
+                    <HideForType type={["Nurse"]}>
                     <Button onClick={() => nextPath(`${path}/add`)} style={{
                         "backgroundColor": "#ff2e63f2", "border": "1px solid gray",
                         "marginBottom": "-13px", "marginRight": "7px"
                     }}><span className="fa fa-plus"></span></Button>
+                    </HideForType>
                 </Breadcrumb>
                 <Container fluid >
                     <div className="pageContainer ">
@@ -81,8 +83,8 @@ function ClinicsSection(props) {
                             </Col>
                             <Col xs={12}>
                                 <Container fluid className="mb-2 mt-4">
-                                    <Row>
-                                        {clinicsList}
+                                    <Row className="ms-md-5">
+                                        {clinics.length ? clinicsList : <ErrorAlert messege="there are no clinics" color="white"/>}
                                     </Row>
                                 </Container>
 

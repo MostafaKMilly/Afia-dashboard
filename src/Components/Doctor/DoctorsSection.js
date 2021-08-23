@@ -15,9 +15,13 @@ import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolk
 import { Columns } from '../../helpers/DoctorsTableColumns'
 import { pageButtonRenderer } from '../../helpers/pageButtonRenderer'
 import HideForType from '../../helpers/HideForType';
+import EditPeronalInfoDoctor from '../../modals/EditPeronalInfoDoctor';
 
 function DoctorsSection(props) {
     let { path, url } = useRouteMatch()
+    let [showModal, setShowModal] = useState(false)
+    let [selectedDoctor, setSelectedDoctor] = useState()
+
     const nextPath = (path) => {
         props.history.push(path)
     }
@@ -31,6 +35,7 @@ function DoctorsSection(props) {
     }
     const actionsFormatter = (cell, row) => {
         return (
+
             <OverlayTrigger
                 trigger="click"
                 placement="top"
@@ -42,12 +47,14 @@ function DoctorsSection(props) {
                                 <Button variant="link" onClick={() => nextPath(`${path}/${row.doctor.id}`)}>
                                     View
                                 </Button>
-                                <Button variant="link" onClick={() => props.deleteDoctor(row.doctor.id)}>
-                                    Delete
-                                </Button>
-                                <Button variant="link" onClick={() => nextPath(`${path}/${row.doctor.id}`)}>
+                               {/*  <Button variant="link" onClick={() => {
+                                    let doctor =props.doctors.doctors.filter((doctor) => {
+                                        return parseInt(doctor.doctor.id) === parseInt(row.doctor.id, 10)})[0]
+                                        setSelectedDoctor(doctor)
+                                        setShowModal(true)
+                                }}>
                                     Edit
-                                </Button>
+                                </Button> */}
                             </div>
                         </Popover.Content>
                     </Popover>
@@ -102,6 +109,7 @@ function DoctorsSection(props) {
 
         return (
             <div className="mt-2">
+                <EditPeronalInfoDoctor showModal={showModal} setShowModal={setShowModal} doctor={selectedDoctor} />
                 <Breadcrumb >
                     <Breadcrumb.Item className="pl-3" href="#">
                         <Link to="/dashboard">

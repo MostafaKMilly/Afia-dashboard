@@ -44,6 +44,9 @@ function WorkingDays(props) {
         if (values.openTime === undefined || values.closeTime === undefined) {
             return
         }
+        if (values.openTime > values.closeTime) {
+            return
+        }
         props.updateWorkingDay(selectDay, values)
         setShowModal(false)
     }

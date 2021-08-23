@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Col, Container, Row, FormLabel, FormText, FormControl, Alert } from 'react-bootstrap';
 import { actions, Control, Errors, Form } from 'react-redux-form';
-import { Link, Route, Switch, withRouter } from 'react-router-dom';
+import { Link, Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Loading from '../Loading'
 import AppointmentBasicInfo from './AppointmentBasicInfo';
@@ -93,6 +93,7 @@ function AppointmentForm(props) {
                                 <Route path={`${props.match.path}/availableTimes`} render={() => <AppointmentAvailableTimes  {...props} errMess={errMess} setErrMess={setErrMess}  />} />
                                 <Route exact path={`${props.match.path}`} render={() => <AppointmentBasicInfo {...props} errMess={errMess} setErrMess={setErrMess}  />} />
                                 <Route path={`${props.match.path}/availableTimes`} render={() => <AppointmentAvailableTimes  {...props} errMess={errMess} setErrMess={setErrMess}  />} />
+                                <Redirect exact to="/dashboard" />
                         </Switch>
                     </Row>
                 </div>

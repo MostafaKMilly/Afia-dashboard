@@ -17,14 +17,16 @@ import {
   DragDropProvider,
   GroupingPanel
 } from '@devexpress/dx-react-scheduler-material-ui';
-import { acceptAppointment, clearAccetptedAppointments, clearErrorMessages, getAcceptedAppointmentForClinic, getAllAcceptedAppointmentsForDoctor, updateAcceptAppointment } from '../redux/Actions/AppointmentsActions'
+import { acceptAppointment, clearAccetptedAppointments, clearErrorMessages, getAcceptedAppointmentForClinic, getAllAcceptedAppointmentsForDoctor, updateAcceptAppointment, updateAppointmentToGoneStatus } from '../redux/Actions/AppointmentsActions'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Loading from './Loading'
 import { Alert, Breadcrumb, Button } from 'react-bootstrap';
 import { baseUrl } from '../shared/baseUrl';
 import ErrorAlert from '../helpers/ErrorAlert';
-import {fetchCenterDays} from '../redux/Actions/CenterActions'
+import { fetchCenterDays } from '../redux/Actions/CenterActions'
+import { actions } from 'react-redux-form';
+import jwt from 'jsonwebtoken'
 
 const useStyles = makeStyles(theme => ({
   todayCell: {
@@ -73,9 +75,9 @@ const DayScaleCell = (props) => {
 
   if (today) {
     return <WeekView.DayScaleCell {...props} className={classes.today} />;
-  } if (startDate.getDay() === 0 || startDate.getDay() === 6) {
+  }/*  if (startDate.getDay() === 0 || startDate.getDay() === 6) {
     return <WeekView.DayScaleCell {...props} className={classes.weekend} />;
-  } return <WeekView.DayScaleCell {...props} />;
+  } */ return <WeekView.DayScaleCell {...props} />;
 };
 
 
@@ -142,16 +144,24 @@ function Calender(props) {
   let [doctorsList, setDoctorsList] = useState([])
   const [doctorsIsLoading, setDoctorsIsLoading] = useState(true)
   const [doctorErrMess, setDoctorErrMess] = useState()
+
+  const daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
   const selectClinic = (event) => {
     let clinicId = event.target[event.target.selectedIndex].id
     if (clinicId == 0) {
       props.clearAccetptedAppointments()
+      setSelectedClinic(undefined)
       return
     }
     setSelectedClinic(clinicId)
     getDoctorsForClinic(clinicId).then(doctors => {
+      setDoctorErrMess(undefined)
       setDoctorsList(doctors)
     })
+      .catch((error) => {
+        setDoctorErrMess(error.message)
+      })
     props.getAcceptedAppointmentForClinic(clinicId)
   }
   const getDoctorsForClinic = (clinicId) => {
@@ -177,27 +187,51 @@ function Calender(props) {
         throw error;
       })
       .then(response => response.json())
-      
+
   }
+
+const getWorkingDay = (doctorId) => {
+  return fetch(baseUrl + 'api/doctors/work_days/id/' + doctorId, {
+      method: "GET",
+      headers: {
+          "Content-Type": "application/json",
+          'Accept': "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+  })
+      .then(response => {
+          if (response.ok) {
+              return response
+          }
+          else {
+              let error = new Error(response.statusText)
+              error.response = response
+              throw error
+          }
+      }, err => {
+          let error = new Error(err.message)
+          throw error;
+      })
+      .then(response => response.json())
+}
   useEffect(() => {
     getDoctorsForClinic(1).then(doctors => {
       setDoctorsList(doctors)
       setDoctorsIsLoading(false)
     })
-    .catch((error) => {
-      setDoctorErrMess(error.message)
-      setDoctorsIsLoading(false)
-    })
+      .catch((error) => {
+        setDoctorErrMess(error.message)
+        setDoctorsIsLoading(false)
+      })
     props.fetchCenterDays()
     props.clearErrorMessages()
+    props.getAcceptedAppointmentForClinic(1)
   }, [])
 
-  if (props.patients.isLoading||props.clinics.isLoading ||doctorsIsLoading||props.center.isLoading) {
+  if (props.patients.isLoading || props.clinics.isLoading || doctorsIsLoading || props.center.isLoading) {
     return <Loading />
   }
-  if (props.clinics.errMess || doctorErrMess ||  props.center.errMess) {
-    return <ErrorAlert messege={props.clinics.errMess || doctorErrMess || props.center.errMess} />
-  }
+
   const getPatientsName = (patientId) => {
     let patient = props.patients.patients.filter((patient) => patient.patient.id === patientId)[0]
     return patient.patient.firstName + ' ' + patient.patient.lastName
@@ -205,27 +239,36 @@ function Calender(props) {
   let clinicSelector = props.clinics.clinics.map((clinic) => (
     <option key={clinic.clinic.id} id={clinic.clinic.id}>{clinic.clinic.name}</option>
   ))
-  let array = [...props.center.workingDays].sort((a,b) => {
+
+  const weekHolidays = []
+  const workingDays = props.center.workingDays.map((workingDays) => workingDays.day)
+  daysInWeek.forEach((day) => {
+    if (!workingDays.includes(day)) {
+      weekHolidays.push(daysInWeek.indexOf(day))
+    }
+  })
+
+  let array = [...props.center.workingDays].sort((a, b) => {
     if (a.openTime < b.openTime) {
-        return -1
+      return -1
     }
     if (a.openTime > b.openTime) {
-        return 1
+      return 1
     }
     return 0
-})  
-  let array2 = [...props.center.workingDays].sort((a,b) => {
+  })
+  let array2 = [...props.center.workingDays].sort((a, b) => {
     if (a.closeTime > b.closeTime) {
-        return -1
+      return -1
     }
     if (a.closeTime < b.closeTime) {
-        return 1
+      return 1
     }
     return 0
-})  
-  console.log(array , array2)
-  let openTime = parseInt(array[0].openTime.split(':')[0])
-  let endTime =  parseInt(array2[0].closeTime.split(':')[0])
+  })
+  let openTime = parseInt(array[0]?.openTime.split(':')[0])
+  let endTime = parseInt(array2[0]?.closeTime.split(':')[0])
+
   const schedulerData = props.appointments.acceptedAppointment.map((appointment) => {
     return ({
       startDate: appointment.date + 'T' + appointment.startTime, endDate: appointment.date + 'T' + appointment.endTime,
@@ -247,51 +290,92 @@ function Calender(props) {
   }]
 
   const commitChanges = ({ added, changed, deleted }) => {
-    let object = {}
-    let appointmentId
-    let daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    for (let i in changed) {
-      appointmentId = i
+    props.clearErrorMessages()
+    if (changed) {
+      let object = {}
+      let appointmentId
+      let daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      for (let i in changed) {
+        appointmentId = i
+      }
+      if (changed[appointmentId].startDate) {
+        let date = new Date(changed[appointmentId].startDate).toISOString()
+        object.date = date.split('T')[0]
+        let startTime = new Date(changed[appointmentId].startDate).toTimeString().split(' ')[0]
+        object.startTime = startTime
+        object.day = daysInWeek[new Date(object.date).getDay()]
+      }
+      if (changed[appointmentId].endDate) {
+        let date = new Date(changed[appointmentId].endDate).toISOString()
+        let endTime = new Date(changed[appointmentId].endDate).toTimeString().split(' ')[0]
+        object.endTime = endTime
+      }
+      if (changed[appointmentId].doctorId) {
+        object.doctorId = changed[appointmentId].doctorId
+      }
+
+      let index = props.appointments.acceptedAppointment.findIndex((appointment) => appointment.id === parseInt(appointmentId))
+      let appointment = {...props.appointments.acceptedAppointment[index]}
+      if (object.startTime) {
+        appointment = {...appointment , startTime : object.startTime}
+      }
+      if (object.endTime) {
+        appointment = {...appointment , endTime : object.endTime}
+      }
+      if (object.doctorId) {
+        appointment = {...appointment , doctorId : object.doctorId}
+      }
+      getWorkingDay(appointment.doctorId).then((workingDays) => {
+          let valid = false
+          console.log(workingDays , appointment)
+          workingDays.forEach((workingDay) => {
+            if(workingDay.day === object.day && appointment.startTime >= workingDay.startTime && appointment.endTime <= workingDay.endTime) {
+              valid = true
+              return
+            }
+          })
+          if (!valid) {
+            let error = new Error("time is invalid please check doctor working times")
+            throw error
+          }
+          props.updateAcceptAppointment(object, appointmentId)
+      })
+      .catch((error) => {
+        props.setErrorMessages(error.message)
+      })
     }
-    if (changed[appointmentId].startDate) {
-      let date = new Date(changed[appointmentId].startDate).toISOString()
-      object.date = date.split('T')[0]
-      let startTime = new Date(changed[appointmentId].startDate).toTimeString().split(' ')[0]
-      object.startTime = startTime
-      object.day = daysInWeek[new Date(object.date).getDay()]
+    if (deleted) {
+      let object = { status: "Gone" }
+
+      props.updateAppointmentToGoneStatus(object, deleted)
     }
-    if (changed[appointmentId].endDate) {
-      let date = new Date(changed[appointmentId].endDate).toISOString()
-      let endTime = new Date(changed[appointmentId].endDate).toTimeString().split(' ')[0]
-      object.endTime = endTime
-    }
-    if (changed[appointmentId].doctorId) {
-      object.doctorId = changed[appointmentId].doctorId
-    }
-    props.updateAcceptAppointment(object, appointmentId)
   }
-  const ErrorAlert = () => {
+  const ErrorAlertComponents = () => {
     if (props.appointments.errMess) {
-        return <Alert variant="danger" className="mt-2 mb-1" style={{
-         width: "fit-content",
-         margin: "0 auto",
-         position : "absolute",
-         top: "-1%",
+      return <Alert variant="danger" className="mt-2 mb-1" style={{
+        width: "fit-content",
+        margin: "0 auto",
+        position: "absolute",
+        top: "-1%",
         transform: "translate(-50% , 0)"
-        ,left: "50%"
-        ,zIndex: 1
-     }} dismissible onClose={() => props.clearErrorMessages()}>
-         <Alert.Heading>Error !</Alert.Heading>
-         {props.appointments.errMess}
-     </Alert>
+        , left: "50%"
+        , zIndex: 1
+      }} dismissible onClose={() => props.clearErrorMessages()}>
+        <Alert.Heading>Error !</Alert.Heading>
+        {props.appointments.errMess}
+      </Alert>
     }
     else {
       return <></>
     }
   }
+
+  let token = jwt.verify(localStorage.getItem("token"), 'clinic')
+  let allowUpdate = token.type === "Nurse" ? true : false
+
   return (
-    <div className="mt-2 mb-3" style={{position:"relative"}}>
-      <ErrorAlert/>
+    <div className="mt-2 mb-3" style={{ position: "relative" }}>
+      <ErrorAlertComponents />
       <Breadcrumb >
         <Breadcrumb.Item className="pl-3 mt-1" href="#">
           <Link to={`/dashboard`}>
@@ -309,61 +393,71 @@ function Calender(props) {
       </Breadcrumb>
       <div className="p-3">
         <Paper>
+          {props.clinics.errMess || doctorErrMess || props.center.errMess ?
+          <ErrorAlert messege={props.clinics.errMess || doctorErrMess || props.center.errMess} color="white" />
+          : 
           <Scheduler
-            data={schedulerData}
-            height={660}
-          >
-            <ViewState
-              defaultCurrentViewName="Week"
-            />
-            <EditingState
-              onCommitChanges={commitChanges}
-            />
-            <IntegratedEditing />
-            <GroupingState
-              grouping={grouping}
-              /* groupOrientation={() => "Vertical"} */
-            />
-            <DayView
-              startDayHour={9}
-              endDayHour={19}
-            />
-            <ConfirmationDialog />
-            <WeekView
-              /* excludedDays={[0, 6]} */
-              startDayHour={openTime}
-              endDayHour={endTime}
-              timeTableCellComponent={TimeTableCell}
-              dayScaleCellComponent={DayScaleCell}
-            />
-            <Toolbar />
-            <ViewSwitcher />
-            <DateNavigator />
-            <TodayButton />
-            <Appointments
-            />
-            <Resources
-              data={resources}
-              mainResourceName="doctorId"
-            />
+          data={schedulerData}
+          height={660}
+        >
+          <ViewState
+            defaultCurrentViewName="Week"
+          />
+          <EditingState
+            onCommitChanges={commitChanges}
+          />
+          <IntegratedEditing />
+          <GroupingState
+            grouping={grouping}
+          /* groupOrientation={() => "Vertical"} */
+          />
+          <DayView
+            startDayHour={openTime}
+            endDayHour={endTime}
+          />
+          <ConfirmationDialog />
+          <WeekView
+            excludedDays={weekHolidays}
+            startDayHour={openTime}
+            endDayHour={endTime}
+            timeTableCellComponent={TimeTableCell}
+            dayScaleCellComponent={DayScaleCell}
+            
+          />
+          <Toolbar />
+          <ViewSwitcher />
+          <DateNavigator />
+          <TodayButton />
+          <Appointments
+          />
+          <Resources
+            data={resources}
+            mainResourceName="doctorId"
+          />
 
-            <IntegratedGrouping />
+          <IntegratedGrouping />
 
 
-            <AppointmentTooltip
-              showCloseButton
-              showOpenButton
-              contentComponent={Content}
-            />
-            <AppointmentForm
-              basicLayoutComponent={BasicLayout}
-              messages={messages}
-              textEditorComponent={TextEditor}
-              booleanEditorComponent={BooleanEditorComponent}
-            />
-            <GroupingPanel />
-            <DragDropProvider />
-          </Scheduler>
+          <AppointmentTooltip
+            showCloseButton
+            showOpenButton
+            showDeleteButton = {token.type === "Admin" ? false : true}
+            contentComponent={Content}
+          />
+          <AppointmentForm
+            basicLayoutComponent={BasicLayout}
+            messages={messages}
+            textEditorComponent={TextEditor}
+            booleanEditorComponent={BooleanEditorComponent}
+            readOnly={token.type === "Admin" ? true : false}
+          />
+          <GroupingPanel />
+          <DragDropProvider 
+          allowDrag={() => allowUpdate}
+          allowResize={() => allowUpdate}
+          />
+        </Scheduler>  
+          }
         </Paper>
       </div>
     </div>
@@ -375,15 +469,17 @@ const mapStateTopProps = (state) => ({
   doctors: state.doctors,
   patients: state.patients,
   clinics: state.clinics,
-  center : state.center
+  center: state.center
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getAcceptedAppointmentForClinic: (clinicId) => dispatch(getAcceptedAppointmentForClinic(clinicId)),
   updateAcceptAppointment: (values, appId) => dispatch(updateAcceptAppointment(values, appId)),
+  updateAppointmentToGoneStatus: (values, appId) => dispatch(updateAppointmentToGoneStatus(values, appId)),
   clearAccetptedAppointments: () => dispatch(clearAccetptedAppointments()),
   fetchCenterDays: () => dispatch(fetchCenterDays()),
-  clearErrorMessages : () => dispatch(clearErrorMessages())
+  clearErrorMessages: () => dispatch(clearErrorMessages(null)),
+  setErrorMessages : (error) => dispatch(clearErrorMessages(error))
 })
 
 export default withRouter(connect(mapStateTopProps, mapDispatchToProps)(Calender));

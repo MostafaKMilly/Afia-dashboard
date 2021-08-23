@@ -18,7 +18,6 @@ function ModalDoctor(props) {
         }
         console.log(requestData)
         props.addDoctor(requestData)
-        props.resetDoctorForm()
         props.handleClose()
     }
     const workingDaysList = props.data.workingDaysList.map((item, i) => (
@@ -170,8 +169,7 @@ const mapStateToProps = (state) => ({
 })
 const mapDispatchToProps = (dispatch) => ({
     addDoctor: (doctorInfo) => dispatch(addDoctor(doctorInfo)),
-    handleClose: () => dispatch(closeDoctorDialog()),
-    resetDoctorForm: () => dispatch(actions.reset('doctorForm'))
+    handleClose: () => dispatch(closeDoctorDialog())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalDoctor)

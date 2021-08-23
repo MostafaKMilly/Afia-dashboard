@@ -44,9 +44,10 @@ export const fetchUser = (userInfo) => dispatch => {
         .then(res => res.json())
         .then(data => {
             let object = {}
-            if (data.doctor) {
-                object = { ...data.doctor }
-                object.photo = data.photo
+            if (data.doctor || data.patient ) {
+                let error = new Error("you dont have access to this site :)")
+                localStorage.clear()
+                throw error
             }
             else {
                 object.user = data
@@ -92,18 +93,14 @@ export const autoLogin = () => dispatch => {
         .then(res => res.json())
         .then(data => {
             let object = {}
-            if (data.doctor) {
-                object = { ...data.doctor }
-                object.photo = data.photo
-            }
-            else if (data.patient) {
-                object = { ...data.patient }
-                object.photo = data.photo
+            if (data.doctor || data.patient ) {
+                let error = new Error("you dont have access to this site :)")
+                localStorage.clear()
+                throw error
             }
             else {
                 object.user = data
             }
-            console.log(object)
             dispatch(setUser(object))
         }).catch(e => dispatch(failedToFetchUserData(e.message)))
 

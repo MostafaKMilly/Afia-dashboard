@@ -33,7 +33,7 @@ function ClinicForm(props) {
                         Error
                     </Alert.Heading>
                     <p>
-                        {props.clinics.errMess}
+                        {props.clinics.addClinicFailedErrMess}
                     </p>
                 </Alert>
             )

@@ -114,8 +114,32 @@ background-color:#3f3d56 !important
 }
 .profileEditIcons {
     position: absolute;
-    right: 0;
-    margin-right: 30px;
+    right: 5%;
+    z-index: 999;
+    
+}
+
+.patientProfileEditIcons {
+    position: absolute;
+    right: 6%;
+    z-index: 999;
+}
+
+.appointmentsButton {
+    position: absolute;
+    right: 4%;
+    top: 3%;
+    z-index: 999;
+}
+
+.submitButton {
+  background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit
 }
 .react-bootstrap-table table {
     table-layout: auto;
@@ -155,6 +179,11 @@ background-color:#3f3d56 !important
 .planeLink {
     color : inherit !important;
     text-decoration: none !important;
+}
+
+.toast {
+  width: 650px !important;
+  max-width: 100% !important;
 }
 
 @media screen and (min-width: 768px) {
@@ -211,6 +240,12 @@ background-color:#3f3d56 !important
     }
     #bottom-axis-container {
       visibility: hidden;
+    }
+    .patientProfileEditIcons {
+      right: 11%;
+    }
+    .appointmentsButton {
+      right: 6%;
     }
 }
 @media screen and (min-width : 768px) {
@@ -327,7 +362,7 @@ background-color:#3f3d56 !important
     background-color: #e01447f2;
   }
 .acceptButton {
-    background-color: #198754; 
+    background-color: #1b9b60; 
     border: none; 
     color: white;  
     padding: 6px 8px;  
@@ -338,20 +373,34 @@ background-color:#3f3d56 !important
   .acceptButton:hover {
     background-color: #0c6b3f;
   }
-
-  @media (max-width:393px) {
+.rejectButton {
+    background-color: #ff4456; 
+    border: none; 
+    color: white;  
+    padding: 6px 8px;  
+    font-size: 16px; 
+    cursor: pointer; 
+  }
+  
+  .rejectButton:hover {
+    background-color: #cc2637;
+  }
+  
+  @media (max-width:595px) {
     .SelectionDiv {
         display: none !important;
     }
     .SelectionDivMob {
-      display: block !important;
+      display: grid !important;
+      justify-content: center;
     }
   }
-  @media (min-width:393px) {
+  @media (min-width:595px) {
     .SelectionDivMob {
       display: none !important;
     }
   }
+  
 
 .row-content {
     margin-bottom: 20px !important;

@@ -5,6 +5,7 @@ export const Doctors = (state = {
     doctors: [],
     errMess: null ,
     modelDialogIsOpen : false,
+    doctorUpdateErrMess : null 
 }, action) => {
     switch (action.type) {
         case ActionTypes.SEARCH_DOCTOR:
@@ -25,10 +26,18 @@ export const Doctors = (state = {
             let index = action.payload
             let arr = state.doctors.filter(doctor => doctor.id !== index)
             return { ...state, isLoading: false, errMess: null, doctors: arr }
+        case ActionTypes.UPDATE_DOCTOR_TAG : 
+            let tag = action.payload
+            let doctorIndex = state.doctors.findIndex((doctor) => doctor.doctor.id === tag.doctorId)
+            let tempArray = [...state.doctors]
+            tempArray[doctorIndex].tag = tag
+            return {...state , doctors : tempArray}
         case ActionTypes.OPEN_DOCTOR_DIALOG :
             return {...state , modelDialogIsOpen:true}
         case ActionTypes.CLOSE_DOCTOR_DIALOG :
             return {...state , modelDialogIsOpen:false}
+        case ActionTypes.UPDATE_DOCTOR_FAILED : 
+            return {...state , doctorUpdateErrMess : action.payload}
         default:
             return state
     }

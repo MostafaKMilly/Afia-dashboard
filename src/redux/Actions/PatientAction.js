@@ -1,5 +1,6 @@
 import * as ActionsTypes from './ActionTypes'
 import { baseUrl } from '../../shared/baseUrl'
+import { actions } from 'react-redux-form'
 
 const patientsLoading = () => ({
     type : ActionsTypes.LOADING_PATIENTS
@@ -31,6 +32,67 @@ export const patientUserNameisValid = () => ({
 export const patientUserNameisNotValid = () => ({
     type : ActionsTypes.PATIENT_USERNAME_IS_NOT_VALID
 }) 
+
+export const loadingPatientFile = () => ({
+    type : ActionsTypes.LOADING_PATIENT_FILE
+})
+
+export const loadingPatientMedicalFile = () => ({
+    type : ActionsTypes.LOADING_PATIENT_MEDICAL_FILE
+})
+
+export const loadPatientFile = () => ({
+    type : ActionsTypes.LOAD_PATIENT_FILE
+})
+
+export const loadPatientMedicalFile = () => ({
+    type : ActionsTypes.LOAD_PATIENT_MEDICAL_FILE
+})
+
+export const loadPatientFileFail = (payload) => ({
+    type : ActionsTypes.LOAD_PATIENT_FILE_FAIL ,
+    payload 
+})
+
+export const loadPatientMedicalFileFail = (payload) => ({
+    type : ActionsTypes.LOAD_PATIENT_MEDICAL_FILE_FAILED ,
+    payload 
+})
+
+const updatePatientFailed = (payload) => ({
+    type : ActionsTypes.UPDATE_PATIENT_FAILED , 
+    payload
+})
+
+export const updatePatientDetail = (values) => dispatch => {
+    fetch (baseUrl + 'api/patients/profile/id/'+values.id , {
+        method : "PATCH" ,
+        headers: {
+            "Content-Type": "application/json",
+            'Accept': "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(values)
+    })
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(() => {
+            dispatch(fetchPatients())
+            getPatientFile(values)(dispatch)
+        })
+        .catch((error) => alert(error.message))
+}
 
 export const checkPatientUserName = (userName) => dispatch => {
     const obj = {}
@@ -128,6 +190,81 @@ const addPatientPhoto = (id , image) => {
 }
 
 
+const getPatientFile = (patientInfo) => (dispatch) => {
+    dispatch(loadingPatientFile())
+    fetch (baseUrl + 'api/patients/info_report' , {
+        method : "POST" ,
+        headers : {
+            'Content-Type' : 'application/json' ,
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body : JSON.stringify(patientInfo)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response
+        }
+        else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+        }
+    }, err => {
+        let error = new Error(err.message)
+        throw error;
+    })
+    .then((response) => response.blob())
+    .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${patientInfo.user.username}reportInfo.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        dispatch(loadPatientFile())
+    })
+    .catch((error) => dispatch(loadPatientFileFail(error.message)))
+}
+
+export const getPatientMedicalFile = (patient) => (dispatch) => {
+    dispatch(loadingPatientMedicalFile())
+    fetch (baseUrl + 'api/report/patientId/'+patient.id , {
+        method : "GET" ,
+        headers : {
+            'Content-Type' : 'application/json' ,
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            return response
+        }
+        else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+        }
+    }, err => {
+        let error = new Error(err.message)
+        throw error;
+    })
+    .then((response) => response.blob())
+    .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${patient.user.username}-GeneralReport.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        dispatch(loadPatientMedicalFile())
+    })
+    .catch((error) => dispatch(loadPatientMedicalFileFail(error.message)))
+}
+
 export const addPatient = (patientInfo) => (dispatch) => {
     fetch(baseUrl + 'api/patients/Signup' , {
         method : "POST" ,
@@ -155,6 +292,8 @@ export const addPatient = (patientInfo) => (dispatch) => {
     .then(patient => {
         dispatch(postPatient(patient))
         dispatch(fetchPatients())
+        dispatch(actions.reset('patientForm'))
+        getPatientFile(patientInfo)(dispatch)
     })
     .catch(e => dispatch(addPatientFailed(e.message)))
 }

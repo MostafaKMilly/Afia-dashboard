@@ -3,6 +3,7 @@ import { Navbar, OverlayTrigger, Popover, Nav, Image, Button } from 'react-boots
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Link, NavLink } from 'react-router-dom';
+import HideForType from '../helpers/HideForType';
 import { logUserOut } from '../redux/Actions/userActions';
 import { baseUrl } from '../shared/baseUrl';
 import Loading from './Loading';
@@ -16,11 +17,11 @@ class Header extends Component {
     }
     render() {
         const url = this.props.match.url
-
+        console.log(this.props.user)
         const nextPath = (path) => {
             this.props.history.push(path)
         }
-        if (this.props.patients.isLoading) {
+        if (this.props.patients.isLoading || !this.props.userDate.loggedIn) {
             return <Loading />
         }
         const loadPhoto = (user) => {
@@ -48,10 +49,10 @@ class Header extends Component {
                     return user.photo.url
                 }
             }
-            else if (user.user.type==="Nurse") {
+            else if (user.user.type === "Nurse") {
                 return 'assets/images/nurse.svg'
             }
-            else if (user.user.type ==="Admin") {
+            else if (user.user.type === "Admin") {
                 return 'assets/images/admin.svg'
             }
         }
@@ -59,19 +60,22 @@ class Header extends Component {
             <Navbar collapseOnSelect expand="md" bg="light" variant="light">
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Nav className="ml-auto">
-                    <Nav className="d-none d-md-block">
-                        <Nav.Link href="#" className="" as="span">
-                            <span className="fa fa-comments fa-lg" ></span>
-                        </Nav.Link>
-                    </Nav>
+                    <HideForType type={["Nurse"]}>
+                        <Nav className="d-none d-md-block">
+                            <Nav.Link to="/dashboard/logs" as={NavLink}>
+                                <span className="fa fa-history fa-lg" ></span>
+                            </Nav.Link>
+                        </Nav>
+                    </HideForType>
                     <OverlayTrigger
                         trigger="click"
                         placement="bottom"
                         show={this.state.showPopover}
+                        rootClose
                         onToggle={() => this.state.showPopover ? this.setState({ showPopover: false }) : this.setState({ showPopover: true })}
                         overlay={
                             <Popover  >
-                                <Popover.Title as="h3" className="text-center">{this.props.user.user.username}</Popover.Title>
+                                <Popover.Title as="h3" className="text-center">{this.props.user.user?.username}</Popover.Title>
                                 <Popover.Content className="text-center">
                                     <Button variant="link" onClick={() => {
                                         this.setState({ showPopover: false })
@@ -81,7 +85,7 @@ class Header extends Component {
                                     <Button variant="link" onClick={(event) => {
                                         event.preventDefault()
                                         this.props.logUserOut()
-                                        window.location.reload()
+                                        this.props.history.push('/')
                                     }}>Logout</Button>
                                 </Popover.Content>
                             </Popover>
@@ -129,6 +133,13 @@ class Header extends Component {
                                 Settings
                             </Link>
                         </Nav.Link>
+                        <HideForType type={["Nurse"]}>
+                            <Nav.Link eventKey="8" as="span">
+                                <Link to={`${url}/Logs`} className="planeLink" >
+                                    Logs
+                                </Link>
+                            </Nav.Link>
+                        </HideForType>
                     </Nav>
                 </Navbar.Collapse>
 
@@ -139,7 +150,8 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    patients: state.patients
+    patients: state.patients,
+    userDate: state.user
 })
 const mapDispatchToProps = (dispatch) => ({
     logUserOut: () => dispatch(logUserOut())
