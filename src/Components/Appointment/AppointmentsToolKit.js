@@ -11,13 +11,14 @@ function AppointmentsToolKit(props) {
     let [appointments, setAppointments] = useState([])
     let [searchedAppointments, setSearchedAppointments] = useState([])
     let [appointmentsErrMess, setAppointmentsErrMess] = useState()
-    let [appointmentIsLoading, setAppointmentsIsLoading] = useState(true)
+    let [appointmentIsLoading, setAppointmentsIsLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(5)
-    const [showReset , setShowReset] = useState(false)
-    const [searchErrMess , setSearchErrMess] = useState()
+    const [showReset, setShowReset] = useState(false)
+    const [searchErrMess, setSearchErrMess] = useState()
 
-    const getAppointments = (type , date) => {
+    const getAppointments = (type, date) => {
+        setAppointmentsIsLoading(true)
         fetch(baseUrl + `api/appointments/type/${type}/date/${date}`, {
             method: "GET",
             headers: {
@@ -51,40 +52,38 @@ function AppointmentsToolKit(props) {
     }
 
     useEffect(() => {
-        getAppointments(props.type , new Date().toISOString().split('T')[0])
-    } , [])
-    if (appointmentIsLoading) {
-        return <Loading />
-    }
+        getAppointments(props.type, new Date().toISOString().split('T')[0])
+    }, [])
+
     const handleClick = (event) => {
         setCurrentPage(parseInt(event.target.id, 10))
     }
     const handleSearch = (values) => {
         if (values.searchQuery.length > 0) {
             let patient = props.patients.patients.filter((patient) => {
-                let str = patient.patient.firstName +' '+patient.patient.lastName
+                let str = patient.patient.firstName + ' ' + patient.patient.lastName
                 return str.includes(values.searchQuery)
             })[0]
             if (!patient) {
                 setSearchErrMess("there is no patient with this name")
-                return 
+                return
             }
             let list = appointments.filter((appointment) => appointment.patientId === patient.patient.id)
             setSearchedAppointments(list)
         }
     }
     const handleChange = (values) => {
-            if (values.searchQuery?.length > 0) {
-                setShowReset(true)
-            }
-            else if (values.searchQuery?.length === 0) {
-                setSearchedAppointments([...appointments])
-                setShowReset(false)
-            }
+        if (values.searchQuery?.length > 0) {
+            setShowReset(true)
+        }
+        else if (values.searchQuery?.length === 0) {
+            setSearchedAppointments([...appointments])
+            setShowReset(false)
+        }
     }
     const handleChangeDate = (event) => {
         setAppointmentsErrMess(undefined)
-        getAppointments(props.type , event.target.value)
+        getAppointments(props.type, event.target.value)
     }
     const lastIndex = currentPage * itemsPerPage
     const firstIndex = lastIndex - itemsPerPage
@@ -131,7 +130,7 @@ function AppointmentsToolKit(props) {
                                 </Col>
                                 <Col md="auto">
                                     <Control type="time" readOnly model=".endTime" className="form-control" id={appointment.id} defaultValue={appointment.endTime}
-                                         />
+                                    />
                                 </Col>
                                 <Col md="auto" className="mt-3 mt-md-0">
                                     <Control type="date" readOnly model=".date" className="form-control" id={appointment.id} defaultValue={appointment.date} />
@@ -145,39 +144,43 @@ function AppointmentsToolKit(props) {
     ))
     const ErrorAlertComponents = () => {
         if (searchErrMess) {
-          return <Alert variant="danger" className="mt-2 mb-1" style={{
-            width: "fit-content",
-            margin: "0 auto",
-            position: "absolute",
-            top: "-5%",
-            transform: "translate(-50% , 0)"
-            , left: "50%"
-            , zIndex: 1
-          }} dismissible onClose={() => setSearchErrMess(undefined)}>
-            <Alert.Heading>Error !</Alert.Heading>
-            {searchErrMess}
-          </Alert>
+            return <Alert variant="danger" className="mt-2 mb-1" style={{
+                width: "fit-content",
+                margin: "0 auto",
+                position: "absolute",
+                top: "2%",
+                transform: "translate(-50% , 0)"
+                , left: "50%"
+                , zIndex: 1
+            }} dismissible onClose={() => setSearchErrMess(undefined)}>
+                <Alert.Heading>Error !</Alert.Heading>
+                {searchErrMess}
+            </Alert>
         }
         else {
-          return <></>
+            return <></>
         }
-      }
-      const getItem = () => {
-          if (props.type === "Cancelled") {
-              return (<Image  width={172} src='.\assets\images\undraw_stranded_traveler_pdbw (1).svg'></Image>)
-          }
-          else if (props.type==="Rejected") {
-            return (<Image  width={172} src='.\assets\images\undraw_cancel_u1it (1).svg'></Image>)
-          }
-          else if(props.type ==="Gone"){
-            return (<Image  width={172} src='.\assets\images\undraw_Receipt_re_fre3.svg'></Image>)
-          }
-          else {
-            return (<Image  width={172} src='.\assets\images\undraw_Done_re_oak4.svg'></Image>)
-          }
-      }
+    }
+    const getItem = () => {
+        if (props.type === "Cancelled") {
+            return (<Image width={172} src='.\assets\images\undraw_stranded_traveler_pdbw (1).svg'></Image>)
+        }
+        else if (props.type === "Rejected") {
+            return (<Image width={172} src='.\assets\images\undraw_cancel_u1it (1).svg'></Image>)
+        }
+        else if (props.type === "Gone") {
+            return (<Image width={172} src='.\assets\images\undraw_Receipt_re_fre3.svg'></Image>)
+        }
+        else if (props.type === "Done") {
+            return (<Image width={172} src='.\assets\images\undraw_Done_re_oak4.svg'></Image>)
+        }
+        else {
+            return (<Image width={172} src='.\assets\images\undraw_Order_confirmed_re_g0if.svg'></Image>)
+        }
+    }
     return (
         <div className="mt-2">
+            
             <Breadcrumb>
                 <Breadcrumb.Item className="pl-3 mt-1" href="#">
                     <Link to={`/dashboard`}>
@@ -190,13 +193,14 @@ function AppointmentsToolKit(props) {
                     </Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Item className="mr-auto mt-1" active href="#">
-                    {props.type+"  Appointments"}
+                    {props.type + "  Appointments"}
                 </Breadcrumb.Item>
             </Breadcrumb>
             <Container fluid >
+            <ErrorAlertComponents />
                 <div className="pageContainer" style={{ position: "relative" }}>
                     <div className="appointmentsButton mt-4 pt-1">
-                        
+
                         <OverlayTrigger
                             trigger="click"
                             placement="bottom"
@@ -211,25 +215,31 @@ function AppointmentsToolKit(props) {
                                             }} >
                                                 Pending
                                             </Button>
-                                            <Button variant="link" disabled={props.type === "Rejected"? true : false} onClick={(event) => {
+                                            <Button variant="link" disabled={props.type === "Accepted" ? true : false} onClick={(event) => {
+                                                event.preventDefault()
+                                                props.history.push('/dashboard/appointments/accepted')
+                                            }}>
+                                                Accepted
+                                            </Button>
+                                            <Button variant="link" disabled={props.type === "Rejected" ? true : false} onClick={(event) => {
                                                 event.preventDefault()
                                                 props.history.push('/dashboard/appointments/rejected')
                                             }}>
                                                 Rejected
                                             </Button>
-                                            <Button variant="link" disabled={props.type === "Cancelled"? true : false} onClick={(event) => {
+                                            <Button variant="link" disabled={props.type === "Cancelled" ? true : false} onClick={(event) => {
                                                 event.preventDefault()
                                                 props.history.push('/dashboard/appointments/cancelled')
                                             }} >
                                                 Cancelled
                                             </Button>
-                                            <Button variant="link" disabled={props.type === "Done"? true : false} onClick={(event) => {
+                                            <Button variant="link" disabled={props.type === "Done" ? true : false} onClick={(event) => {
                                                 event.preventDefault()
                                                 props.history.push('/dashboard/appointments/done')
                                             }} >
                                                 Done
                                             </Button>
-                                            <Button variant="link" disabled={props.type === "Gone"? true : false} onClick={(event) => {
+                                            <Button variant="link" disabled={props.type === "Gone" ? true : false} onClick={(event) => {
                                                 event.preventDefault()
                                                 props.history.push('/dashboard/appointments/gone')
                                             }} >
@@ -244,7 +254,7 @@ function AppointmentsToolKit(props) {
                         </OverlayTrigger>
 
                     </div>
-                        <ErrorAlertComponents/>
+                   
                     <Row className="mb-4">
                         <Col xs={12} className="mt-3 text-center">
                             <h4>{props.type + "  Appointments"}</h4>
@@ -259,14 +269,14 @@ function AppointmentsToolKit(props) {
                                         <div className="mt-2 mb-2">
                                             <LocalForm model="searchBox" className="text-center" onSubmit={(values) => handleSearch(values)} onChange={(values) => handleChange(values)}>
                                                 <Row style={{ alignItems: "flex-end" }} className="mb-3 mt-3 justify-content-md-center">
-                                                    <Col className="col-12 col-md-6 mb-2 mb-md-0 order-1 order-md-1" style={{position : "relative"}}>
+                                                    <Col className="col-12 col-md-6 mb-2 mb-md-0 order-1 order-md-1" style={{ position: "relative" }}>
                                                         <Control type="text" placeholder="search.." className="form-control" model=".searchQuery" />
-                                                        {showReset ? <Button variant="link" className="me-3" style={{position : "absolute" , top : "0" , right : "0"}}
-                                                        onClick={() => {
-                                                            setShowReset(false)
-                                                            setSearchErrMess(undefined)
-                                                            setSearchedAppointments([...appointments])
-                                                        }}
+                                                        {showReset ? <Button variant="link" className="me-3" style={{ position: "absolute", top: "0", right: "0" }}
+                                                            onClick={() => {
+                                                                setShowReset(false)
+                                                                setSearchErrMess(undefined)
+                                                                setSearchedAppointments([...appointments])
+                                                            }}
                                                         >Reset</Button> : <></>}
                                                     </Col>
                                                     <Col className="col-12  col-md-1 mb-2 mb-md-0 order-3 order-md-2">
@@ -283,22 +293,28 @@ function AppointmentsToolKit(props) {
 
                                             </LocalForm>
                                         </div>
-                                        {appointmentsErrMess ? <Col xs={12}>
-                                        <ErrorAlert messege={appointmentsErrMess} color="#ffffff" />
-                                    </Col> : <div>
-                                            {appointmentsList}
-                                        </div>}
-                                        
+                                        {
+                                            appointmentIsLoading ? <Loading /> :
+                                                appointmentsErrMess ?
+                                                    <Col xs={12}>
+                                                        <ErrorAlert messege={appointmentsErrMess} color="#ffffff" />
+                                                    </Col> :
+                                                    <div>
+                                                        {appointmentsList}
+                                                    </div>
+                                        }
+
+
                                     </Col>
-                                    {appointmentsErrMess ? <></> : 
-                                    <center className="mt-2">
-                                        <div className="text-center">
-                                            <Pagination>{items}</Pagination>
-                                        </div>
-                                    </center>
-                                    
+                                    {appointmentsErrMess ? <></> :
+                                        <center className="mt-2">
+                                            <div className="text-center">
+                                                <Pagination>{items}</Pagination>
+                                            </div>
+                                        </center>
+
                                     }
-                                    
+
                                 </Row>
                             </Container>
                         </Col>
@@ -311,8 +327,8 @@ function AppointmentsToolKit(props) {
 }
 
 const mapStateTopProps = (state) => ({
-    doctors : state.doctors ,
-    patients : state.patients
+    doctors: state.doctors,
+    patients: state.patients
 })
 
 export default withRouter(connect(mapStateTopProps)(AppointmentsToolKit));

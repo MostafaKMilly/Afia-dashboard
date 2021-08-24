@@ -24,6 +24,8 @@ function DoctorDetail(props) {
     let [showHolidayModal, setShowHolidayModal] = useState(false)
     let [currentPage, setCurrentPage] = useState(1)
     let [itemsPerPage, setItemsPerPage] = useState(3)
+    let [currentPageWorkingDays, setCurrentPageWorkingDays] = useState(1)
+    let [itemsPerPageWorkingDays, setItemsPerPageWorkingDays] = useState(3)
     let [showSessionsDetail, setShowSessionsDetail] = useState(false)
     let [showWorkingDaysModal, setShowWorkingDaysModal] = useState(false)
     let [workingDaysModalErrMess, setWorkingDaysModalErrMess] = useState()
@@ -155,30 +157,30 @@ function DoctorDetail(props) {
             .then(response => response.json())
     }
 
-    const deleteHoliday = (holidayId) => {
-        return fetch(baseUrl + 'api/doctors/holidays/id/' + holidayId, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                'Accept': "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response
-                }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
-                }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
+    /*     const deleteHoliday = (holidayId) => {
+            return fetch(baseUrl + 'api/doctors/holidays/id/' + holidayId, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Accept': "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
             })
-            .then(response => response.json())
-    }
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+        } */
 
     const updateTags = (doctorId, values) => {
         return fetch(baseUrl + 'api/doctors/tags/id/' + doctorId, {
@@ -310,6 +312,28 @@ function DoctorDetail(props) {
     else if (props.doctors.errMess) {
         return (<ErrorAlert messege={props.doctors.errMess} />)
     }
+
+    const lastIndexWorkingDays = currentPageWorkingDays * itemsPerPageWorkingDays
+    const firstIndexWorkingDays = lastIndexWorkingDays - itemsPerPageWorkingDays
+    const handleClickWorkingDays = (event) => {
+        setCurrentPageWorkingDays(parseInt(event.target.id, 10))
+    }
+    let workingDaysListItems = workingDaysList?.length ? workingDaysList.slice(firstIndexWorkingDays, lastIndexWorkingDays).map((workingDay) => (
+        <p>
+            <span>{workingDay.day + ' : '}</span>
+            <span>{formatAMPM(workingDay.startTime) + ' to '}</span>
+            <span>{formatAMPM(workingDay.endTime)}</span>
+        </p>
+    )) : <p>{workingDayError || "there is no working days"}</p>
+    let itemsList = []
+    for (let i = 1; i <= Math.ceil(workingDaysList?.length / itemsPerPageWorkingDays); i++) {
+        itemsList.push(
+            <Pagination.Item key={i} active={i === currentPageWorkingDays} id={i} onClick={handleClickWorkingDays}>
+                {i}
+            </Pagination.Item>
+        )
+    }
+
     function formatAMPM(date) {
         var hours = date.split(':')[0]
         var minutes = date.split(':')[1];
@@ -346,7 +370,7 @@ function DoctorDetail(props) {
     )) : <p>{workingDayError || "there is no working days"}</p>
 
     const handleSubmitHoliday = (values) => {
-        if (values.date) {
+        if (values.date && values.date >= new Date().toISOString().split('T')[0]) {
             let day = daysInWeek[new Date(values.date).getDay()]
             let doctorId = props.doctor.doctor.id
             values = { ...values, day, doctorId }
@@ -360,17 +384,20 @@ function DoctorDetail(props) {
                     setHolidaysErrMess(error.message)
                 })
         }
+        else {
+            setHolidaysErrMess("holiday is invalid")
+        }
     }
-    const handleDeleteHoliday = (holidayId) => {
-        setHolidaysErrMess(undefined)
-        deleteHoliday(holidayId).then(() => {
-            let tempArray = holidays.filter((holiday) => holiday.id !== holidayId)
-            setHolidays(tempArray)
-        })
-            .catch((error) => {
-                setHolidaysErrMess(error.message)
-            })
-    }
+    /*  const handleDeleteHoliday = (holidayId) => {
+         setHolidaysErrMess(undefined)
+         deleteHoliday(holidayId).then(() => {
+             let tempArray = holidays.filter((holiday) => holiday.id !== holidayId)
+             setHolidays(tempArray)
+         })
+             .catch((error) => {
+                 setHolidaysErrMess(error.message)
+             })
+     } */
 
     const handleUpdateWorkingDay = (values) => {
         if (values.endTime < values.startTime) {
@@ -404,13 +431,13 @@ function DoctorDetail(props) {
     const handleAddWorkingDays = (values) => {
         console.log(values)
         setWorkingDaysModalErrMess(undefined)
-        if (!values.day || !values.endTime || !values.startTime || values.endTime < values.startTime || values.endTime === values.startTime ) {
+        if (!values.day || !values.endTime || !values.startTime || values.endTime < values.startTime || values.endTime === values.startTime) {
             setWorkingDaysModalErrMess("time is invalid")
             return
         }
         let exist = false
         workingDaysList.forEach((workingDay) => {
-            if (workingDay.day === values.day && workingDay.startTime.slice(0,5) <= values.startTime && workingDay.endTime.slice(0,5) >= values.endTime) {
+            if (workingDay.day === values.day && workingDay.startTime.slice(0, 5) <= values.startTime && workingDay.endTime.slice(0, 5) >= values.endTime) {
                 exist = true
             }
         })
@@ -418,7 +445,7 @@ function DoctorDetail(props) {
             setWorkingDaysModalErrMess("working day is invalid !")
             return
         }
-        values = { ...values, doctorId: props.doctor.doctor.id , startTime : values.startTime+":00" , endTime: values.endTime+":00" }
+        values = { ...values, doctorId: props.doctor.doctor.id, startTime: values.startTime + ":00", endTime: values.endTime + ":00" }
         postWorkingDay(values).then((workingDay) => {
             let tempArr = [...workingDaysList]
             tempArr.push(workingDay)
@@ -443,6 +470,8 @@ function DoctorDetail(props) {
             </Pagination.Item>
         )
     }
+
+
     const handleUpdateSessionsDuration = (values) => {
         let object = {}
         object.check = parseInt(values.check)
@@ -541,7 +570,13 @@ function DoctorDetail(props) {
                             </div>
                             <Image src="assets/images/undraw_time_management_30iu.svg" className="img-fluid mt-3 mb-3" style={{ "maxWidth": "46%" }} alt={props.doctor.doctor.firstName} />
                             <h4 className="mb-3">Working Days</h4>
-                            {workingDays}
+                            {workingDaysListItems}
+                            <center>
+                                    <div className="text-center mt-2">
+                                        <Pagination>{itemsList}</Pagination>
+                                    </div>
+
+                                </center>
                         </div>
                         <div className="pe-4 ps-4 pb-4 pt-2 bg-white mt-4 text-center">
                             <div className="profileEditIcons me-3 mt-2">
@@ -602,15 +637,15 @@ function DoctorDetail(props) {
                                 <ul class="list-group list-group-flush gap-0 text-center mt-2 mb-2 ms-0 me-0">
                                     {holidays.length ? holidays.map((holiday) => (
                                         <li class="list-group-item border-bottom-0" key={holiday.id}>{holiday.day + '  :      ' + holiday.date}
-                                            <span className="fa fa-trash-alt fa-lg" style={{
+                                            {/*  <span className="fa fa-sync-alt fa-lg" style={{
                                                 position: "absolute",
                                                 right: "21%",
                                                 top: "32%",
                                                 color: "#FF9D9D",
                                                 zIndex: "999",
                                                 cursor: "pointer"
-                                            }} onClick={() => handleDeleteHoliday(holiday.id)} ></span></li>
-
+                                            }} onClick={() => handleDeleteHoliday(holiday.id)} ></span>< */}
+                                        </li>
                                     )) : <li class="list-group-item border-bottom-0 text-danger" key={0}>There are no holidays</li>}
                                 </ul>
                             }
@@ -737,7 +772,7 @@ function DoctorDetail(props) {
                                             <option>Sunday</option>
                                             <option>Monday</option>
                                             <option>Tuesday</option>
-                                            <option>wednesday</option>
+                                            <option>Wednesday</option>
                                             <option>Thursday</option>
                                             <option>Friday</option>
                                         </Control.select>
@@ -770,7 +805,7 @@ function DoctorDetail(props) {
                                         <option>Sunday</option>
                                         <option>Monday</option>
                                         <option>Tuesday</option>
-                                        <option>wednesday</option>
+                                        <option>Wednesday</option>
                                         <option>Thursday</option>
                                         <option>Friday</option>
                                     </Control.select>

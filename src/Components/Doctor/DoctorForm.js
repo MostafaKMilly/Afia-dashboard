@@ -11,7 +11,7 @@ import { actions } from 'react-redux-form'
 import { intialDotorForm } from '../../redux/Forms/doctorform';
 
 function DoctorForm(props) {
-    const [addWorkingDaysErrMess , setWorkingDaysErrMess] = useState()
+    const [addWorkingDaysErrMess, setWorkingDaysErrMess] = useState()
 
     const handleSubmit = (values) => {
         props.closeRegisterDialog()
@@ -37,11 +37,11 @@ function DoctorForm(props) {
             setWorkingDaysErrMess("working day is invalid !")
             return
         }
-       
+
         if ((day !== '' && endTime !== '' && startTime !== '') && startTime < endTime) {
             props.addToWorkingDays({ ...props.doctorForm.workingDays })
         }
-        
+
         props.resetWorkinDays()
     }
     const required = (value) => value && value.length
@@ -273,12 +273,21 @@ function DoctorForm(props) {
                                     <Col md={2}>
                                         <FormLabel>Clinic :</FormLabel></Col>
                                     <Col md={4} className="mb-2">
-                                        <Control.select name="clinic" model=".clinic"
-                                            className="form-select" onChange={handleSelect}>
+                                        <Control.select name="clinic" model=".clinic" disabled={props.clinics.clinics.length === 0 ? true : false}
+                                            className="form-select" onChange={handleSelect} validators={{ required }}
+                                            defaultValue={props.doctorForm.clinic.length === 0 ? props.clinics.clinics[0]?.clinic?.name : props.doctorForm.clinic} >
                                             {props.clinics.clinics.map((clinic) => (
                                                 <option id={clinic.clinic.id} key={clinic.clinic.id}>{clinic.clinic.name}</option>
                                             ))}
                                         </Control.select>
+                                        <Errors
+                                            className="text-danger" model=".clinic" show="touched" messages={{
+                                                required: "Required "
+                                            }}
+                                        />
+                                        <Control.text name="clinicId" model=".clinicId"
+                                            className="d-none"
+                                            defaultValue={props.doctorForm.clinicId.length === 0 ? props.clinics.clinics[0]?.clinic?.id : props.doctorForm.clinicId } />
                                     </Col>
                                     <Col md={2}>
                                         <FormLabel>Sepecialize :</FormLabel>
@@ -351,7 +360,7 @@ function DoctorForm(props) {
                                                     <option>Sunday</option>
                                                     <option>Monday</option>
                                                     <option>Tuesday</option>
-                                                    <option>wednesday</option>
+                                                    <option>Wednesday</option>
                                                     <option>Thursday</option>
                                                     <option>Friday</option>
                                                 </Control.select>
@@ -382,7 +391,7 @@ function DoctorForm(props) {
                                 </Row>
                                 <Row>
                                     <Col md={{ offset: 2 }}>
-                                    {addWorkingDaysErrMess ? <p className="text-danger">{addWorkingDaysErrMess}</p> : <></>}
+                                        {addWorkingDaysErrMess ? <p className="text-danger">{addWorkingDaysErrMess}</p> : <></>}
 
                                         <ul className="list-unstyled">
                                             {workingDaysList}
@@ -406,7 +415,7 @@ function DoctorForm(props) {
                                                 <option>35</option>
                                                 <option>40</option>
                                             </Control.select>
-                                          
+
                                             <label for="floatingSelect">Check</label>
                                         </div>
                                     </Col>
@@ -421,7 +430,7 @@ function DoctorForm(props) {
                                                 <option>35</option>
                                                 <option>40</option>
                                             </Control.select>
-                                           
+
                                             <label for="floatingSelect">Review</label>
                                         </div>
                                     </Col>
@@ -473,7 +482,7 @@ const mapDispatchToProps = (dispatch) => ({
     changeUserName: (username) => dispatch(actions.change('doctorForm.user.username', username)),
     checkDoctorEmail: (email) => dispatch(checkDoctorEmail(email)),
     changeEmail: (email) => dispatch(actions.change('doctorForm.user.email', email)),
-    clearDoctorErrorMessages : () => dispatch(clearDoctorErrorMessages())
+    clearDoctorErrorMessages: () => dispatch(clearDoctorErrorMessages())
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DoctorForm))

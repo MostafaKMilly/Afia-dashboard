@@ -231,8 +231,8 @@ function PatientForm(props) {
                                                         }}
                                                     >
                                                         <option selected>Choose gender</option>
-                                                        <option>male</option>
-                                                        <option>female</option>
+                                                        <option>Male</option>
+                                                        <option>Female</option>
                                                     </Control.select>
                                                     <Errors
                                                         className="text-danger" model=".gender" show="touched" messages={{

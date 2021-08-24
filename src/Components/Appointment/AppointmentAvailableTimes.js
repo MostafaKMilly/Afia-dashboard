@@ -8,97 +8,98 @@ import { baseUrl } from '../../shared/baseUrl';
 import Loading from '../Loading';
 
 function AppointmentAvailableTimes(props) {
-    const [availableTimes , setAvailableTimes] = useState([])
-    const [availableTimesIsLoading , setAvailableTimesIsLoading] = useState(true)
-    const [activeTimeButton , setActiveTimeButton] = useState()
-    const [tagsIsLoading , setTagsIsLoading] = useState(true)
-    const [adderValue , setAdderValue] = useState()
+    const [availableTimes, setAvailableTimes] = useState([])
+    const [availableTimesIsLoading, setAvailableTimesIsLoading] = useState(true)
+    const [activeTimeButton, setActiveTimeButton] = useState()
+    const [tagsIsLoading, setTagsIsLoading] = useState(true)
+    const [adderValue, setAdderValue] = useState()
 
     const daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     useEffect(() => {
-        const getAvailableTimes = (date , day , doctorId) => {
-            fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}` , {
-                method : "GET" ,
+        const getAvailableTimes = (date, day, doctorId) => {
+            fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}`, {
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    return response
-                }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
-                }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
-            })
-            .then(response => response.json())
-            .then ((availableTimes) => {
-                setAvailableTimes(availableTimes)
-                setAvailableTimesIsLoading(false)
-            })
-            .catch((error) => {
-                props.setErrMess(error.message)
-                setAvailableTimesIsLoading(false)   
-            })
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+                .then((availableTimes) => {
+                    setAvailableTimes(availableTimes)
+                    setAvailableTimesIsLoading(false)
+                })
+                .catch((error) => {
+                    props.setErrMess(error.message)
+                    setAvailableTimesIsLoading(false)
+                })
         }
-        getAvailableTimes(props.appointmentForm.date , daysInWeek[new Date(props.appointmentForm.date).getDay()] 
-        , props.appointmentForm.doctorId )
+        getAvailableTimes(props.appointmentForm.date instanceof Date ? props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-') : ''
+            , daysInWeek[new Date(props.appointmentForm.date).getDay()]
+            , props.appointmentForm.doctorId)
 
         const getDoctorTag = () => {
-            fetch(baseUrl +'api/doctors/tags/id/'+props.appointmentForm.doctorId , {
-                method : "GET" ,
+            fetch(baseUrl + 'api/doctors/tags/id/' + props.appointmentForm.doctorId, {
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    return response
-                }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
-                }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
-            })
-            .then(response => response.json())
-            .then ((tags) => {
-                for (let property in tags) {
-                    if (property === props.appointmentForm.type.toLowerCase()) {
-                        setAdderValue(tags[property])
+                .then(response => {
+                    if (response.ok) {
+                        return response
                     }
-                }
-                setTagsIsLoading(false)
-            })
-            .catch((error) => {
-                props.setErrMess(error.message)
-                setTagsIsLoading(false)   
-            })
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+                .then((tags) => {
+                    for (let property in tags) {
+                        if (property === props.appointmentForm.type.toLowerCase()) {
+                            setAdderValue(tags[property])
+                        }
+                    }
+                    setTagsIsLoading(false)
+                })
+                .catch((error) => {
+                    props.setErrMess(error.message)
+                    setTagsIsLoading(false)
+                })
         }
         getDoctorTag()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
-    
+    }, [])
+
     function addMinutes(time, minsToAdd) {
-        function D(J){ return (J<10? '0':'') + J;};
+        function D(J) { return (J < 10 ? '0' : '') + J; };
         var piece = time.split(':');
-        var mins = piece[0]*60 + +piece[1] + +minsToAdd;
-      
-        return D(mins%(24*60)/60 | 0) + ':' + D(mins%60);  
-      }  
-    
+        var mins = piece[0] * 60 + +piece[1] + +minsToAdd;
+
+        return D(mins % (24 * 60) / 60 | 0) + ':' + D(mins % 60);
+    }
+
     function formatAMPM(date) {
         var hours = date.split(':')[0]
         var minutes = date.split(':')[1];
@@ -111,29 +112,29 @@ function AppointmentAvailableTimes(props) {
     }
 
     const submitAppointment = (obj) => {
-        return fetch(baseUrl + 'api/appointments' , {
-            method : "POST" , 
+        return fetch(baseUrl + 'api/appointments', {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
             },
-            body : JSON.stringify(obj)
+            body: JSON.stringify(obj)
         })
-        .then(response => {
-            if (response.ok) {
-                return response
-            }
-            else {
-                let error = new Error(response.statusText)
-                error.response = response
-                throw error
-            }
-        }, err => {
-            let error = new Error(err.message)
-            throw error;
-        })
-        .then(response => response.json())
+            .then(response => {
+                if (response.ok) {
+                    return response
+                }
+                else {
+                    let error = new Error(response.statusText)
+                    error.response = response
+                    throw error
+                }
+            }, err => {
+                let error = new Error(err.message)
+                throw error;
+            })
+            .then(response => response.json())
     }
 
     const handleSubmit = () => {
@@ -142,45 +143,45 @@ function AppointmentAvailableTimes(props) {
         obj.doctorId = props.appointmentForm.doctorId
         obj.patientId = props.appointmentForm.patientId
         obj.day = daysInWeek[new Date(props.appointmentForm.date).getDay()]
-        obj.date = props.appointmentForm.date
+        obj.date = props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-')
         obj.type = props.appointmentForm.type
         obj.status = "Pending"
         obj.description = props.appointmentForm.description
         obj.startTime = activeTimeButton
-        obj.endTime = addMinutes(activeTimeButton , adderValue)
+        obj.endTime = addMinutes(activeTimeButton, adderValue)
         submitAppointment(obj).then(() => {
             props.resetForm()
             props.changeSuccessMessage("Appointment reversed successfully")
             setActiveTimeButton(undefined)
             nextPath('/dashboard/addAppointments')
         })
-        .catch((error) => {
-            props.setErrMess(error.message)
-        })
+            .catch((error) => {
+                props.setErrMess(error.message)
+            })
     }
 
     if (!props.appointmentForm.date || !props.appointmentForm.doctorId ||
-         !props.appointmentForm.patientId ||
-         !props.appointmentForm.clinicId || !props.appointmentForm.description) {
+        !props.appointmentForm.patientId ||
+        !props.appointmentForm.clinicId || !props.appointmentForm.description) {
         return (<ErrorAlert messege="please add basic appointment info :)" color="white" />)
     }
     if (availableTimesIsLoading || tagsIsLoading) {
-        return <Loading/>
+        return <Loading />
     }
     const nextPath = (path) => {
         props.history.push(path)
     }
-    let disabled = activeTimeButton ? false : true 
+    let disabled = activeTimeButton ? false : true
 
-    const availableTimesList =[]
+    const availableTimesList = []
     availableTimes.forEach((obj) => {
         let currentTime = obj.startTime
-        while (addMinutes(currentTime , adderValue) < obj.endTime) {
+        while (addMinutes(currentTime, adderValue) < obj.endTime) {
             availableTimesList.push(currentTime)
-            currentTime = addMinutes(currentTime , adderValue)
+            currentTime = addMinutes(currentTime, adderValue)
         }
     })
-    
+
     return (
         <Col md={12}>
             <Row className="form-group g-2 mt-3" >
@@ -191,8 +192,8 @@ function AppointmentAvailableTimes(props) {
                 </Col>
                 <Col md={10}>
                     <div className="timesContainer ">
-                        {availableTimesList.map((time , index) => (
-                            <Button className={activeTimeButton ===time ? 'active m-2' : 'm-2'} variant="outline-secondary" onClick={() => setActiveTimeButton(time)}  key={index}>{formatAMPM(time)}</Button>
+                        {availableTimesList.map((time, index) => (
+                            <Button className={activeTimeButton === time ? 'active m-2' : 'm-2'} variant="outline-secondary" onClick={() => setActiveTimeButton(time)} key={index}>{formatAMPM(time)}</Button>
                         ))}
                     </div>
                 </Col>
@@ -217,7 +218,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     resetForm: () => dispatch(actions.reset('appointmentForm')),
-    changeSuccessMessage : (value) => dispatch(actions.change('appointmentForm.successMessage' , value))
+    changeSuccessMessage: (value) => dispatch(actions.change('appointmentForm.successMessage', value))
 })
 
-export default withRouter(connect(mapStateToProps,mapDispatchToProps)(AppointmentAvailableTimes));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AppointmentAvailableTimes));

@@ -5,7 +5,6 @@ import { withRouter } from 'react-router';
 import { Link, NavLink } from 'react-router-dom';
 import HideForType from '../helpers/HideForType';
 import { logUserOut } from '../redux/Actions/userActions';
-import { baseUrl } from '../shared/baseUrl';
 import Loading from './Loading';
 
 class Header extends Component {
@@ -33,7 +32,7 @@ class Header extends Component {
                     return user.photo.url
                 }
             }
-            else if (user.user.type === "Patient" && user.gender === "male") {
+            else if (user.user.type === "Patient" && user.gender === "Male") {
                 if (user.photo === undefined || user.photo === null) {
                     return 'assets/images/maleavatar.svg'
                 }
@@ -41,7 +40,7 @@ class Header extends Component {
                     return user.photo.url
                 }
             }
-            else if (user.user.type === "Patient" && user.gender === "female") {
+            else if (user.user.type === "Patient" && user.gender === "Female") {
                 if (user.photo === undefined || user.photo === null) {
                     return 'assets/images/femaleavatar.svg'
                 }

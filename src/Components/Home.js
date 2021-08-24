@@ -10,7 +10,6 @@ import {
     ValueAxis,
 } from '@devexpress/dx-react-chart-material-ui';
 import { Animation } from '@devexpress/dx-react-chart';
-import { fetchCenterDays } from '../redux/Actions/CenterActions';
 import Loading from './Loading';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
@@ -179,8 +178,8 @@ class Home extends Component {
                                 <button className="btn me-2 mb-2 mb-md-0 text-white" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/appointments`)}>
                                     Pending Appointments
                                 </button>
-                                    <button className="btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/patients/add`)}>
-                                        Add Patients
+                                    <button className="btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/clinics/add`)}>
+                                        Add Clinics
                                     </button>
                                     <button className="btn text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/doctors/add`)}>
                                         Add Doctors
@@ -374,7 +373,7 @@ class Home extends Component {
                                 paddingRight: "68px",
                                 paddingLeft: "68px"
                             }}>
-                                {isNaN(dataPieChart[0].area)|| isNaN(dataPieChart[1].area) ? <p className="lead text-danger" style={{paddingTop : "174px" , paddingBottom : "174px"}}>There are no patients</p> :
+                                {isNaN(dataPieChart[0].area) && isNaN(dataPieChart[1].area) ? <p className="lead text-danger" style={{paddingTop : "174px" , paddingBottom : "174px"}}>There are no patients</p> :
                                    <Chart
                                    data={dataPieChart}
                                    height="380"

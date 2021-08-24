@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
-import { Button, Col, Container, FormLabel, Image, Row } from 'react-bootstrap';
+import { Button, Col, Container, FormLabel, Image, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { fetchUser } from '../redux/Actions/userActions';
@@ -14,9 +14,12 @@ class Login extends Component {
     this.state = {
       username: "",
       password: "",
+      showModal: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleCloseModal = this.handleCloseModal.bind(this)
+    this.handleOpenModal = this.handleOpenModal.bind(this)
   }
   handleChange(event) {
     event.persist();
@@ -28,6 +31,12 @@ class Login extends Component {
   handleSubmit(values) {
     this.props.fetchUser(values);
     this.nextPath("dashboard")
+  }
+  handleOpenModal() {
+    this.setState({ showModal: true })
+  }
+  handleCloseModal() {
+    this.setState({ showModal: false })
   }
   nextPath(path) {
     this.props.history.push(path)
@@ -68,14 +77,14 @@ class Login extends Component {
                   <Row className=" form-group pl-4">
                     <Col xs={6}>
                       <FormLabel check>
-                        <Control.checkbox model=".rememberMe" name="rememberMe" className="form-check-input" />
+                        <Control.checkbox defaultChecked={true} model=".rememberMe" name="rememberMe" className="form-check-input" />
                         Remember me
                       </FormLabel>
                     </Col>
                     <Col xs={6} className="ml-auto text-right">
-                      <a href="" color="inherent">
+                      <Button variant="link" className="mt-0 mb-0 pb-0 pt-0 pb-2" onClick={() => this.handleOpenModal()}>
                         Forget password ?
-                      </a>
+                      </Button>
                     </Col>
 
                   </Row>
@@ -92,6 +101,28 @@ class Login extends Component {
                 />
               </Col>
             </Row>
+            <Modal show={this.state.showModal} onHide={() => this.handleCloseModal()}>
+              <Modal.Header closeButton>
+                <Modal.Title>Contact Us</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="text-center">
+              <Image src="assets\images\logo (1).svg" className="mb-2" width="110" height="110" fluid />
+                <p>
+              If you forget your password feel free to contact us :)
+              </p>
+                <div>
+                      <span className="fa fa-phone me-2"></span> +963943565925
+                </div>
+                <div>
+                      <span className="fa fa-inbox me-2"></span> mostafamilly6@gmail.com
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => this.handleCloseModal()}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </Container>
 
         </div>

@@ -148,8 +148,8 @@ function NurseComponent(props) {
     ))
     const handleEdit = (values) => {
         if (values.username || values.password || values.email) {
+            setError(undefined)
             updateNurse(selectedNurse, values).then(() => {
-                
                 let tempoArray = [...nurses]
                 let i = tempoArray.findIndex((nurse) => nurse.id === selectedNurse)
                 tempoArray[i] = { ...tempoArray[i], ...values }
@@ -165,6 +165,7 @@ function NurseComponent(props) {
         if (values.username === undefined || values.password === undefined || values.email === undefined) {
             return
         }
+        setError(undefined)
         values = { ...values, type: "Nurse" }
         addNurse(values).then((nurse) => {
             console.log(nurses)

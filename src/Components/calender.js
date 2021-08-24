@@ -39,12 +39,12 @@ const useStyles = makeStyles(theme => ({
     },
   },
   weekendCell: {
-    backgroundColor: fade(theme.palette.action.disabledBackground, 0.04),
+    backgroundColor: fade(theme.palette.action.disabledBackground, 0.07),
     '&:hover': {
-      backgroundColor: fade(theme.palette.action.disabledBackground, 0.04),
+      backgroundColor: fade(theme.palette.action.disabledBackground, 0.07),
     },
     '&:focus': {
-      backgroundColor: fade(theme.palette.action.disabledBackground, 0.04),
+      backgroundColor: fade(theme.palette.action.disabledBackground, 0.07),
     },
   },
   today: {
@@ -59,12 +59,43 @@ const useStyles = makeStyles(theme => ({
 const TimeTableCell = (props) => {
   const classes = useStyles();
   const { startDate } = props;
-
+  const [validDates , setValidDate] = useState([])
+  useEffect(() => {
+      if (props.groupingInfo) {
+        fetch(baseUrl + 'api/doctors/working_days/id/' + props.groupingInfo[0].id, {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+              'Accept': "application/json",
+              "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+      })
+          .then(response => {
+              if (response.ok) {
+                  return response
+              }
+              else {
+                  let error = new Error(response.statusText)
+                  error.response = response
+                  throw error
+              }
+          }, err => {
+              let error = new Error(err.message)
+              throw error;
+          })
+          .then(response => response.json())
+          .then((workingDays) => {
+            let dates = workingDays.map((workingDays) => workingDays.date)
+            setValidDate(dates)
+          })
+          .catch((error) => setValidDate([]))
+      }
+  } ,[])
   const date = new Date(startDate);
   props = { ...props, onDoubleClick: undefined }
   if (date.getDate() === new Date().getDate()) {
     return <WeekView.TimeTableCell   {...props} className={classes.todayCell} />;
-  } if (date.getDay() === 0 || date.getDay() === 6) {
+  } if (!validDates.includes(date.toISOString().split('T')[0])) {
     return <WeekView.TimeTableCell   {...props} className={classes.weekendCell} />;
   } return <WeekView.TimeTableCell   {...props} />;
 };
@@ -72,13 +103,12 @@ const TimeTableCell = (props) => {
 const DayScaleCell = (props) => {
   const classes = useStyles();
   const { startDate, today } = props;
-
-  if (today) {
+  
+  /* if (today) {
     return <WeekView.DayScaleCell {...props} className={classes.today} />;
-  }/*  if (startDate.getDay() === 0 || startDate.getDay() === 6) {
-    return <WeekView.DayScaleCell {...props} className={classes.weekend} />;
-  } */ return <WeekView.DayScaleCell {...props} />;
+  }  */return <WeekView.DayScaleCell {...props} />;
 };
+
 
 
 const Content = (({
@@ -191,7 +221,7 @@ function Calender(props) {
   }
 
 const getWorkingDay = (doctorId) => {
-  return fetch(baseUrl + 'api/doctors/work_days/id/' + doctorId, {
+  return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
       method: "GET",
       headers: {
           "Content-Type": "application/json",
@@ -215,7 +245,7 @@ const getWorkingDay = (doctorId) => {
       .then(response => response.json())
 }
   useEffect(() => {
-    getDoctorsForClinic(1).then(doctors => {
+    getDoctorsForClinic(props.clinics.clinics[0]?.clinic?.id).then(doctors => {
       setDoctorsList(doctors)
       setDoctorsIsLoading(false)
     })
@@ -225,7 +255,7 @@ const getWorkingDay = (doctorId) => {
       })
     props.fetchCenterDays()
     props.clearErrorMessages()
-    props.getAcceptedAppointmentForClinic(1)
+    props.getAcceptedAppointmentForClinic(props.clinics.clinics[0]?.clinic?.id)
   }, [])
 
   if (props.patients.isLoading || props.clinics.isLoading || doctorsIsLoading || props.center.isLoading) {
@@ -289,6 +319,30 @@ const getWorkingDay = (doctorId) => {
     resourceName: 'doctorId',
   }]
 
+  const getValidDates = (doctorId) => {
+    return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(response => response.json())
+}
   const commitChanges = ({ added, changed, deleted }) => {
     props.clearErrorMessages()
     if (changed) {
@@ -329,11 +383,12 @@ const getWorkingDay = (doctorId) => {
           let valid = false
           console.log(workingDays , appointment)
           workingDays.forEach((workingDay) => {
-            if(workingDay.day === object.day && appointment.startTime >= workingDay.startTime && appointment.endTime <= workingDay.endTime) {
+            if(workingDay.day === object.day && object.date === workingDay.date && appointment.startTime >= workingDay.startTime && appointment.endTime <= workingDay.endTime) {
               valid = true
               return
             }
           })
+
           if (!valid) {
             let error = new Error("time is invalid please check doctor working times")
             throw error
@@ -414,6 +469,9 @@ const getWorkingDay = (doctorId) => {
           <DayView
             startDayHour={openTime}
             endDayHour={endTime}
+            timeTableCellComponent={TimeTableCell}
+            dayScaleCellComponent={DayScaleCell}
+            cellDuration={15}
           />
           <ConfirmationDialog />
           <WeekView

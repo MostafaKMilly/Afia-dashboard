@@ -263,8 +263,8 @@ function PatientDetail(props) {
     const LoadingFileAlert = () => {
         if (showLoadingAlert) {
             console.log("mostafa")
-            if ((props.patientRegisterStatus.isFileLoading && !props.patientRegisterStatus.patientFileErrMess) || 
-            (props.patientRegisterStatus.isMedicalFileLoading && !props.patientRegisterStatus.medicalFileErrMess)) {
+            if ((props.patientRegisterStatus.isFileLoading && !props.patientRegisterStatus.patientFileErrMess) ||
+                (props.patientRegisterStatus.isMedicalFileLoading && !props.patientRegisterStatus.medicalFileErrMess)) {
                 return <Alert variant="primary" className="mt-2 mb-1" style={{
                     width: "fit-content",
                     margin: "0 auto",
@@ -328,8 +328,8 @@ function PatientDetail(props) {
                 <Row className="row-content">
                     <Col className="col-12 col-md-4  mb-2">
                         <div className="pt-md-4 pe-md-3 pb-md-3 ps-md-2 ps-4 pe-4">
-                            <div className="bg-white mb-3" style={{position : "relative"}}>
-                            <div className="appointmentsButton">
+                            <div className="bg-white mb-3" style={{ position: "relative" }}>
+                                <div className="appointmentsButton">
                                     <HideForType type={["Admin"]}>
                                         <span className="fa fa-download fa-lg mt-2" style={{ cursor: "pointer" }} onClick={() => props.getMedicalFile(props.patient.patient)}></span>
                                     </HideForType>
@@ -337,7 +337,7 @@ function PatientDetail(props) {
                                 <div className="text-center">
                                     <Image roundedCircle src=
                                         {props.patient.photo === null ?
-                                            props.patient.patient.gender === "male" ? 'assets/images/maleavatar.svg' : 'assets/images/femaleavatar.svg' :
+                                            props.patient.patient.gender === "Male" ? 'assets/images/maleavatar.svg' : 'assets/images/femaleavatar.svg' :
                                             props.patient.photo.url
                                         } width="170px" className="img-fluid mt-4 mb-4"></Image>
                                 </div>
@@ -358,7 +358,7 @@ function PatientDetail(props) {
                                 <div className="offset-2 mt-2">
                                     <span className="d-flex">
                                         <p className="text-muted" style={{ flexGrow: 1 }}>Length : </p>
-                                        <p style={{ flexGrow: 1 }}>{props.patient.patient.length + ' m'}</p>
+                                        <p style={{ flexGrow: 1 }}>{props.patient.patient.length + ' cm'}</p>
                                     </span>
                                 </div>
                                 <div className="offset-2 mt-2">
@@ -448,13 +448,19 @@ function PatientDetail(props) {
                                             <p className="mb-2">{props.patient.patient.user.email}</p>
                                         </div>
                                         <div style={{ marginRight: "50px" }} className="d-inline-block">
-                                            <p className="text-muted mb-2">Phone number</p>
-                                            <p className="mb-2">{props.patient.patient.phone}</p>
+                                            <p className="text-muted mb-2">Username</p>
+                                            <p className="mb-2">{props.patient.patient.user.username}</p>
                                         </div>
                                     </div>
                                     <div className="mt-3">
-                                        <p className="text-muted mb-2">Address</p>
-                                        <p className="mb-2">{props.patient.patient.address}</p>
+                                        <div style={{ marginRight: "50px" }} className="d-inline-block">
+                                            <p className="text-muted mb-2">Address</p>
+                                            <p className="mb-2">{props.patient.patient.address}</p>
+                                        </div>
+                                        <div style={{ marginRight: "50px" }} className="d-inline-block">
+                                            <p className="text-muted mb-2">Phone number</p>
+                                            <p className="mb-2">{props.patient.patient.phone}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -490,7 +496,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getMedicalFile : (patient) => dispatch(getPatientMedicalFile(patient))
+    getMedicalFile: (patient) => dispatch(getPatientMedicalFile(patient))
 })
 
-export default withRouter(connect(mapStateToProps , mapDispatchToProps)(PatientDetail));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PatientDetail));

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Form, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { addDoctor, closeDoctorDialog } from '../redux/Actions/DoctorActions';
+import { addDoctor, addDoctorFailed, closeDoctorDialog } from '../redux/Actions/DoctorActions';
 import { actions } from 'react-redux-form';
 
 function ModalDoctor(props) {
@@ -16,7 +16,14 @@ function ModalDoctor(props) {
             review: parseInt(requestData.tags.review),
             consultation: parseInt(requestData.tags.consultation)
         }
+        requestData.clinicId = parseInt(requestData.clinicId)
         console.log(requestData)
+        if (!requestData.clinicId) {
+            props.addDoctorFailed("please add clinic before add doctor")
+            props.handleClose()
+            return
+        }
+        
         props.addDoctor(requestData)
         props.handleClose()
     }
@@ -169,7 +176,8 @@ const mapStateToProps = (state) => ({
 })
 const mapDispatchToProps = (dispatch) => ({
     addDoctor: (doctorInfo) => dispatch(addDoctor(doctorInfo)),
-    handleClose: () => dispatch(closeDoctorDialog())
+    handleClose: () => dispatch(closeDoctorDialog()),
+    addDoctorFailed : (error) => dispatch(addDoctorFailed(error))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalDoctor)

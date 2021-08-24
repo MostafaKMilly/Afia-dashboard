@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Col, Container, Row, FormLabel, FormText, FormControl, Alert } from 'react-bootstrap';
-import { actions, Control, Errors, Form } from 'react-redux-form';
+import React, { useState } from 'react';
+import { Breadcrumb, Button, Col, Container, Row, Alert } from 'react-bootstrap';
+import { actions } from 'react-redux-form';
 import { Link, Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Loading from '../Loading'
@@ -8,7 +8,7 @@ import AppointmentBasicInfo from './AppointmentBasicInfo';
 import AppointmentAvailableTimes from './AppointmentAvailableTimes';
 
 function AppointmentForm(props) {
-    
+
     const [errMess, setErrMess] = useState()
     if (props.patients.isLoading || props.clinics.isLoading) {
         return <Loading />
@@ -18,51 +18,51 @@ function AppointmentForm(props) {
     const ErrorAlert = () => {
         if (errMess) {
             return <Alert variant="danger" className="mt-2 mb-1" style={{
-             width: "fit-content",
-             margin: "0 auto",
-             position : "absolute",
-             top: "2%",
-            transform: "translate(-50% , 0)"
-            ,left: "50%"
-            ,zIndex: 1
-         }} dismissible onClose={() => {
-             /* props.resetForm() */
-             setErrMess(undefined)
-         }}>
-             <Alert.Heading>Error !</Alert.Heading>
-             {errMess}
-         </Alert>
+                width: "fit-content",
+                margin: "0 auto",
+                position: "absolute",
+                top: "2%",
+                transform: "translate(-50% , 0)"
+                , left: "50%"
+                , zIndex: 1
+            }} dismissible onClose={() => {
+                /* props.resetForm() */
+                setErrMess(undefined)
+            }}>
+                <Alert.Heading>Error !</Alert.Heading>
+                {errMess}
+            </Alert>
         }
         else {
-          return <></>
+            return <></>
         }
     }
     const SuccessAlert = () => {
         if (props.appointmentForm.successMessage) {
             return <Alert variant="success" className="mt-2 mb-1" style={{
-             width: "fit-content",
-             margin: "0 auto",
-             position : "absolute",
-             top: "2%",
-            transform: "translate(-50% , 0)"
-            ,left: "50%"
-            ,zIndex: 1
-         }} dismissible onClose={() => {
-             props.clearSuccessMessage()
-         }}>
-             <Alert.Heading>Success</Alert.Heading>
-             {props.appointmentForm.successMessage}
-         </Alert>
+                width: "fit-content",
+                margin: "0 auto",
+                position: "absolute",
+                top: "2%",
+                transform: "translate(-50% , 0)"
+                , left: "50%"
+                , zIndex: 1
+            }} dismissible onClose={() => {
+                props.clearSuccessMessage()
+            }}>
+                <Alert.Heading>Success</Alert.Heading>
+                {props.appointmentForm.successMessage}
+            </Alert>
         }
         else {
-          return <></>
+            return <></>
         }
     }
-    
+
     return (
         <div className="mt-2">
-            <ErrorAlert/>
-            <SuccessAlert/>
+            <ErrorAlert />
+            <SuccessAlert />
             <Breadcrumb>
                 <Breadcrumb.Item className="pl-3" href="#">
                     <Link to="/dashboard">
@@ -90,10 +90,10 @@ function AppointmentForm(props) {
                             <h5>Add appointment</h5>
                         </Col>
                         <Switch>
-                                <Route path={`${props.match.path}/availableTimes`} render={() => <AppointmentAvailableTimes  {...props} errMess={errMess} setErrMess={setErrMess}  />} />
-                                <Route exact path={`${props.match.path}`} render={() => <AppointmentBasicInfo {...props} errMess={errMess} setErrMess={setErrMess}  />} />
-                                <Route path={`${props.match.path}/availableTimes`} render={() => <AppointmentAvailableTimes  {...props} errMess={errMess} setErrMess={setErrMess}  />} />
-                                <Redirect exact to="/dashboard" />
+                            <Route path={`${props.match.path}/availableTimes`} render={() => <AppointmentAvailableTimes  {...props} errMess={errMess} setErrMess={setErrMess} />} />
+                            <Route exact path={`${props.match.path}`} render={() => <AppointmentBasicInfo {...props} errMess={errMess} setErrMess={setErrMess} />} />
+                            <Route path={`${props.match.path}/availableTimes`} render={() => <AppointmentAvailableTimes  {...props} errMess={errMess} setErrMess={setErrMess} />} />
+                            <Redirect exact to="/dashboard" />
                         </Switch>
                     </Row>
                 </div>
@@ -110,8 +110,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     resetForm: () => dispatch(actions.reset('appointmentForm')),
-    clearSuccessMessage : () => dispatch(actions.change('appointmentForm.successMessage' , null))
+    clearSuccessMessage: () => dispatch(actions.change('appointmentForm.successMessage', null))
 })
 
 
-export default withRouter(connect(mapStateToProps,mapDispatchToProps)(AppointmentForm));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AppointmentForm));

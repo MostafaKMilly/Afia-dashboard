@@ -21,7 +21,6 @@ import Calender from './calender';
 import PatientDetail from './Patient/PatientDetail';
 import Settings from './Settings/Settings';
 import Loading from './Loading';
-import { Redirect } from 'react-router-dom';
 import { fetchCenterDays } from '../redux/Actions/CenterActions';
 import AppointmentForm from './Appointment/AppointmentForm';
 import Logs from './Logs';
@@ -99,6 +98,7 @@ class Dashboard extends Component {
                             <Route path={`${this.props.match.path}/appointments/done`} component={() => <AppointmentsToolKit type="Done" />} />
                             <Route path={`${this.props.match.path}/appointments/gone`} component={() => <AppointmentsToolKit type="Gone" />} />
                             <Route path={`${this.props.match.path}/appointments/cancelled`} component={() => <AppointmentsToolKit type="Cancelled"/>} />
+                            <Route path={`${this.props.match.path}/appointments/accepted`} component={() => <AppointmentsToolKit type="Accepted"/>} />
                         </div>
                     </div>
                 </>

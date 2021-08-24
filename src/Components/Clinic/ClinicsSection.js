@@ -10,7 +10,6 @@ import { Link, useRouteMatch, withRouter } from 'react-router-dom';
 import Loading from '../Loading';
 import ErrorAlert from '../../helpers/ErrorAlert'
 import { deleteClinic } from '../../redux/Actions/ClinicActions';
-import { baseUrl } from '../../shared/baseUrl';
 import HideForType from '../../helpers/HideForType'
 
 

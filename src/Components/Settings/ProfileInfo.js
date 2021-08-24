@@ -15,7 +15,7 @@ function ProfileInfo(props) {
                 return user.photo.url
             }
         }
-        else if (user.user.type === "Patient" && user.gender === "male") {
+        else if (user.user.type === "Patient" && user.gender === "Male") {
             if (user.photo === undefined || user.photo === null) {
                 return 'assets/images/maleavatar.svg'
             }
@@ -23,7 +23,7 @@ function ProfileInfo(props) {
                 return user.photo.url
             }
         }
-        else if (user.user.type === "Patient" && user.gender === "female") {
+        else if (user.user.type === "Patient" && user.gender === "Female") {
             if (user.photo === undefined || user.photo === null) {
                 return 'assets/images/femaleavatar.svg'
             }

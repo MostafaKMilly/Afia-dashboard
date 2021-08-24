@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, Alert, Breadcrumb, Button, ButtonGroup, Card, Col, Container, OverlayTrigger, Popover, Row, useAccordionToggle } from 'react-bootstrap';
+import { Accordion, Alert, Breadcrumb, Button, Card, Col, Container, OverlayTrigger, Popover, Row, useAccordionToggle } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { Link, useRouteMatch, withRouter } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { acceptAppointment, fetchPendingAppointments, rejectAppointment, updateAppointmetns } from '../../redux/Actions/AppointmentsActions';
 import { baseUrl } from '../../shared/baseUrl';
 import Loading from '../Loading';
 import ErrorAlert from '../../helpers/ErrorAlert'
 import { LocalForm, Control } from 'react-redux-form'
 import HideForType from '../../helpers/HideForType';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 function Appointments(props) {
     let [doctors, setDoctors] = useState([])
     let [clinics, setClinics] = useState([])
     let [todayAppointments, setTodayAppointments] = useState([])
-    let [errorMess, setErrorMess] = useState()
     let [SelectedClinic, setSelectedClinic] = useState(null)
     let [selectedDoctor, setSelectedDoctor] = useState(null)
     let [doctorsIsLoading, setDoctorsIslLoading] = useState(true)
@@ -35,10 +36,11 @@ function Appointments(props) {
         if (mm < 10) mm = '0' + mm;
         return (yyyy + '-' + mm + '-' + dd);
     };
-    let { path, url } = useRouteMatch()
+
     const nextPath = (path) => {
         props.history.push(path)
     }
+
     const getClinicTimeLine = (clinicId, date) => {
         return fetch(baseUrl + 'api/appointments/accepted/clinicId/' + clinicId + '/date=' + date, {
             method: 'GET',
@@ -139,29 +141,29 @@ function Appointments(props) {
             .then(response => response.json())
 
     }
-    const getAvailableTimes = (date , day , doctorId) => {
-        return fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}` , {
-            method : "GET" ,
+    const getAvailableTimes = (date, day, doctorId) => {
+        return fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}`, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
             }
         })
-        .then(response => {
-            if (response.ok) {
-                return response
-            }
-            else {
-                let error = new Error(response.statusText)
-                error.response = response
-                throw error
-            }
-        }, err => {
-            let error = new Error(err.message)
-            throw error;
-        })
-        .then(response => response.json())
+            .then(response => {
+                if (response.ok) {
+                    return response
+                }
+                else {
+                    let error = new Error(response.statusText)
+                    error.response = response
+                    throw error
+                }
+            }, err => {
+                let error = new Error(err.message)
+                throw error;
+            })
+            .then(response => response.json())
     }
 
     useEffect(() => {
@@ -196,7 +198,7 @@ function Appointments(props) {
                 setClinicsIslLoading(false)
             })
         getClinics()
-        const getDoctorsForClinic = () => fetch(baseUrl + 'api/doctors/clinic/1', {
+        const getDoctorsForClinic = () => fetch(baseUrl + 'api/doctors/clinic/' + props.clinics.clinics[0]?.clinic?.id, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -227,21 +229,21 @@ function Appointments(props) {
                 setDoctorsIslLoading(false)
             })
         getDoctorsForClinic()
-        getClinicTimeLine(1, curday())
+        getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, curday())
             .then(
                 appointments => setTodayAppointments(appointments)
             )
             .catch(error => {
                 settodayTimeLineErrMess(error.message)
             })
-        props.fetchPendingAppointments(1)
+        props.fetchPendingAppointments(props.clinics.clinics[0]?.clinic?.id)
     }, [])
     const CustomToggle = ({ children, eventKey, date }) => {
         const decoratedOnClick = useAccordionToggle(eventKey)
         return (
             <button className="iconBtn" type="button" onClick={() => {
                 decoratedOnClick()
-                handleExpand(updatedDate||date)
+                handleExpand(updatedDate || date)
             }}>
                 <span className="fa fa-chevron-down me-2"></span>
                 {children}
@@ -253,7 +255,7 @@ function Appointments(props) {
         var minutes = date.split(':')[1];
         var ampm = hours >= 12 ? 'pm' : 'am';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         minutes = minutes < 10 ? minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
@@ -294,7 +296,7 @@ function Appointments(props) {
                 })
         }
         else {
-            getClinicTimeLine(1, date).then((appointments) => {
+            getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, date).then((appointments) => {
                 setAppoinmtentTimeLine(appointments)
             })
                 .catch(error => {
@@ -303,7 +305,6 @@ function Appointments(props) {
         }
     }
     const handleChangeDate = (date) => {
-        
         if (!date) {
             return
         }
@@ -326,7 +327,7 @@ function Appointments(props) {
                 })
         }
         else {
-            getClinicTimeLine(1, date).then((appointments) => {
+            getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, date).then((appointments) => {
                 setAppointmentsTimeLineErrMess(undefined)
                 setAppoinmtentTimeLine(appointments)
             })
@@ -379,56 +380,56 @@ function Appointments(props) {
         let doctor = props.doctors.doctors.filter((doctor) => doctor.doctor.id === appointmentId)[0]
         return 'Dr. ' + doctor.doctor.firstName + ' ' + doctor.doctor.lastName
     }
-    const handleAccept = (values, appointmentId , doctorId) => {
+    const handleAccept = (values, appointmentId, doctorId) => {
         let valuesObject = { ...values, day: daysInWeek[new Date(values.date).getDay()], status: 'Accepted' }
-       getAvailableTimes(valuesObject.date , valuesObject.day , doctorId)
-       .then((availableTimes) => {
-        let valid = false 
-        availableTimes.forEach((element) => {
-            if(valuesObject.startTime >= element.startTime.slice(0,5) && valuesObject.endTime.slice(0,5) <= element.endTime) {
-                valid = true
-                return
-            }
-        })
-        if (!valid) {
-            let error = new Error("time is invalid please try another one")
-            throw error
-        }
-        acceptAppointment(valuesObject, appointmentId).then(() => {
-            props.acceptAppointment(appointmentId)
-            if (selectedDoctor) {
-                getDoctorTimeLine(selectedDoctor, curday()).then((appointments) => {
-                    settodayTimeLineErrMess(undefined)
-                    setTodayAppointments(appointments)
+        getAvailableTimes(valuesObject.date, valuesObject.day, doctorId)
+            .then((availableTimes) => {
+                let valid = false
+                availableTimes.forEach((element) => {
+                    if (valuesObject.startTime >= element.startTime.slice(0, 5) && valuesObject.endTime.slice(0, 5) <= element.endTime) {
+                        valid = true
+                        return
+                    }
+                })
+                if (!valid) {
+                    let error = new Error("time is invalid please try another one")
+                    throw error
+                }
+                acceptAppointment(valuesObject, appointmentId).then(() => {
+                    props.acceptAppointment(appointmentId)
+                    if (selectedDoctor) {
+                        getDoctorTimeLine(selectedDoctor, curday()).then((appointments) => {
+                            settodayTimeLineErrMess(undefined)
+                            setTodayAppointments(appointments)
+                        })
+                            .catch(error => {
+                                settodayTimeLineErrMess(error.message)
+                            })
+                    }
+                    else if (SelectedClinic) {
+                        getClinicTimeLine(SelectedClinic, curday()).then((appointments) => {
+                            settodayTimeLineErrMess(undefined)
+                            setTodayAppointments(appointments)
+                        })
+                            .catch(error => {
+                                settodayTimeLineErrMess(error.message)
+                            })
+                    }
+                    else {
+                        getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, curday()).then((appointments) => {
+                            settodayTimeLineErrMess(undefined)
+                            setTodayAppointments(appointments)
+                        })
+                            .catch(error => {
+                                settodayTimeLineErrMess(error.message)
+                            })
+                    }
                 })
                     .catch(error => {
-                        settodayTimeLineErrMess(error.message)
+                        setAcceptAppointmentErrMess(error.message)
                     })
-            }
-            else if (SelectedClinic) {
-                getClinicTimeLine(SelectedClinic, curday()).then((appointments) => {
-                    settodayTimeLineErrMess(undefined)
-                    setTodayAppointments(appointments)
-                })
-                    .catch(error => {
-                        settodayTimeLineErrMess(error.message)
-                    })
-            }
-            else {
-                getClinicTimeLine(1, curday()).then((appointments) => {
-                    settodayTimeLineErrMess(undefined)
-                    setTodayAppointments(appointments)
-                })
-                    .catch(error => {
-                        settodayTimeLineErrMess(error.message)
-                    })
-            }
-        })
-            .catch(error => {
-                setAcceptAppointmentErrMess(error.message)
             })
-       })
-       .catch((error) => setAcceptAppointmentErrMess(error.message))
+            .catch((error) => setAcceptAppointmentErrMess(error.message))
     }
 
     const handleReject = (event) => appointmentId => {
@@ -442,8 +443,58 @@ function Appointments(props) {
                 setAcceptAppointmentErrMess(error.message)
             })
     }
+
+    const DateComponent = (propsValus) => {
+        let [date, setDate] = useState()
+        let [validDateList, setValidDatesList] = useState([])
+        const getValidDates = (doctorId) => {
+            return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+        }
+
+        useEffect(() => {
+            if (propsValus) {
+                setDate(new Date(propsValus.dateValue))
+                getValidDates(propsValus.doctorId).then((workingDays) => {
+                    let arr = []
+                    workingDays.forEach((workingDay) => {
+                        arr.push(new Date(workingDay.date))
+                    })
+                    setValidDatesList(arr)
+                })
+                    .catch((error) => setValidDatesList([]))
+            }
+
+        }, [])
+
+        return <DatePicker selected={date} includeDates={validDateList} {...propsValus} onChange={(date) => {
+            propsValus.onChange(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
+            handleChangeDate(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
+        }} />
+    }
+
     let appointment = props.appointments.appointments.map((appointment, index) => (
-        <Card className="ps-3 pe-2" key={appointment.id}>
+        <Card className="ps-3 pe-2" key={appointment.id} style={{ overflow: 'visible' }}>
             <Card.Body style={{ position: "relative" }}>
                 <Card.Title className="mb-2">
                     <PatientsName patientId={appointment.patientId} />
@@ -459,7 +510,7 @@ function Appointments(props) {
                     {appointment.type}
                 </Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{appointment.title}</Card.Subtitle>
-                <LocalForm onSubmit={(values) => handleAccept(values, appointment.id ,appointment.doctorId )}>
+                <LocalForm onSubmit={(values) => handleAccept(values, appointment.id, appointment.doctorId)}>
                     <div className="d-md-flex d-block">
                         <Card.Text>
                             {appointment.description} <br></br>
@@ -475,7 +526,7 @@ function Appointments(props) {
                                         onChange={(event) => console.log(event)} />
                                 </Col>
                                 <Col md="auto" className="mt-3 mt-md-0">
-                                    <Control type="date" model=".date" className="form-control" id={appointment.id} defaultValue={appointment.date}  onChange={(event) => handleChangeDate(event.target.value) }/>
+                                    <Control model=".date" className="form-control" component={DateComponent} id={appointment.id} mapProps={{ dateValue: appointment.date, doctorId: appointment.doctorId }} defaultValue={appointment.date} />
                                 </Col>
                             </Row>
                         </Card.Text>
@@ -518,7 +569,7 @@ function Appointments(props) {
         </Card>
     ))
     let error = false
-    if (props.appointments.loading || props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || clinicsIsLoading) {
+    if (props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || props.clinics.isLoading || clinicsIsLoading) {
         return <Loading />
     }
     if (props.appointments.errMess) {
@@ -528,8 +579,8 @@ function Appointments(props) {
     const selectDoctor = (event) => {
         let doctorId = event.target[event.target.selectedIndex].id
         if (doctorId == 0) {
-            props.fetchPendingAppointments(SelectedClinic || 1)
-            getClinicTimeLine(SelectedClinic || 1, curday()).then((appointments) => {
+            props.fetchPendingAppointments(SelectedClinic || props.clinics.clinics[0]?.clinic?.id)
+            getClinicTimeLine(SelectedClinic || props.clinics.clinics[0]?.clinic?.id, curday()).then((appointments) => {
                 settodayTimeLineErrMess(undefined)
                 setTodayAppointments(appointments)
             })
@@ -579,7 +630,7 @@ function Appointments(props) {
                 width: "fit-content",
                 margin: "0 auto",
                 position: "absolute",
-                top: "-5%",
+                top: "2%",
                 transform: "translate(-50% , 0)"
                 , left: "50%"
                 , zIndex: 1
@@ -592,8 +643,12 @@ function Appointments(props) {
             return <></>
         }
     }
+
+
+
     return (
         <div className="mt-2">
+             <ErrorAlertComponents />
             <Breadcrumb >
                 <Breadcrumb.Item className="pl-3 mt-1" href="#">
                     <Link to={`/dashboard`}>
@@ -632,50 +687,61 @@ function Appointments(props) {
                 }} onClick={() => nextPath(`addAppointments`)}><span className="fa fa-plus"></span></Button>
             </div>
             <Container fluid >
-                <div className="pageContainer" style={{position : "relative"}}>
+                <div className="pageContainer" style={{ position: "relative" }}>
+               
                     <div className="appointmentsButton">
                         
-                    <OverlayTrigger
-                trigger="click"
-                placement="bottom"
-                rootClose 
-                overlay={
-                    <Popover >
-                        <Popover.Content>
-                            <div className="d-grid">
-                                <Button variant="link" disabled >
-                                    Pending
-                                </Button>
-                                <Button variant="link"   onClick={(event) => {
-                                        event.preventDefault()
-                                        props.history.push('/dashboard/appointments/rejected')}}>
-                                    Rejected
-                                </Button>
-                                <Button variant="link" onClick={(event) => {
-                                        event.preventDefault()
-                                        props.history.push('/dashboard/appointments/cancelled')}} >
-                                    Cancelled
-                                </Button>
-                                <Button variant="link" onClick={(event) => {
-                                        event.preventDefault()
-                                        props.history.push('/dashboard/appointments/done')}} >
-                                    Done
-                                </Button>
-                                <Button variant="link" onClick={(event) => {
-                                        event.preventDefault()
-                                        props.history.push('/dashboard/appointments/gone')}} >
-                                    Gone
-                                </Button>
-                              
-                            </div>
-                        </Popover.Content>
-                    </Popover>
-                }>
-                <span className="fas fa-ellipsis-v" style={{fontSize : "19px"}}></span>
-            </OverlayTrigger>
-                    
+                        <OverlayTrigger
+                            trigger="click"
+                            placement="bottom"
+                            rootClose
+                            overlay={
+                                <Popover >
+                                    <Popover.Content>
+                                        <div className="d-grid">
+                                            <Button variant="link" disabled >
+                                                Pending
+                                            </Button>
+                                            <Button variant="link" onClick={(event) => {
+                                                event.preventDefault()
+                                                props.history.push('/dashboard/appointments/accepted')
+                                            }}>
+                                                Accepted
+                                            </Button>
+                                            <Button variant="link" onClick={(event) => {
+                                                event.preventDefault()
+                                                props.history.push('/dashboard/appointments/rejected')
+                                            }}>
+                                                Rejected
+                                            </Button>
+                                            <Button variant="link" onClick={(event) => {
+                                                event.preventDefault()
+                                                props.history.push('/dashboard/appointments/cancelled')
+                                            }} >
+                                                Cancelled
+                                            </Button>
+                                            <Button variant="link" onClick={(event) => {
+                                                event.preventDefault()
+                                                props.history.push('/dashboard/appointments/done')
+                                            }} >
+                                                Done
+                                            </Button>
+                                            <Button variant="link" onClick={(event) => {
+                                                event.preventDefault()
+                                                props.history.push('/dashboard/appointments/gone')
+                                            }} >
+                                                Gone
+                                            </Button>
+
+                                        </div>
+                                    </Popover.Content>
+                                </Popover>
+                            }>
+                            <span className="fas fa-ellipsis-v" style={{ fontSize: "19px" }}></span>
+                        </OverlayTrigger>
+
                     </div>
-                    <ErrorAlertComponents />
+                   
                     <Row className="mb-4">
                         <Col xs={12} className="mt-3 text-center">
                             <h4>Appointments</h4>
@@ -687,14 +753,17 @@ function Appointments(props) {
                                         <div class="timeline-steps aos-init aos-animate">
                                             {timeline}
                                         </div>
-                                        <Accordion>
-                                            {appointment}
-                                        </Accordion>
+                                        {
+                                            props.appointments.isLoading ? <Loading /> :
+                                                <Accordion>
+                                                    {appointment}
+                                                </Accordion>
+                                        }
                                     </Col>
                                 </Row>
                             </Container>
                         </Col>
-                        {doctorsErrMess || clinicsErrMess || error || props.appointments.appointments.length === 0 ? <Col xs={12}>
+                        {doctorsErrMess || clinicsErrMess || error || (props.appointments.appointments.length === 0 && !props.appointments.isLoading) ? <Col xs={12}>
                             <ErrorAlert messege={doctorsErrMess || clinicsErrMess || props.appointments.errMess || "Error 404:There are no appointments for this clinics"} color="#ffffff" />
                         </Col> : <></>}
                     </Row>
@@ -706,7 +775,8 @@ function Appointments(props) {
 const mapStateToProps = (state) => ({
     appointments: state.appointments,
     patients: state.patients,
-    doctors: state.doctors
+    doctors: state.doctors,
+    clinics: state.clinics
 })
 
 const mapDispatchToProps = (dispatch) => ({

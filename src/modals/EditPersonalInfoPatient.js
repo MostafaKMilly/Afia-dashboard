@@ -54,8 +54,8 @@ function EditPeronalInfoPatient(props) {
                                 <Control.select name="gender" model=".gender" className="form-select"
                                     defaultValue={props.patient.patient.gender}
                                 >
-                                <option>male</option>
-                                <option>female</option>
+                                <option>Male</option>
+                                <option>Female</option>
                                 </Control.select>
                             </FormGroup>
                             <FormGroup as={Col}>

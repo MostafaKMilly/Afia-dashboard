@@ -10,12 +10,19 @@ export const Columns = (actionsFormatter) => [{
     dataField: "doctor.lastName",
     text: "Last Name",
     sort: true,
-
 }, {
     dataField: "doctor.user.email",
     text: "Email",
     sort: true
-}, {
+},
+{
+    dataField: "doctor.user.username",
+    text: "Username",
+    sort: true,
+    hidden: true,
+    searchable: true
+},
+{
     dataField: "doctor.phoneNumber",
     text: "PhoneNumber",
     sort: true

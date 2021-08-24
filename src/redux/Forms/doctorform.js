@@ -10,8 +10,8 @@ export const intialDotorForm = {
     sepecialize : '',
     language : '',
     description : '' ,
-    clinicId : '1',
-    clinic : 'العيادة السنية',
+    clinicId : '',
+    clinic : '',
     workingDaysList : [] ,
     workingDays : {
         day : '' ,

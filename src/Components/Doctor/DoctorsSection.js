@@ -35,7 +35,6 @@ function DoctorsSection(props) {
     }
     const actionsFormatter = (cell, row) => {
         return (
-
             <OverlayTrigger
                 trigger="click"
                 placement="top"
@@ -47,14 +46,6 @@ function DoctorsSection(props) {
                                 <Button variant="link" onClick={() => nextPath(`${path}/${row.doctor.id}`)}>
                                     View
                                 </Button>
-                               {/*  <Button variant="link" onClick={() => {
-                                    let doctor =props.doctors.doctors.filter((doctor) => {
-                                        return parseInt(doctor.doctor.id) === parseInt(row.doctor.id, 10)})[0]
-                                        setSelectedDoctor(doctor)
-                                        setShowModal(true)
-                                }}>
-                                    Edit
-                                </Button> */}
                             </div>
                         </Popover.Content>
                     </Popover>

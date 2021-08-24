@@ -38,7 +38,8 @@ export const Columns = (actionsFormatter) => [{
     , {
     dataField: "patient.user.username",
     text: "User Name",
-    hidden: true
+    hidden: true,
+    searchable : true
 }, {
     dataField: "patient.gender",
     text: "Gender",

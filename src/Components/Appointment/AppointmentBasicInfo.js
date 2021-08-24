@@ -1,10 +1,13 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Col, Container, Row, FormLabel, FormText, FormControl, Alert } from 'react-bootstrap';
+import { Button, Col, Row, FormLabel } from 'react-bootstrap';
 import { actions, Control, Errors, Form } from 'react-redux-form';
-import { Link, useRouteMatch, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Loading from '../Loading'
 import { baseUrl } from '../../shared/baseUrl';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 function AppointmentBasicInfo(props) {
 
@@ -13,7 +16,9 @@ function AppointmentBasicInfo(props) {
     const [filterdArray, setFilterdArray] = useState([...props.patients.patients])
     const [showDropDown, setShowDropDown] = useState(false)
     const [doctors, setDoctors] = useState([])
-    const daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const [validDates, setValidDatesList] = useState([])
+    const [validDatesErrMess, setValidDatesErrMess] = useState()
+
     const nextPath = (path) => {
         props.history.push(path)
     }
@@ -43,8 +48,8 @@ function AppointmentBasicInfo(props) {
             .then(response => response.json())
     }
 
-    const getAvailableTimes = (date, day, doctorId) => {
-        return fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}`, {
+    const getValidDates = (doctorId) => {
+        return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -68,7 +73,6 @@ function AppointmentBasicInfo(props) {
             .then(response => response.json())
     }
 
-
     useEffect(() => {
         if (props.appointmentForm.clinicId) {
             getDoctorsForClinic(props.appointmentForm.clinicId)
@@ -85,9 +89,6 @@ function AppointmentBasicInfo(props) {
         return <Loading />
     }
 
-
-    const required = (value) => value && value.length
-    const maxLength = (len) => (val) => !(val) || val.length <= len
     const minLength = (len) => (val) => (val) && val.length >= len
 
     const handleClick = (event) => {
@@ -116,7 +117,11 @@ function AppointmentBasicInfo(props) {
         const select = event.target
         const options = select.options
         const id = options[options.selectedIndex].id
-        if (id === 0) {
+        props.changeDoctorId(null)
+        props.resetDate()
+        if (parseInt(id)=== 0) {
+            props.changeClinicId(null)
+            props.changeDoctorId(null)
             return
         }
         getDoctorsForClinic(id).then((doctors) => {
@@ -125,17 +130,50 @@ function AppointmentBasicInfo(props) {
             .catch((error) => {
                 props.setErrMess(error.message)
             })
-        props.changeClinicId(id)
+        props.changeClinicId(parseInt(id))
     }
 
     const handleSelectDoctor = (event) => {
         const select = event.target
         const options = select.options
         const id = options[options.selectedIndex].id
-        if (id === 0) {
+        props.resetDate()
+        if (parseInt(id) === 0) {
+            props.changeDoctorId(null)
             return
         }
-        props.changeDoctorId(id)
+        setValidDatesErrMess(undefined)
+        getValidDates(id).then((workingDays) => {
+            let arr = []
+            workingDays.forEach((workingDay) => {
+                arr.push(new Date(workingDay.date))
+            })
+            setValidDatesList(arr)
+        })
+            .catch((error) => {
+                setValidDatesList([])
+                setValidDatesErrMess(error.message)
+            })
+        props.changeDoctorId(parseInt(id))
+    }
+    const DateComponent = (propsValus) => {
+        useEffect(() => {
+            if (parseInt(propsValus.doctorId) && validDates.length ===0) {
+                console.log(validDates)
+                getValidDates(parseInt(propsValus.doctorId)).then((workingDays) => {
+                    let arr = []
+                    workingDays.forEach((workingDay) => {
+                        arr.push(new Date(workingDay.date))
+                    })
+                    setValidDatesList(arr)
+                })
+                .catch(() => {})
+            }
+        }, [])
+        return <DatePicker {...propsValus} includeDates={validDates}
+            readOnly={Number.parseInt(props.appointmentForm.doctorId) ? false : true}
+            selected={props.appointmentForm.date}
+            placeholderText="select date for appointment" />
     }
 
     const patientsList = filterdArray.map((patient) => (
@@ -153,7 +191,8 @@ function AppointmentBasicInfo(props) {
     doctorSelects.unshift(<option key="0" id="0">Select doctor</option>)
 
     let disabled = props.appointmentForm.patientId && props.appointmentForm.doctorId &&
-        props.appointmentForm.date && props.appointmentForm.description.length > 10 && props.appointmentForm.clinicId ? false : true
+        props.appointmentForm.date && props.appointmentForm.description.length > 10 && props.appointmentForm.clinicId &&
+        props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-') >= new Date().toISOString().split('T')[0] ? false : true
     return (
         <Col md={12}>
             <Form model="appointmentForm" className="p-4" onSubmit={(values) => console.log(values)}>
@@ -203,14 +242,10 @@ function AppointmentBasicInfo(props) {
                         <FormLabel>Date :</FormLabel>
                     </Col>
                     <Col md={4} className="mb-2">
-                        <Control type="date" model=".date" name="date" className="form-control" validators={{
-                            validDate: (date) => date ? new Date(date).toISOString().split('T')[0] >= new Date().toISOString().split('T')[0] : null
-                        }} />
-                        <Errors
-                            className="text-danger" model=".date" show="touched" messages={{
-                                validDate: "date must be valid"
-                            }}
-                        />
+                        <Control model=".date" name="date" className="form-control" component={DateComponent} mapProps={{ doctorId: props.appointmentForm.doctorId }} />
+                        <div className="text-danger">
+                            <span>{validDatesErrMess}</span>
+                        </div>
                     </Col>
                     <Col md={2} className="text-md-center">
                         <FormLabel>Type :</FormLabel>
@@ -242,18 +277,6 @@ function AppointmentBasicInfo(props) {
                         />
                     </Col>
                 </Row>
-                {/* <Row className="form-group g-2 mt-3" >
-                <Col md={2}>
-                    <FormLabel>
-                        Available times :
-                    </FormLabel>
-                </Col>
-                <Col md={10}>
-                    <div className="timesContainer ">
-                        <Button className="m-2" variant="outline-secondary">01:00PM</Button>
-                    </div>
-                </Col>
-            </Row> */}
                 <Row className="form-group">
                     <Col md={{ size: 10, offset: 2 }}>
                         <Button className="btn2" type="submit" disabled={disabled} onClick={() => nextPath(`/dashboard/addAppointments/availableTimes`)}>
@@ -276,6 +299,7 @@ const mapDispatchToProps = (dispatch) => ({
     changeClinicId: (id) => dispatch(actions.change('appointmentForm.clinicId', id)),
     changeDoctorId: (id) => dispatch(actions.change('appointmentForm.doctorId', id)),
     changePatientId: (id) => dispatch(actions.change('appointmentForm.patientId', id)),
+    resetDate: () => dispatch(actions.change('appointmentForm.date', null)),
     changeUserName: (username) => dispatch(actions.change('appointmentForm.username', username)),
     resetPatientId: () => dispatch(actions.change('appointmentForm.patientId', null)),
     changeIsAvailableTimesFetched: (value) => dispatch(actions.change('appointmentForm.isAvailableTimesFetched', value)),
