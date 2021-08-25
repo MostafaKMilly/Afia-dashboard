@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Container, Col, Image, Form, Button, Table, Modal, FormGroup, Alert } from 'react-bootstrap';
+import { Row, Container, Col, Image, Button, Table, Modal, FormGroup, Alert } from 'react-bootstrap';
 import { Pagination } from 'react-bootstrap';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Control, LocalForm } from 'react-redux-form'
 import { baseUrl } from '../../shared/baseUrl';
 import HideForType from '../../helpers/HideForType';
@@ -16,6 +16,7 @@ function CenterHolidays(props) {
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(5)
     const [addHolidayFailedErrMess, setAddHolidayFailedErrMess] = useState()
+    const daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
     const getCenterHolidays = () => {
         fetch(baseUrl + 'api/center/holidays', {
@@ -139,13 +140,13 @@ function CenterHolidays(props) {
         <tr key={holiday.id}>
             <td>{holiday.day}</td>
             <td>{holiday.date}</td>
-            <HideForType type={["Nurse"]}>
+           {/*  <HideForType type={["Nurse"]}>
                 <td><span className="fa fa-edit me-3" type="button" onClick={() => {
                     setSelectedHoliday(holiday.id)
                     setShowModal(true)
                 }} style={{ color: '#010A43' }}></span>
                 </td>
-            </HideForType>
+            </HideForType> */}
         </tr>
     ))
     let emptyMessage
@@ -163,10 +164,12 @@ function CenterHolidays(props) {
     }
     const handleSubmit = (values) => {
         setAddHolidayFailedErrMess(undefined)
-        if (!values.day || !values.date) {
+        if (!values.date || values.date < new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
+            setAddHolidayFailedErrMess("Date is invalid")
             return
         }
-        addHoliday(values)
+        let obj = {...values , day : daysInWeek[new Date(values.date).getDay()]}
+        addHoliday(obj)
     }
     const selectedHolidayValue = holidays.filter((holiday) => holiday.id === selectedHoliday)[0]
     let defaultDay = selectedHolidayValue ? selectedHolidayValue.day : undefined
@@ -188,7 +191,7 @@ function CenterHolidays(props) {
     return (
         <div>
             <ErrorAlert />
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit center holiday</Modal.Title>
                 </Modal.Header>
@@ -225,7 +228,7 @@ function CenterHolidays(props) {
                         </Button>
                     </Modal.Footer>
                 </LocalForm>
-            </Modal>
+            </Modal> */}
 
             <h5 style={{ fontWeight: 450 }} className="mt-3 ms-3 mb-4">Center Holidays</h5>
             <Container>
@@ -243,7 +246,7 @@ function CenterHolidays(props) {
 <LocalForm onSubmit={(values) => handleSubmit(values)} className="text-center" style={{ marginTop: "70px" }}>
     {addHolidayFailedErrMess ? <p className="text-center text-danger mt-2">{addHolidayFailedErrMess}</p> : <></>}
 
-    <div className="d-md-inline-block w-auto mb-3 me-md-3">
+    {/* <div className="d-md-inline-block w-auto mb-3 me-md-3">
         <Control.select model=".day" name="day" className="form-select" defaultValue="Saturday" >
             <option>Saturday</option>
             <option>Sunday</option>
@@ -253,7 +256,7 @@ function CenterHolidays(props) {
             <option>Thursday</option>
             <option>Friday</option>
         </Control.select>
-    </div>
+    </div> */}
     <div className="d-md-inline-block w-auto mb-3 me-md-3">
         <div className="input-group">
             <Control model=".date" type="date" className="form-control" />
@@ -276,9 +279,9 @@ function CenterHolidays(props) {
                                 <tr>
                                     <th>Day</th>
                                     <th>Date</th>
-                                    <HideForType type={["Nurse"]}>
+                                    {/* <HideForType type={["Nurse"]}>
                                         <th>Actions</th>
-                                    </HideForType>
+                                    </HideForType> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -286,16 +289,16 @@ function CenterHolidays(props) {
                             </tbody>
                             {emptyMessage ? <tbody>
                                 <tr>
-                                    <HideForType type={["Nurse"]}>
-                                        <td colSpan={3}>
-                                            {emptyMessage}
-                                        </td>
-                                    </HideForType>
-                                    <HideForType type={["Admin"]}>
+                                    {/* <HideForType type={["Nurse"]}> */}
                                         <td colSpan={2}>
                                             {emptyMessage}
                                         </td>
-                                    </HideForType>
+                                    {/* </HideForType> */}
+                                    {/* <HideForType type={["Admin"]}>
+                                        <td colSpan={2}>
+                                            {emptyMessage}
+                                        </td>
+                                    </HideForType> */}
                                 </tr>
                             </tbody> : <></>}
 

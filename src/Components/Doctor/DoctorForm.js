@@ -60,6 +60,17 @@ function DoctorForm(props) {
         }
         return true
     }
+    function formatAMPM(date) {
+        var hours = date.split(':')[0]
+        var minutes = date.split(':')[1];
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
+    }
+
     const timeRequired = () => props.doctorForm.workingDaysList.length
     if (props.clinics.isLoading) {
         return <Loading />
@@ -72,10 +83,10 @@ function DoctorForm(props) {
             <span className="fa fa-calendar-day mr-3" style={{ "color": "grey" }}></span>
             {item.day}
             <span className="fa fa-clock ml-4 mr-4" style={{ "color": "grey" }}></span>
-            {item.startTime}
+            {formatAMPM(item.startTime)}
             <span style={{ "color": "grey" }} className="ml-3 mr-2">{'->'}</span>
             <span className="fa fa-clock ml-4 mr-4" style={{ "color": "grey" }}></span>
-            {item.endTime}
+            {formatAMPM(item.endTime)}
             <span className="fa fa-trash-alt ml-4" style={{ "color": "#ff2e63f2" }} onClick={(i) => handleRemove(i)} type="button"></span>
         </li>
     ))

@@ -95,7 +95,7 @@ const TimeTableCell = (props) => {
   props = { ...props, onDoubleClick: undefined }
   if (date.getDate() === new Date().getDate()) {
     return <WeekView.TimeTableCell   {...props} className={classes.todayCell} />;
-  } if (!validDates.includes(date.toISOString().split('T')[0])) {
+  } if (!validDates.includes(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))) {
     return <WeekView.TimeTableCell   {...props} className={classes.weekendCell} />;
   } return <WeekView.TimeTableCell   {...props} />;
 };
@@ -353,14 +353,13 @@ const getWorkingDay = (doctorId) => {
         appointmentId = i
       }
       if (changed[appointmentId].startDate) {
-        let date = new Date(changed[appointmentId].startDate).toISOString()
-        object.date = date.split('T')[0]
+        let date = new Date(changed[appointmentId].startDate).toLocaleDateString('pt-br')
+        object.date = date.split('/').reverse().join('-')
         let startTime = new Date(changed[appointmentId].startDate).toTimeString().split(' ')[0]
         object.startTime = startTime
         object.day = daysInWeek[new Date(object.date).getDay()]
       }
       if (changed[appointmentId].endDate) {
-        let date = new Date(changed[appointmentId].endDate).toISOString()
         let endTime = new Date(changed[appointmentId].endDate).toTimeString().split(' ')[0]
         object.endTime = endTime
       }
@@ -400,7 +399,7 @@ const getWorkingDay = (doctorId) => {
       })
     }
     if (deleted) {
-      let object = { status: "Gone" }
+      let object = { status: "Rejected" }
 
       props.updateAppointmentToGoneStatus(object, deleted)
     }
@@ -471,7 +470,7 @@ const getWorkingDay = (doctorId) => {
             endDayHour={endTime}
             timeTableCellComponent={TimeTableCell}
             dayScaleCellComponent={DayScaleCell}
-            cellDuration={15}
+            cellDuration={10}
           />
           <ConfirmationDialog />
           <WeekView

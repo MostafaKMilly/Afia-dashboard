@@ -20,6 +20,8 @@ export const Appointments = (state = {
                 return 0
             })
             return { ...state, isLoading: false, errMess: null, appointments: appointmentArr, acceptedAppointment: [] }
+        case ActionTypes.CHANGE_PENDING_APPOINTMENTS : 
+            return {...state , appointments : action.payload }
         case ActionTypes.LOADING_APPOINTMENTS:
             return { ...state, isLoading: true, errMess: null, appointments: [], acceptedAppointment: [] }
         case ActionTypes.APPOINTMENTS_FAILED:

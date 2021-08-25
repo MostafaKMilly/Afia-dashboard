@@ -13,8 +13,8 @@ function AppointmentAvailableTimes(props) {
     const [activeTimeButton, setActiveTimeButton] = useState()
     const [tagsIsLoading, setTagsIsLoading] = useState(true)
     const [adderValue, setAdderValue] = useState()
-
     const daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    
     useEffect(() => {
         const getAvailableTimes = (date, day, doctorId) => {
             fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}`, {

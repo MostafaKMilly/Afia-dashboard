@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Accordion, Alert, Breadcrumb, Button, Card, Col, Container, OverlayTrigger, Popover, Row, useAccordionToggle } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom'
-import { acceptAppointment, fetchPendingAppointments, rejectAppointment, updateAppointmetns } from '../../redux/Actions/AppointmentsActions';
+import { acceptAppointment, changePendingAppointments, fetchPendingAppointments, fetchPendingAppointmentsByDate, rejectAppointment, updateAppointmetns, updateAppointmetnsByDate } from '../../redux/Actions/AppointmentsActions';
 import { baseUrl } from '../../shared/baseUrl';
 import Loading from '../Loading';
 import ErrorAlert from '../../helpers/ErrorAlert'
@@ -26,16 +26,11 @@ function Appointments(props) {
     let [updatedDate, setUpdatedDate] = useState()
     let [appointmentsTimeLineErrMess, setAppointmentsTimeLineErrMess] = useState()
     let [todayTimeLineErrMess, settodayTimeLineErrMess] = useState()
-
-    let curday = () => {
-        let today = new Date();
-        let dd = today.getDate();
-        let mm = today.getMonth() + 1;
-        let yyyy = today.getFullYear();
-        if (dd < 10) dd = '0' + dd;
-        if (mm < 10) mm = '0' + mm;
-        return (yyyy + '-' + mm + '-' + dd);
-    };
+    let [date, setDate] = useState()
+    let [showReset, setShowReset] = useState(false)
+    let [searchValue, setSearchValue] = useState()
+    let [autoAcceptErrMess, setAutoAcceptErrMess] = useState()
+    const [searchErrMess, setSearchErrMess] = useState()
 
     const nextPath = (path) => {
         props.history.push(path)
@@ -229,13 +224,13 @@ function Appointments(props) {
                 setDoctorsIslLoading(false)
             })
         getDoctorsForClinic()
-        getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, curday())
+        /* getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, curday())
             .then(
                 appointments => setTodayAppointments(appointments)
             )
             .catch(error => {
                 settodayTimeLineErrMess(error.message)
-            })
+            }) */
         props.fetchPendingAppointments(props.clinics.clinics[0]?.clinic?.id)
     }, [])
     const CustomToggle = ({ children, eventKey, date }) => {
@@ -338,15 +333,15 @@ function Appointments(props) {
         setUpdatedDate(date)
     }
     let timeline = !todayTimeLineErrMess ? sortedTimeLine.map((appointment => (
-        <div class="timeline-step">
-            <div class="timeline-content" data-toggle="popover" data-trigger="hover">
-                <div class="inner-circle"></div>
-                <p class="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
-                <p class="h6 text-muted mb-1">
+        <div className="timeline-step">
+            <div className="timeline-content" data-toggle="popover" data-trigger="hover">
+                <div className="inner-circle"></div>
+                <p className="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
+                <p className="h6 text-muted mb-1">
                     <PatientsName patientId={appointment.patientId} />
                 </p>
                 {
-                    !selectedDoctor ? <p class="h6  mb-0 mb-lg-0" style={{ color: "#ff3467" }}>
+                    !selectedDoctor ? <p className="h6  mb-0 mb-lg-0" style={{ color: "#ff3467" }}>
                         <DoctorName doctorId={appointment.doctorId} />
                     </p> : <></>
                 }
@@ -366,11 +361,11 @@ function Appointments(props) {
     })
 
     let timeLineFoappointment = !appointmentsTimeLineErrMess ? sortedAppointmentsTimeLine.map((appointment => (
-        <div class="timeline-step">
-            <div class="timeline-content" data-toggle="popover" data-trigger="hover">
-                <div class="inner-circle"></div>
-                <p class="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
-                <p class="h6 text-muted mb-0 mb-lg-0">
+        <div className="timeline-step">
+            <div className="timeline-content" data-toggle="popover" data-trigger="hover">
+                <div className="inner-circle"></div>
+                <p className="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
+                <p className="h6 text-muted mb-0 mb-lg-0">
                     <PatientsName patientId={appointment.patientId} />
                 </p>
             </div>
@@ -397,8 +392,8 @@ function Appointments(props) {
                 }
                 acceptAppointment(valuesObject, appointmentId).then(() => {
                     props.acceptAppointment(appointmentId)
-                    if (selectedDoctor) {
-                        getDoctorTimeLine(selectedDoctor, curday()).then((appointments) => {
+                    if (selectedDoctor && date) {
+                        getDoctorTimeLine(selectedDoctor, date).then((appointments) => {
                             settodayTimeLineErrMess(undefined)
                             setTodayAppointments(appointments)
                         })
@@ -406,8 +401,8 @@ function Appointments(props) {
                                 settodayTimeLineErrMess(error.message)
                             })
                     }
-                    else if (SelectedClinic) {
-                        getClinicTimeLine(SelectedClinic, curday()).then((appointments) => {
+                    else if (SelectedClinic && date) {
+                        getClinicTimeLine(SelectedClinic, date).then((appointments) => {
                             settodayTimeLineErrMess(undefined)
                             setTodayAppointments(appointments)
                         })
@@ -415,8 +410,8 @@ function Appointments(props) {
                                 settodayTimeLineErrMess(error.message)
                             })
                     }
-                    else {
-                        getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, curday()).then((appointments) => {
+                    else if (date){
+                        getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, date).then((appointments) => {
                             settodayTimeLineErrMess(undefined)
                             setTodayAppointments(appointments)
                         })
@@ -486,7 +481,10 @@ function Appointments(props) {
             }
 
         }, [])
-
+        if (props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || props.clinics.isLoading || clinicsIsLoading) {
+            return <Loading />
+        }
+        
         return <DatePicker selected={date} includeDates={validDateList} {...propsValus} onChange={(date) => {
             propsValus.onChange(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
             handleChangeDate(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
@@ -558,7 +556,7 @@ function Appointments(props) {
                     <Container>
                         <Row>
                             <Col>
-                                <div class="timeline-steps aos-init aos-animate">
+                                <div className="timeline-steps aos-init aos-animate">
                                     {timeLineFoappointment}
                                 </div>
                             </Col>
@@ -569,52 +567,60 @@ function Appointments(props) {
         </Card>
     ))
     let error = false
-    if (props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || props.clinics.isLoading || clinicsIsLoading) {
-        return <Loading />
-    }
+   
     if (props.appointments.errMess) {
         error = true
     }
 
     const selectDoctor = (event) => {
+        setDate('')
+        setSearchValue('')
+        setSearchErrMess('')
+        settodayTimeLineErrMess(undefined)
+        setTodayAppointments([])
         let doctorId = event.target[event.target.selectedIndex].id
         if (doctorId == 0) {
             props.fetchPendingAppointments(SelectedClinic || props.clinics.clinics[0]?.clinic?.id)
-            getClinicTimeLine(SelectedClinic || props.clinics.clinics[0]?.clinic?.id, curday()).then((appointments) => {
+           /*  getClinicTimeLine(SelectedClinic || props.clinics.clinics[0]?.clinic?.id, curday()).then((appointments) => {
                 settodayTimeLineErrMess(undefined)
                 setTodayAppointments(appointments)
             })
                 .catch(error => {
                     settodayTimeLineErrMess(error.message)
-                })
+                }) */
             setSelectedDoctor(undefined)
         }
         else {
             setSelectedDoctor(doctorId)
-            getDoctorTimeLine(doctorId, curday()).then((appointments) => {
+            /* getDoctorTimeLine(doctorId, curday()).then((appointments) => {
                 settodayTimeLineErrMess(undefined)
                 setTodayAppointments(appointments)
             })
                 .catch(error => {
                     settodayTimeLineErrMess(error.message)
-                })
+                }) */
             props.updateAppointments(doctorId)
         }
     }
     const selectClinic = (event) => {
+        setDate('')
+        setSearchValue('')
+        setSearchErrMess('')
+        settodayTimeLineErrMess(undefined)
+        setTodayAppointments([])
         let clinicId = event.target[event.target.selectedIndex].id
         setSelectedClinic(clinicId)
         let doctorArray = props.doctors.doctors.filter((doctor) => doctor.doctor.clinicId == clinicId)
         setDoctors(doctorArray)
         props.fetchPendingAppointments(clinicId)
-        getClinicTimeLine(clinicId, curday()).then((appointments) => {
+        /* getClinicTimeLine(clinicId, curday()).then((appointments) => {
             settodayTimeLineErrMess(undefined)
             setTodayAppointments(appointments)
         }
         )
             .catch(error => {
                 settodayTimeLineErrMess(error.message)
-            })
+            }) */
     }
     let clinicSelectors = clinics.map((clinic) => (
         <option key={clinic.clinic.id} id={clinic.clinic.id}>{clinic.clinic.name}</option>
@@ -625,7 +631,7 @@ function Appointments(props) {
     doctorSelectors.unshift(<option key="0" id="0">All Doctor</option>)
 
     const ErrorAlertComponents = () => {
-        if (acceptAppointmentErrMess) {
+        if (acceptAppointmentErrMess || searchErrMess || autoAcceptErrMess) {
             return <Alert variant="danger" className="mt-2 mb-1" style={{
                 width: "fit-content",
                 margin: "0 auto",
@@ -634,21 +640,171 @@ function Appointments(props) {
                 transform: "translate(-50% , 0)"
                 , left: "50%"
                 , zIndex: 1
-            }} dismissible onClose={() => setAcceptAppointmentErrMess(undefined)}>
+            }} dismissible onClose={() => {
+                setAcceptAppointmentErrMess(undefined)
+                setSearchErrMess(undefined)
+                setAutoAcceptErrMess(undefined)
+            }}>
                 <Alert.Heading>Error !</Alert.Heading>
-                {acceptAppointmentErrMess}
+                {acceptAppointmentErrMess || searchErrMess || autoAcceptErrMess}
             </Alert>
         }
         else {
             return <></>
         }
     }
+    function addMinutes(time, minsToAdd) {
+        function D(J) { return (J < 10 ? '0' : '') + J; };
+        var piece = time.split(':');
+        var mins = piece[0] * 60 + +piece[1] + +minsToAdd;
 
+        return D(mins % (24 * 60) / 60 | 0) + ':' + D(mins % 60);
+    }
 
+    const handleChangeSearchDate = (event) => {
+        setDate(event.target.value)
+        settodayTimeLineErrMess(undefined)
+        setTodayAppointments([])
+        if (selectedDoctor) {
+            props.updateAppointmentsByDate(selectedDoctor, event.target.value)
+        }
+        else if (SelectedClinic) {
+            props.fetchPendingAppointmentsByDate(SelectedClinic, event.target.value)
+        }
+        else {
+            props.fetchPendingAppointmentsByDate(props.clinics.clinics[0]?.clinic?.id, event.target.value)
+        }
+        if (selectedDoctor) {
+            getDoctorTimeLine(selectedDoctor, event.target.value).then((appointments) => {
+                settodayTimeLineErrMess(undefined)
+                setTodayAppointments(appointments)
+            })
+                .catch(error => {
+                    settodayTimeLineErrMess(error.message)
+                })
+        }
+        else if (SelectedClinic) {
+            getClinicTimeLine(SelectedClinic,event.target.value).then((appointments) => {
+                settodayTimeLineErrMess(undefined)
+                setTodayAppointments(appointments)
+            })
+                .catch(error => {
+                    settodayTimeLineErrMess(error.message)
+                })
+        }
+        else {
+            getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, event.target.value).then((appointments) => {
+                settodayTimeLineErrMess(undefined)
+                setTodayAppointments(appointments)
+            })
+                .catch(error => {
+                    settodayTimeLineErrMess(error.message)
+                })
+        }
 
+    }
+
+    const handleGetAllPendingAppointments = (event) => {
+        event.preventDefault()
+        setDate('')
+        settodayTimeLineErrMess(undefined)
+        setTodayAppointments([])
+        setSearchValue('')
+        setSearchErrMess('')
+        if (selectedDoctor) {
+            props.updateAppointments(selectedDoctor)
+        }
+        else if (SelectedClinic) {
+            props.fetchPendingAppointments(SelectedClinic)
+        }
+        else {
+            props.fetchPendingAppointments(props.clinics.clinics[0]?.clinic?.id)
+        }
+    }
+    const resetAppointments = () => {
+        if (date && date.length > 0) {
+            if (selectedDoctor) {
+                props.updateAppointmentsByDate(selectedDoctor, date)
+            }
+            else if (SelectedClinic) {
+                props.fetchPendingAppointmentsByDate(SelectedClinic, date)
+            }
+            else {
+                props.fetchPendingAppointmentsByDate(props.clinics.clinics[0]?.clinic?.id, date)
+            }
+        }
+        else {
+            if (selectedDoctor) {
+                props.updateAppointments(selectedDoctor)
+            }
+            else if (SelectedClinic) {
+                props.fetchPendingAppointments(SelectedClinic)
+            }
+            else {
+                props.fetchPendingAppointments(props.clinics.clinics[0]?.clinic?.id)
+            }
+        }
+    }
+    const handleSearchChange = (event) => {
+        setSearchValue(event.target.value)
+        if (event.target.value.length > 0) {
+            setShowReset(true)
+        }
+        else if (event.target.value.length === 0) {
+            resetAppointments()
+            setShowReset(false)
+        }
+    }
+    const handleSearch = (values) => {
+        setSearchErrMess('')
+        if (values.searchQuery?.length > 0) {
+            let patient = props.patients.patients.filter((patient) => {
+                let str = patient.patient.firstName + ' ' + patient.patient.lastName
+                return str.includes(values.searchQuery)
+            })[0]
+            if (!patient) {
+                setSearchErrMess("there is no patient with this name")
+                return
+            }
+            let arr = props.appointments.appointments.filter((appointment) => appointment.patientId === patient.patient.id)
+            if (arr.length === 0) {
+                setSearchErrMess("there is no patient with this name")
+                return
+            }
+            props.changeAppointment(arr)
+        }
+    }
+
+    const handleAutoAccept = (event) => {
+        event.preventDefault()
+        let list = []
+        getAvailableTimes(date, daysInWeek[new Date(date).getDay()], selectedDoctor)
+            .then((availableTimes) => {
+                availableTimes.forEach((availableTime) => {
+                    let startTime = availableTime.startTime.slice(0,5)
+                    props.appointments.appointments.forEach((appointment) => {
+                        let diff = (new Date(`Wed Aug 25 2021 ${appointment.endTime}`) -
+                            new Date(`Wed Aug 25 2021 ${appointment.startTime}`)) / 60000
+                        let endTime = addMinutes(startTime, diff)
+                        if (endTime < availableTime.endTime.slice(0,5) && !list.filter((item) => item.id === appointment.id)[0]) {
+                            list.push({ id: appointment.id, startTime, endTime , doctorId :appointment.doctorId , date : appointment.date , day : appointment.day })
+                            startTime = endTime
+                        }
+                        else {
+                            return
+                        }
+                    })
+                })
+                list.forEach((item) => {
+                    handleAccept({startTime : item.startTime , endTime : item.endTime , date : item.date} , item.id , item.doctorId)
+                })
+                
+            })
+            .catch((error) => setAutoAcceptErrMess(error.message))
+    }
     return (
         <div className="mt-2">
-             <ErrorAlertComponents />
+            <ErrorAlertComponents />
             <Breadcrumb >
                 <Breadcrumb.Item className="pl-3 mt-1" href="#">
                     <Link to={`/dashboard`}>
@@ -688,9 +844,9 @@ function Appointments(props) {
             </div>
             <Container fluid >
                 <div className="pageContainer" style={{ position: "relative" }}>
-               
+
                     <div className="appointmentsButton">
-                        
+
                         <OverlayTrigger
                             trigger="click"
                             placement="bottom"
@@ -741,7 +897,7 @@ function Appointments(props) {
                         </OverlayTrigger>
 
                     </div>
-                   
+
                     <Row className="mb-4">
                         <Col xs={12} className="mt-3 text-center">
                             <h4>Appointments</h4>
@@ -750,8 +906,53 @@ function Appointments(props) {
                             <Container fluid className="mb-2 mt-4">
                                 <Row>
                                     <Col>
-                                        <div class="timeline-steps aos-init aos-animate">
+                                        <div className="timeline-steps aos-init aos-animate">
                                             {timeline}
+                                        </div>
+                                        <div className="mt-2 mb-2">
+                                            <LocalForm model="searchBox" className="text-center" onSubmit={(values) => handleSearch(values)}>
+                                                <Row style={{ alignItems: "flex-end" }} className="mb-3 mt-3 justify-content-md-center">
+                                                    <Col className="col-12 col-md-6 mb-2 mb-md-0 order-1 order-md-1" style={{ position: "relative" }}>
+                                                        <Control value={searchValue} type="text" placeholder="search.." className="form-control" model=".searchQuery" onChange={handleSearchChange} />
+                                                        {showReset && searchValue?.length > 0 ? <Button variant="link" className="me-3" style={{ position: "absolute", top: "0", right: "0" }}
+                                                            onClick={() => {
+                                                                setShowReset(false)
+                                                                setSearchValue('')
+                                                                setSearchErrMess(undefined)
+                                                                resetAppointments()
+                                                            }}
+                                                        >Reset</Button> : <></>}
+                                                    </Col>
+                                                    <Col className="col-12  col-md-1 mb-2 mb-md-0 order-3 order-md-2">
+                                                        <Button variant="outline-success mt-2 text-center w-auto" type="submit">Search</Button>
+                                                    </Col>
+                                                    <Col className="col-12 col-md-12 order-2 mt-md-3 order-md-3">
+                                                        <Row className="justify-content-md-center">
+                                                            <Col className="col-12 col-md-4">
+                                                                <Control type="date" value={date} onChange={handleChangeSearchDate} className="form-control" model=".searchDate"></Control>
+
+                                                            </Col>
+                                                            <Col className="col-12 col-md-1 mt-3 mb-2 mb-md-0 mt-md-0 pe-md-1 align-self-center">
+
+                                                                <button className="submitButton" onClick={handleGetAllPendingAppointments}>
+
+                                                                    <span className="fa fa-stream ms-2 me-2 d-inline"></span>All
+
+                                                                </button>
+
+                                                            </Col>
+                                                            {selectedDoctor && date && props.appointments.appointments.length > 0 ?
+                                                                <Col className="col-12 col-md-2 mt-3 mb-2 mb-md-0 mt-md-0  align-self-center">
+                                                                    <Button className="loginBtn" onClick={handleAutoAccept}>
+                                                                        <span className="fa fa-check-double me-2 d-inline"></span>Auto Accept
+                                                                    </Button>
+                                                                </Col> : <></>}
+
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+
+                                            </LocalForm>
                                         </div>
                                         {
                                             props.appointments.isLoading ? <Loading /> :
@@ -781,7 +982,10 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     fetchPendingAppointments: (id) => dispatch(fetchPendingAppointments(id)),
+    fetchPendingAppointmentsByDate: (id, date) => dispatch(fetchPendingAppointmentsByDate(id, date)),
     updateAppointments: (id) => dispatch(updateAppointmetns(id)),
+    updateAppointmentsByDate: (id, date) => dispatch(updateAppointmetnsByDate(id, date)),
+    changeAppointment: (list) => dispatch(changePendingAppointments(list)),
     acceptAppointment: (appointmentId) => dispatch(acceptAppointment(appointmentId)),
     rejectAppointment: (appointmentId) => dispatch(rejectAppointment(appointmentId))
 })

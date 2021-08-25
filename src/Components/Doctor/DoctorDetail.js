@@ -157,7 +157,7 @@ function DoctorDetail(props) {
             .then(response => response.json())
     }
 
-    /*     const deleteHoliday = (holidayId) => {
+      /*   const deleteHoliday = (holidayId) => {
             return fetch(baseUrl + 'api/doctors/holidays/id/' + holidayId, {
                 method: "DELETE",
                 headers: {
@@ -370,7 +370,7 @@ function DoctorDetail(props) {
     )) : <p>{workingDayError || "there is no working days"}</p>
 
     const handleSubmitHoliday = (values) => {
-        if (values.date && values.date >= new Date().toISOString().split('T')[0]) {
+        if (values.date && values.date >= new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
             let day = daysInWeek[new Date(values.date).getDay()]
             let doctorId = props.doctor.doctor.id
             values = { ...values, day, doctorId }
@@ -388,7 +388,7 @@ function DoctorDetail(props) {
             setHolidaysErrMess("holiday is invalid")
         }
     }
-    /*  const handleDeleteHoliday = (holidayId) => {
+     /* const handleDeleteHoliday = (holidayId) => {
          setHolidaysErrMess(undefined)
          deleteHoliday(holidayId).then(() => {
              let tempArray = holidays.filter((holiday) => holiday.id !== holidayId)
@@ -397,14 +397,14 @@ function DoctorDetail(props) {
              .catch((error) => {
                  setHolidaysErrMess(error.message)
              })
-     } */
-
+     }
+ */
     const handleUpdateWorkingDay = (values) => {
         if (values.endTime < values.startTime) {
             setWorkingDaysModalErrMess("time is invalid")
             return
         }
-        let obj = { startTime: values.startTime, endTime: values.endTime }
+        let obj = { startTime: values.startTime.length === 8 ? values.startTime : values.startTime+':00' , endTime: values.endTime.length === 8 ? values.endTime : values.endTime+':00' }
         setWorkingDaysModalErrMess(undefined)
         updateWorkingDay(obj, values.day, props.doctor.doctor.id).then(() => {
             let index = workingDaysList.findIndex((workingDay) => workingDay.day === values.day)
@@ -637,14 +637,14 @@ function DoctorDetail(props) {
                                 <ul class="list-group list-group-flush gap-0 text-center mt-2 mb-2 ms-0 me-0">
                                     {holidays.length ? holidays.map((holiday) => (
                                         <li class="list-group-item border-bottom-0" key={holiday.id}>{holiday.day + '  :      ' + holiday.date}
-                                            {/*  <span className="fa fa-sync-alt fa-lg" style={{
+                                            {/*  <span className="fa fa-trash-alt fa-lg" style={{
                                                 position: "absolute",
                                                 right: "21%",
                                                 top: "32%",
                                                 color: "#FF9D9D",
                                                 zIndex: "999",
                                                 cursor: "pointer"
-                                            }} onClick={() => handleDeleteHoliday(holiday.id)} ></span>< */}
+                                            }} onClick={() => handleDeleteHoliday(holiday.id)} ></span> */}
                                         </li>
                                     )) : <li class="list-group-item border-bottom-0 text-danger" key={0}>There are no holidays</li>}
                                 </ul>

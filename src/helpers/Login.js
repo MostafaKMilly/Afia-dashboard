@@ -29,6 +29,9 @@ class Login extends Component {
     })
   }
   handleSubmit(values) {
+    if (!values.username || !values.password) {
+      return
+    }
     this.props.fetchUser(values);
     this.nextPath("dashboard")
   }

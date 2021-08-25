@@ -52,14 +52,14 @@ function AppointmentsToolKit(props) {
     }
 
     useEffect(() => {
-        getAppointments(props.type, new Date().toISOString().split('T')[0])
+        getAppointments(props.type, new Date().toLocaleDateString('pt-br').split('/').reverse().join('-'))
     }, [])
 
     const handleClick = (event) => {
         setCurrentPage(parseInt(event.target.id, 10))
     }
     const handleSearch = (values) => {
-        if (values.searchQuery.length > 0) {
+        if (values.searchQuery?.length > 0) {
             let patient = props.patients.patients.filter((patient) => {
                 let str = patient.patient.firstName + ' ' + patient.patient.lastName
                 return str.includes(values.searchQuery)
@@ -69,6 +69,11 @@ function AppointmentsToolKit(props) {
                 return
             }
             let list = appointments.filter((appointment) => appointment.patientId === patient.patient.id)
+            console.log(list)
+            if (list.length ===0 ) {
+                setSearchErrMess("there is no patient with this name")
+                return
+            }
             setSearchedAppointments(list)
         }
     }
@@ -285,7 +290,7 @@ function AppointmentsToolKit(props) {
                                                     <Col className="col-12 col-md-12 order-2 mt-md-3 order-md-3">
                                                         <Row className="justify-content-md-center">
                                                             <Col className="col-12 col-md-4">
-                                                                <Control type="date" onChange={handleChangeDate} className="form-control" model=".searchDate" defaultValue={new Date().toISOString().split('T')[0]}></Control>
+                                                                <Control type="date" onChange={handleChangeDate} className="form-control" model=".searchDate" defaultValue={new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')}></Control>
                                                             </Col>
                                                         </Row>
                                                     </Col>

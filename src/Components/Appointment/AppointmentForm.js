@@ -26,7 +26,6 @@ function AppointmentForm(props) {
                 , left: "50%"
                 , zIndex: 1
             }} dismissible onClose={() => {
-                /* props.resetForm() */
                 setErrMess(undefined)
             }}>
                 <Alert.Heading>Error !</Alert.Heading>

@@ -86,9 +86,70 @@ export const fetchPendingAppointments = (clinicId) => (dispatch) => {
         .catch(e => dispatch(appointmentsFailed(e.message)))
 }
 
+export const fetchPendingAppointmentsByDate = (clinicId , date) => (dispatch) => {
+    dispatch(loadingAppointments())
+    fetch(baseUrl + 'api/appointments/clinicId/' + clinicId+'/date/'+date, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error("Error " + response.status + ":" + response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(response => response.json())
+        .then(appoitnmetns => dispatch(loadAppointments(appoitnmetns)))
+        .catch(e => dispatch(appointmentsFailed(e.message)))
+}
+
 export const updateAppointmetns = (doctorId) => (dispatch) => {
     dispatch(loadingAppointments())
     fetch(baseUrl + 'api/appointments/doctorId/' + doctorId, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error("Error " + response.status + ":" + response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(response => response.json())
+        .then(appoitnmetns => dispatch(loadAppointments(appoitnmetns)))
+        .catch(e => dispatch(appointmentsFailed(e.message)))
+}
+
+export const changePendingAppointments = (payload) => ({
+    type : ActionTypes.CHANGE_PENDING_APPOINTMENTS , 
+    payload
+})
+
+export const updateAppointmetnsByDate = (doctorId,date) => (dispatch) => {
+    dispatch(loadingAppointments())
+    fetch(baseUrl + 'api/appointments/doctorId/' + doctorId+'/date/'+date, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

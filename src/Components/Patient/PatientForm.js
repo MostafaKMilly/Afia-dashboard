@@ -30,8 +30,7 @@ function PatientForm(props) {
         return true
     }
     const isDateValid = (val) => {
-        const dateObj = new Date();
-        let myDate = (dateObj.getUTCFullYear()) + "-" + +(dateObj.getMonth < 10 ? '0' : '') + (dateObj.getMonth() + 1) + "-" + (dateObj.getUTCDate());
+        let myDate = new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')
         return myDate >= val
     }
     const ErrorAlert = () => {

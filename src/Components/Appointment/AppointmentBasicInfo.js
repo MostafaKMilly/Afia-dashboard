@@ -12,7 +12,6 @@ import "react-datepicker/dist/react-datepicker.css";
 function AppointmentBasicInfo(props) {
 
     const [patients, setPatients] = useState([...props.patients.patients])
-    const [selectedPatient, setSelectedPatient] = useState()
     const [filterdArray, setFilterdArray] = useState([...props.patients.patients])
     const [showDropDown, setShowDropDown] = useState(false)
     const [doctors, setDoctors] = useState([])
@@ -118,6 +117,7 @@ function AppointmentBasicInfo(props) {
         const options = select.options
         const id = options[options.selectedIndex].id
         props.changeDoctorId(null)
+        setDoctors([])
         props.resetDate()
         if (parseInt(id)=== 0) {
             props.changeClinicId(null)
@@ -192,7 +192,7 @@ function AppointmentBasicInfo(props) {
 
     let disabled = props.appointmentForm.patientId && props.appointmentForm.doctorId &&
         props.appointmentForm.date && props.appointmentForm.description.length > 10 && props.appointmentForm.clinicId &&
-        props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-') >= new Date().toISOString().split('T')[0] ? false : true
+        props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-') >= new Date().toLocaleDateString('pt-br').split('/').reverse().join('-') ? false : true
     return (
         <Col md={12}>
             <Form model="appointmentForm" className="p-4" onSubmit={(values) => console.log(values)}>
