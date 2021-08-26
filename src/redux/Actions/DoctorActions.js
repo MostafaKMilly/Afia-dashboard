@@ -3,7 +3,7 @@ import { baseUrl } from '../../shared/baseUrl'
 import * as ActionTypes from './ActionTypes'
 
 export const addDoctorFailed = (payload) => ({
-    type : ActionTypes.ADD_DOCTOR_FAILED ,
+    type: ActionTypes.ADD_DOCTOR_FAILED,
     payload
 })
 
@@ -13,7 +13,7 @@ export const loadDoctors = (doctors) => ({
 })
 
 export const closeRegisterDialog = () => ({
-    type : ActionTypes.CLOSE_DOCTOR_FAILED_DIALOG 
+    type: ActionTypes.CLOSE_DOCTOR_FAILED_DIALOG
 })
 
 export const loadingDoctors = () => ({
@@ -27,84 +27,84 @@ export const doctorsFailed = (error) => ({
 
 
 export const doctorUserNameisValid = () => ({
-    type : ActionTypes.DOCTOR_USERNAME_IS_VALID
-}) 
+    type: ActionTypes.DOCTOR_USERNAME_IS_VALID
+})
 
 export const doctorUserNameisNotValid = () => ({
-    type : ActionTypes.DOCTOR_USERNAME_IS_NOT_VALID
-}) 
+    type: ActionTypes.DOCTOR_USERNAME_IS_NOT_VALID
+})
 
 export const updateDoctorTags = (payload) => ({
-    type : ActionTypes.UPDATE_DOCTOR_TAG,
+    type: ActionTypes.UPDATE_DOCTOR_TAG,
     payload
 })
 
 export const checkDoctorUserName = (userName) => dispatch => {
     const obj = {}
     obj.username = userName
-    fetch (baseUrl + 'api/checkUserName' , {
-        method : "POST" , 
-        body : JSON.stringify(obj) ,
-        headers : {
-            'Content-Type' : 'application/json' ,
+    fetch(baseUrl + 'api/checkUserName', {
+        method: "POST",
+        body: JSON.stringify(obj),
+        headers: {
+            'Content-Type': 'application/json',
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
     })
-    .then(response => {
-        if (response.ok) {
-            return response
-        }
-        else {
-            let error = new Error("Error " + response.status + ":" + response.statusText)
-            error.response = response
-            throw error
-        }
-    }, err => {
-        let error = new Error(err.message)
-        throw error;
-    })
-    .then(res => res.json())
-    .then ((messege) => dispatch(doctorUserNameisValid()))
-    .catch ( (e) => dispatch(doctorUserNameisNotValid()))
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error("Error " + response.status + ":" + response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(res => res.json())
+        .then((messege) => dispatch(doctorUserNameisValid()))
+        .catch((e) => dispatch(doctorUserNameisNotValid()))
 }
 
 export const doctorEmailIsValid = () => ({
-    type : ActionTypes.DOCTOR_EMAIL_IS_VALID
-}) 
+    type: ActionTypes.DOCTOR_EMAIL_IS_VALID
+})
 
 export const doctorEmailIsNotValid = () => ({
-    type : ActionTypes.DOCTOR_EMAIL_IS_NOT_VALID
-}) 
+    type: ActionTypes.DOCTOR_EMAIL_IS_NOT_VALID
+})
 
 export const checkDoctorEmail = (email) => dispatch => {
     const obj = {}
     obj.email = email
-    fetch (baseUrl + 'api/checkEmail' , {
-        method : "POST" , 
-        body : JSON.stringify(obj) ,
-        headers : {
-            'Content-Type' : 'application/json' ,
+    fetch(baseUrl + 'api/checkEmail', {
+        method: "POST",
+        body: JSON.stringify(obj),
+        headers: {
+            'Content-Type': 'application/json',
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
     })
-    .then(response => {
-        if (response.ok) {
-            return response
-        }
-        else {
-            let error = new Error("Error " + response.status + ":" + response.statusText)
-            error.response = response
-            throw error
-        }
-    }, err => {
-        let error = new Error(err.message)
-        throw error;
-    })
-    .then(res => res.json())
-    .then ((messege) => dispatch(doctorEmailIsValid()))
-    .catch ( (e) => dispatch(doctorEmailIsNotValid()))
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error("Error " + response.status + ":" + response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(res => res.json())
+        .then((messege) => dispatch(doctorEmailIsValid()))
+        .catch((e) => dispatch(doctorEmailIsNotValid()))
 }
 
 export const postDoctor = (payload) => ({
@@ -113,7 +113,7 @@ export const postDoctor = (payload) => ({
 })
 
 
-const addDoctorPhoto = (id , image) => {
+/* const addDoctorPhoto = (id , image) => {
     fetch(baseUrl + 'api/doctors/photo/id/'+ id , {
         method : "POST" ,
         body : image ,
@@ -130,111 +130,111 @@ const addDoctorPhoto = (id , image) => {
             console.log("failed")
         }
     })
-}
+} */
 
-export const addTagForDoctor = (doctorId , tags) => {
-    fetch(baseUrl + 'api/doctors/tags/id/'+doctorId , {
-        method : "POST",
-        headers : {
-            'Content-Type' : 'application/json' ,
+export const addTagForDoctor = (doctorId, tags) => {
+    fetch(baseUrl + 'api/doctors/tags/id/' + doctorId, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body : JSON.stringify(tags)
+        body: JSON.stringify(tags)
     })
-    .then(response => {
-        if (response.ok) {
-            return response
-        }
-        else {
-            let error = new Error(response.statusText)
-            error.response = response
-            throw error
-        }
-    }, err => {
-        let error = new Error(err.message)
-        throw error;
-    })
-    .then(res => res.json())
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(res => res.json())
 }
 export const clearDoctorErrorMessages = () => ({
-    type : ActionTypes.CLEAR_DOCTOR_REGISTER_ERROR_MESSAGES
+    type: ActionTypes.CLEAR_DOCTOR_REGISTER_ERROR_MESSAGES
 })
 
 export const addDoctor = (doctorInfo) => (dispatch) => {
-    let personaolInfo = {...doctorInfo}
+    let personaolInfo = { ...doctorInfo }
     delete personaolInfo.clinic
     delete personaolInfo.workingDaysList
     delete personaolInfo.workingDays
     delete personaolInfo.tags
-    fetch(baseUrl + 'api/doctors/Signup' , {
-        method : "POST" ,
-        headers : {
-            'Content-Type' : 'application/json' ,
+    fetch(baseUrl + 'api/doctors/Signup', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body : JSON.stringify(personaolInfo)
+        body: JSON.stringify(personaolInfo)
     })
-    .then(response => {
-        if (response.ok) {
-            return response
-        }
-        else {
-            let error = new Error(response.statusText)
-            error.response = response
-            throw error
-        }
-    }, err => {
-        let error = new Error(err.message)
-        throw error;
-    })
-    .then(res => res.json())
-    .then(doctor => {
-        dispatch(postDoctor(doctor))
-        Promise.all(doctorInfo.workingDaysList.map((workingDay) => {
-            workingDay = {...workingDay , doctorId : doctor.DoctorData.id , startTime : workingDay.startTime+":00" , endTime : workingDay.endTime+":00"} 
-            return fetch(baseUrl + 'api/doctors/work_days' , {
-                method : "POST" ,
-                headers : {
-                    'Content-Type' : 'application/json' ,
-                    "Accept": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                },
-                body : JSON.stringify(workingDay)
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response
-                }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
-                }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
-            })
-            .catch(e =>dispatch(addDoctorFailed(workingDay.day +': '+ e.message)))
-        }))
-        addTagForDoctor(doctor.DoctorData.id , doctorInfo.tags)
-        dispatch(actions.reset('doctorForm'))
-        dispatch(fetchDoctors())
-    })
-    .catch(e => dispatch(addDoctorFailed(e.message)))
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(res => res.json())
+        .then(doctor => {
+            dispatch(postDoctor(doctor))
+            Promise.all(doctorInfo.workingDaysList.map((workingDay) => {
+                workingDay = { ...workingDay, doctorId: doctor.DoctorData.id, startTime: workingDay.startTime + ":00", endTime: workingDay.endTime + ":00" }
+                return fetch(baseUrl + 'api/doctors/work_days', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: JSON.stringify(workingDay)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response
+                        }
+                        else {
+                            let error = new Error(response.statusText)
+                            error.response = response
+                            throw error
+                        }
+                    }, err => {
+                        let error = new Error(err.message)
+                        throw error;
+                    })
+                    .catch(e => dispatch(addDoctorFailed(workingDay.day + ': ' + e.message)))
+            }))
+            addTagForDoctor(doctor.DoctorData.id, doctorInfo.tags)
+            dispatch(actions.reset('doctorForm'))
+            dispatch(fetchDoctors())
+        })
+        .catch(e => dispatch(addDoctorFailed(e.message)))
 }
 
-const updatedDoctorFailed = (payload) => ({
+/* const updatedDoctorFailed = (payload) => ({
     type : ActionTypes.UPDATE_DOCTOR_FAILED , 
     payload
 })
-
+ */
 
 
 export const updateDoctorDetail = (values) => dispatch => {
-    fetch (baseUrl + 'api/doctors/profile/id/'+values.id , {
-        method : "PATCH" ,
+    fetch(baseUrl + 'api/doctors/profile/id/' + values.id, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             'Accept': "application/json",

@@ -16,7 +16,6 @@ class Header extends Component {
     }
     render() {
         const url = this.props.match.url
-        console.log(this.props.user)
         const nextPath = (path) => {
             this.props.history.push(path)
         }

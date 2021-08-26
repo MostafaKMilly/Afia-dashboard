@@ -1,6 +1,7 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from 'react';
-import { Row, Container, Col, Image, Form, Button, Table, Modal, FormGroup, FormLabel, Alert, Pagination } from 'react-bootstrap';
-import { withRouter, Link } from 'react-router-dom';
+import { Row, Container, Col, Image, Button, Table, Modal, FormGroup, FormLabel, Alert, Pagination } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { clearErrMess, deleteWorkingDay, updateWorkingDay } from '../../redux/Actions/CenterActions';
 import { Control, LocalForm } from 'react-redux-form'
@@ -37,7 +38,7 @@ function NurseComponent(props) {
             throw error;
         })
             .then(response => response.json())
-            
+
     }
     useEffect(() => {
         getNurses().then((nurses) => {
@@ -71,7 +72,7 @@ function NurseComponent(props) {
             throw error;
         })
             .then(response => response.json())
-            
+
     }
     const updateNurse = (nurseId, values) => {
         return fetch(baseUrl + 'api/nurses/id/' + nurseId, {
@@ -155,9 +156,9 @@ function NurseComponent(props) {
                 tempoArray[i] = { ...tempoArray[i], ...values }
                 setNurses(tempoArray)
             })
-            .catch(error => {
-                setError(error.message)
-            })
+                .catch(error => {
+                    setError(error.message)
+                })
             setEditShowModal(false)
         }
     }
@@ -168,14 +169,13 @@ function NurseComponent(props) {
         setError(undefined)
         values = { ...values, type: "Nurse" }
         addNurse(values).then((nurse) => {
-            console.log(nurses)
             let tempoArray = [...nurses]
             tempoArray.push(nurse.NurseData)
             setNurses(tempoArray)
         })
-        .catch(error => {
-            setError(error.message)
-        })
+            .catch(error => {
+                setError(error.message)
+            })
         setAddShowModal(false)
     }
     const handleDelete = (nurseId) => {
@@ -287,7 +287,7 @@ function NurseComponent(props) {
                             <tbody>
                                 {nursesList}
                             </tbody>
-                            {nurses.length ===0 ? <tbody>
+                            {nurses.length === 0 ? <tbody>
                                 <tr>
                                     <td colSpan={3}>
                                         {"there are no nurses"}

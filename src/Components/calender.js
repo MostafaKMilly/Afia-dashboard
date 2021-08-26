@@ -17,15 +17,18 @@ import {
   DragDropProvider,
   GroupingPanel
 } from '@devexpress/dx-react-scheduler-material-ui';
-import { acceptAppointment, clearAccetptedAppointments, clearErrorMessages, getAcceptedAppointmentForClinic, getAllAcceptedAppointmentsForDoctor, updateAcceptAppointment, updateAppointmentToGoneStatus } from '../redux/Actions/AppointmentsActions'
+import {
+  clearAccetptedAppointments,
+  clearErrorMessages, getAcceptedAppointmentForClinic,
+  updateAcceptAppointment, updateAppointmentToGoneStatus
+} from '../redux/Actions/AppointmentsActions'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Loading from './Loading'
-import { Alert, Breadcrumb, Button } from 'react-bootstrap';
+import { Alert, Breadcrumb } from 'react-bootstrap';
 import { baseUrl } from '../shared/baseUrl';
 import ErrorAlert from '../helpers/ErrorAlert';
 import { fetchCenterDays } from '../redux/Actions/CenterActions'
-import { actions } from 'react-redux-form';
 import jwt from 'jsonwebtoken'
 
 const useStyles = makeStyles(theme => ({
@@ -59,38 +62,38 @@ const useStyles = makeStyles(theme => ({
 const TimeTableCell = (props) => {
   const classes = useStyles();
   const { startDate } = props;
-  const [validDates , setValidDate] = useState([])
+  const [validDates, setValidDate] = useState([])
   useEffect(() => {
-      if (props.groupingInfo) {
-        fetch(baseUrl + 'api/doctors/working_days/id/' + props.groupingInfo[0].id, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-              'Accept': "application/json",
-              "Authorization": `Bearer ${localStorage.getItem("token")}`
-          }
+    if (props.groupingInfo) {
+      fetch(baseUrl + 'api/doctors/working_days/id/' + props.groupingInfo[0].id, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'Accept': "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
       })
-          .then(response => {
-              if (response.ok) {
-                  return response
-              }
-              else {
-                  let error = new Error(response.statusText)
-                  error.response = response
-                  throw error
-              }
-          }, err => {
-              let error = new Error(err.message)
-              throw error;
-          })
-          .then(response => response.json())
-          .then((workingDays) => {
-            let dates = workingDays.map((workingDays) => workingDays.date)
-            setValidDate(dates)
-          })
-          .catch((error) => setValidDate([]))
-      }
-  } ,[])
+        .then(response => {
+          if (response.ok) {
+            return response
+          }
+          else {
+            let error = new Error(response.statusText)
+            error.response = response
+            throw error
+          }
+        }, err => {
+          let error = new Error(err.message)
+          throw error;
+        })
+        .then(response => response.json())
+        .then((workingDays) => {
+          let dates = workingDays.map((workingDays) => workingDays.date)
+          setValidDate(dates)
+        })
+        .catch((error) => setValidDate([]))
+    }
+  }, [])
   const date = new Date(startDate);
   props = { ...props, onDoubleClick: undefined }
   if (date.getDate() === new Date().getDate()) {
@@ -101,9 +104,6 @@ const TimeTableCell = (props) => {
 };
 
 const DayScaleCell = (props) => {
-  const classes = useStyles();
-  const { startDate, today } = props;
-  
   /* if (today) {
     return <WeekView.DayScaleCell {...props} className={classes.today} />;
   }  */return <WeekView.DayScaleCell {...props} />;
@@ -220,30 +220,30 @@ function Calender(props) {
 
   }
 
-const getWorkingDay = (doctorId) => {
-  return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
+  const getWorkingDay = (doctorId) => {
+    return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
       method: "GET",
       headers: {
-          "Content-Type": "application/json",
-          'Accept': "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        "Content-Type": "application/json",
+        'Accept': "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
       }
-  })
+    })
       .then(response => {
-          if (response.ok) {
-              return response
-          }
-          else {
-              let error = new Error(response.statusText)
-              error.response = response
-              throw error
-          }
+        if (response.ok) {
+          return response
+        }
+        else {
+          let error = new Error(response.statusText)
+          error.response = response
+          throw error
+        }
       }, err => {
-          let error = new Error(err.message)
-          throw error;
+        let error = new Error(err.message)
+        throw error;
       })
       .then(response => response.json())
-}
+  }
   useEffect(() => {
     getDoctorsForClinic(props.clinics.clinics[0]?.clinic?.id).then(doctors => {
       setDoctorsList(doctors)
@@ -319,30 +319,6 @@ const getWorkingDay = (doctorId) => {
     resourceName: 'doctorId',
   }]
 
-  const getValidDates = (doctorId) => {
-    return fetch(baseUrl + 'api/doctors/working_days/id/' + doctorId, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
-        }
-    })
-        .then(response => {
-            if (response.ok) {
-                return response
-            }
-            else {
-                let error = new Error(response.statusText)
-                error.response = response
-                throw error
-            }
-        }, err => {
-            let error = new Error(err.message)
-            throw error;
-        })
-        .then(response => response.json())
-}
   const commitChanges = ({ added, changed, deleted }) => {
     props.clearErrorMessages()
     if (changed) {
@@ -368,38 +344,37 @@ const getWorkingDay = (doctorId) => {
       }
 
       let index = props.appointments.acceptedAppointment.findIndex((appointment) => appointment.id === parseInt(appointmentId))
-      let appointment = {...props.appointments.acceptedAppointment[index]}
+      let appointment = { ...props.appointments.acceptedAppointment[index] }
       if (object.startTime) {
-        appointment = {...appointment , startTime : object.startTime}
+        appointment = { ...appointment, startTime: object.startTime }
       }
       if (object.endTime) {
-        appointment = {...appointment , endTime : object.endTime}
+        appointment = { ...appointment, endTime: object.endTime }
       }
       if (object.doctorId) {
-        appointment = {...appointment , doctorId : object.doctorId}
+        appointment = { ...appointment, doctorId: object.doctorId }
       }
       getWorkingDay(appointment.doctorId).then((workingDays) => {
-          let valid = false
-          console.log(workingDays , appointment)
-          workingDays.forEach((workingDay) => {
-            if(workingDay.day === object.day && object.date === workingDay.date && appointment.startTime >= workingDay.startTime && appointment.endTime <= workingDay.endTime) {
-              valid = true
-              return
-            }
-          })
-
-          if (!valid) {
-            let error = new Error("time is invalid please check doctor working times")
-            throw error
+        let valid = false
+        workingDays.forEach((workingDay) => {
+          if (workingDay.day === object.day && object.date === workingDay.date && appointment.startTime >= workingDay.startTime && appointment.endTime <= workingDay.endTime) {
+            valid = true
+            return
           }
-          props.updateAcceptAppointment(object, appointmentId)
+        })
+
+        if (!valid) {
+          let error = new Error("time is invalid please check doctor working times")
+          throw error
+        }
+        props.updateAcceptAppointment(object, appointmentId)
       })
-      .catch((error) => {
-        props.setErrorMessages(error.message)
-      })
+        .catch((error) => {
+          props.setErrorMessages(error.message)
+        })
     }
     if (deleted) {
-      let object = { status: "Rejected" }
+      let object = { status: "Gone" }
 
       props.updateAppointmentToGoneStatus(object, deleted)
     }
@@ -448,72 +423,72 @@ const getWorkingDay = (doctorId) => {
       <div className="p-3">
         <Paper>
           {props.clinics.errMess || doctorErrMess || props.center.errMess ?
-          <ErrorAlert messege={props.clinics.errMess || doctorErrMess || props.center.errMess} color="white" />
-          : 
-          <Scheduler
-          data={schedulerData}
-          height={660}
-        >
-          <ViewState
-            defaultCurrentViewName="Week"
-          />
-          <EditingState
-            onCommitChanges={commitChanges}
-          />
-          <IntegratedEditing />
-          <GroupingState
-            grouping={grouping}
-          /* groupOrientation={() => "Vertical"} */
-          />
-          <DayView
-            startDayHour={openTime}
-            endDayHour={endTime}
-            timeTableCellComponent={TimeTableCell}
-            dayScaleCellComponent={DayScaleCell}
-            cellDuration={10}
-          />
-          <ConfirmationDialog />
-          <WeekView
-            excludedDays={weekHolidays}
-            startDayHour={openTime}
-            endDayHour={endTime}
-            timeTableCellComponent={TimeTableCell}
-            dayScaleCellComponent={DayScaleCell}
-            
-          />
-          <Toolbar />
-          <ViewSwitcher />
-          <DateNavigator />
-          <TodayButton />
-          <Appointments
-          />
-          <Resources
-            data={resources}
-            mainResourceName="doctorId"
-          />
+            <ErrorAlert messege={props.clinics.errMess || doctorErrMess || props.center.errMess} color="white" />
+            :
+            <Scheduler
+              data={schedulerData}
+              height={660}
+            >
+              <ViewState
+                defaultCurrentViewName="Week"
+              />
+              <EditingState
+                onCommitChanges={commitChanges}
+              />
+              <IntegratedEditing />
+              <GroupingState
+                grouping={grouping}
+              /* groupOrientation={() => "Vertical"} */
+              />
+              <DayView
+                startDayHour={openTime}
+                endDayHour={endTime}
+                timeTableCellComponent={TimeTableCell}
+                dayScaleCellComponent={DayScaleCell}
+                cellDuration={10}
+              />
+              <ConfirmationDialog />
+              <WeekView
+                excludedDays={weekHolidays}
+                startDayHour={openTime}
+                endDayHour={endTime}
+                timeTableCellComponent={TimeTableCell}
+                dayScaleCellComponent={DayScaleCell}
 
-          <IntegratedGrouping />
+              />
+              <Toolbar />
+              <ViewSwitcher />
+              <DateNavigator />
+              <TodayButton />
+              <Appointments
+              />
+              <Resources
+                data={resources}
+                mainResourceName="doctorId"
+              />
+
+              <IntegratedGrouping />
 
 
-          <AppointmentTooltip
-            showCloseButton
-            showOpenButton
-            showDeleteButton = {token.type === "Admin" ? false : true}
-            contentComponent={Content}
-          />
-          <AppointmentForm
-            basicLayoutComponent={BasicLayout}
-            messages={messages}
-            textEditorComponent={TextEditor}
-            booleanEditorComponent={BooleanEditorComponent}
-            readOnly={token.type === "Admin" ? true : false}
-          />
-          <GroupingPanel />
-          <DragDropProvider 
-          allowDrag={() => allowUpdate}
-          allowResize={() => allowUpdate}
-          />
-        </Scheduler>  
+              <AppointmentTooltip
+                showCloseButton
+                showOpenButton
+                showDeleteButton={token.type === "Admin" ? false : true}
+                contentComponent={Content}
+              />
+              <AppointmentForm
+                basicLayoutComponent={BasicLayout}
+                messages={messages}
+                textEditorComponent={TextEditor}
+                booleanEditorComponent={BooleanEditorComponent}
+                readOnly={token.type === "Admin" ? true : false}
+              />
+              <GroupingPanel />
+              <DragDropProvider
+                allowDrag={() => allowUpdate}
+                allowResize={() => allowUpdate}
+              />
+            </Scheduler>
           }
         </Paper>
       </div>
@@ -536,7 +511,7 @@ const mapDispatchToProps = (dispatch) => ({
   clearAccetptedAppointments: () => dispatch(clearAccetptedAppointments()),
   fetchCenterDays: () => dispatch(fetchCenterDays()),
   clearErrorMessages: () => dispatch(clearErrorMessages(null)),
-  setErrorMessages : (error) => dispatch(clearErrorMessages(error))
+  setErrorMessages: (error) => dispatch(clearErrorMessages(error))
 })
 
 export default withRouter(connect(mapStateTopProps, mapDispatchToProps)(Calender));

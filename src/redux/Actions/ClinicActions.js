@@ -24,78 +24,78 @@ export const postClinic = (clinic) => ({
 })
 
 
-const addclinicPhoto = (id , image) => dispatch => {
-    fetch(baseUrl + 'api/clinics/photo/id/'+ id , {
-        method : "POST" ,
-        headers : {
-            'Accept' : 'multipart/form-data',
+const addclinicPhoto = (id, image) => dispatch => {
+    fetch(baseUrl + 'api/clinics/photo/id/' + id, {
+        method: "POST",
+        headers: {
+            'Accept': 'multipart/form-data',
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
-        body : image 
+        body: image
     })
-    .then(res => {
-        if (res.ok) {
-            console.log("success")
-        }
-        else {
-            let error = new Error(res.statusText)
-            error.res = res
-            throw error
-        }
-    })
-    .catch((e) => dispatch(addclinicFailed(e.message)))
+        .then(res => {
+            if (res.ok) {
+                console.log("success")
+            }
+            else {
+                let error = new Error(res.statusText)
+                error.res = res
+                throw error
+            }
+        })
+        .catch((e) => dispatch(addclinicFailed(e.message)))
 }
 
 export const addclinicFailed = (payload) => ({
-    type : ActionTypes.ADD_CLINIC_FAILED ,
+    type: ActionTypes.ADD_CLINIC_FAILED,
     payload
 })
 
 
 export const addClinic = (clinicInfo) => (dispatch) => {
-    let clinicInfoObj = {...clinicInfo}
+    let clinicInfoObj = { ...clinicInfo }
     delete clinicInfoObj.image
-    fetch(baseUrl + 'api/clinics/' , {
-        method : "POST" ,
-        headers : {
-            'Content-Type' : 'application/json' ,
+    fetch(baseUrl + 'api/clinics/', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body : JSON.stringify(clinicInfoObj)
+        body: JSON.stringify(clinicInfoObj)
     })
-    .then(response => {
-        if (response.ok) {
-            return response
-        }
-        else {
-            let error = new Error(response.statusText)
-            error.response = response
-            throw error
-        }
-    }, err => {
-        let error = new Error(err.message)
-        throw error;
-    })
-    .then(res => res.json())
-    .then(clinic => {
-        dispatch(postClinic(clinic))
-        let havePhoto = true
-        for (let val of clinicInfo.image.entries()) {
-            if (val[1] === "undefined") {
-                havePhoto = false
+        .then(response => {
+            if (response.ok) {
+                return response
             }
-        }
-        if (havePhoto) {
-            addclinicPhoto(clinic.id , clinicInfo.image)(dispatch)
-        }
-        dispatch(fetchClinics())
-    })
-    .catch(e => dispatch(addclinicFailed(e.message)))
+            else {
+                let error = new Error(response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(res => res.json())
+        .then(clinic => {
+            dispatch(postClinic(clinic))
+            let havePhoto = true
+            for (let val of clinicInfo.image.entries()) {
+                if (val[1] === "undefined") {
+                    havePhoto = false
+                }
+            }
+            if (havePhoto) {
+                addclinicPhoto(clinic.id, clinicInfo.image)(dispatch)
+            }
+            dispatch(fetchClinics())
+        })
+        .catch(e => dispatch(addclinicFailed(e.message)))
 }
 
 export const closeClinicRegisterDialog = () => ({
-    type : ActionTypes.CLOSE_CLINIC_FAILED_DIALOG
+    type: ActionTypes.CLOSE_CLINIC_FAILED_DIALOG
 })
 
 export const fetchClinics = () => (dispatch) => {
@@ -131,9 +131,9 @@ export const deleteClinic = (id) => ({
 })
 
 export const closeClinicDialog = () => ({
-    type : ActionTypes.CLOSE_CLINIC_DIALOG
+    type: ActionTypes.CLOSE_CLINIC_DIALOG
 })
 
 export const openClinicDialog = () => ({
-    type : ActionTypes.OPEN_CLINIC_DIALOG
+    type: ActionTypes.OPEN_CLINIC_DIALOG
 })

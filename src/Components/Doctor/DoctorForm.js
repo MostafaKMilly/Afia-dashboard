@@ -298,7 +298,7 @@ function DoctorForm(props) {
                                         />
                                         <Control.text name="clinicId" model=".clinicId"
                                             className="d-none"
-                                            defaultValue={props.doctorForm.clinicId.length === 0 ? props.clinics.clinics[0]?.clinic?.id : props.doctorForm.clinicId } />
+                                            defaultValue={props.doctorForm.clinicId.length === 0 ? props.clinics.clinics[0]?.clinic?.id : props.doctorForm.clinicId} />
                                     </Col>
                                     <Col md={2}>
                                         <FormLabel>Sepecialize :</FormLabel>

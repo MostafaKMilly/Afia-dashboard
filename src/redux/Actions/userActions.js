@@ -44,7 +44,7 @@ export const fetchUser = (userInfo) => dispatch => {
         .then(res => res.json())
         .then(data => {
             let object = {}
-            if (data.doctor || data.patient ) {
+            if (data.doctor || data.patient) {
                 let error = new Error("you dont have access to this site :)")
                 localStorage.clear()
                 throw error
@@ -93,7 +93,7 @@ export const autoLogin = () => dispatch => {
         .then(res => res.json())
         .then(data => {
             let object = {}
-            if (data.doctor || data.patient ) {
+            if (data.doctor || data.patient) {
                 let error = new Error("you dont have access to this site :)")
                 localStorage.clear()
                 throw error

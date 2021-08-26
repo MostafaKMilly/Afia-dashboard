@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Container, Col, Image, Button, Table, Modal, FormGroup, Alert } from 'react-bootstrap';
+import { Row, Container, Col, Image, Button, Table, Alert } from 'react-bootstrap';
 import { Pagination } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import { Control, LocalForm } from 'react-redux-form'
@@ -81,38 +81,38 @@ function CenterHolidays(props) {
                 setAddHolidayFailedErrMess(error.message)
             })
     }
-    const updateHoliday = (values) => {
-        fetch(baseUrl + 'api/center/holidays/id/' + values.id, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                'Accept': "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify(values)
-        }).then(response => {
-            if (response.ok) {
-                return response
-            }
-            else {
-                let error = new Error(response.statusText)
-                error.response = response
-                throw error
-            }
-        }, err => {
-            let error = new Error(err.message)
-            throw error;
-        })
-            .then(() => {
-                const tempList = [...holidays]
-                const index = tempList.findIndex((holiday) => holiday.id === values.id)
-                tempList[index] = values
-                setHolidays(tempList)
-            })
-            .catch((error) => {
-                setErrMess(error.message)
-            })
-    }
+    /*  const updateHoliday = (values) => {
+         fetch(baseUrl + 'api/center/holidays/id/' + values.id, {
+             method: "PATCH",
+             headers: {
+                 "Content-Type": "application/json",
+                 'Accept': "application/json",
+                 "Authorization": `Bearer ${localStorage.getItem("token")}`
+             },
+             body: JSON.stringify(values)
+         }).then(response => {
+             if (response.ok) {
+                 return response
+             }
+             else {
+                 let error = new Error(response.statusText)
+                 error.response = response
+                 throw error
+             }
+         }, err => {
+             let error = new Error(err.message)
+             throw error;
+         })
+             .then(() => {
+                 const tempList = [...holidays]
+                 const index = tempList.findIndex((holiday) => holiday.id === values.id)
+                 tempList[index] = values
+                 setHolidays(tempList)
+             })
+             .catch((error) => {
+                 setErrMess(error.message)
+             })
+     } */
 
     useEffect(() => {
         getCenterHolidays()
@@ -140,7 +140,7 @@ function CenterHolidays(props) {
         <tr key={holiday.id}>
             <td>{holiday.day}</td>
             <td>{holiday.date}</td>
-           {/*  <HideForType type={["Nurse"]}>
+            {/*  <HideForType type={["Nurse"]}>
                 <td><span className="fa fa-edit me-3" type="button" onClick={() => {
                     setSelectedHoliday(holiday.id)
                     setShowModal(true)
@@ -154,26 +154,23 @@ function CenterHolidays(props) {
         emptyMessage = "There are no holidays for center"
     }
 
-    const handleChange = (values) => {
+    /* const handleChange = (values) => {
         if (values.day === undefined || values.date === undefined) {
             return
         }
         setShowModal(false)
         let obj = { ...values, id: selectedHoliday }
         updateHoliday(obj)
-    }
+    } */
     const handleSubmit = (values) => {
         setAddHolidayFailedErrMess(undefined)
         if (!values.date || values.date < new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
             setAddHolidayFailedErrMess("Date is invalid")
             return
         }
-        let obj = {...values , day : daysInWeek[new Date(values.date).getDay()]}
+        let obj = { ...values, day: daysInWeek[new Date(values.date).getDay()] }
         addHoliday(obj)
     }
-    const selectedHolidayValue = holidays.filter((holiday) => holiday.id === selectedHoliday)[0]
-    let defaultDay = selectedHolidayValue ? selectedHolidayValue.day : undefined
-    let defaultDate = selectedHolidayValue ? selectedHolidayValue.date : undefined
     const ErrorAlert = () => {
         if (errMess) {
             return <Alert variant="danger" className="mt-2 mb-4" style={{
@@ -240,13 +237,13 @@ function CenterHolidays(props) {
                         </div>
                     </Col>
                     <HideForType type={["Nurse"]}>
-                        
-                    <Col className="col-12 text-center  mt-2">
 
-<LocalForm onSubmit={(values) => handleSubmit(values)} className="text-center" style={{ marginTop: "70px" }}>
-    {addHolidayFailedErrMess ? <p className="text-center text-danger mt-2">{addHolidayFailedErrMess}</p> : <></>}
+                        <Col className="col-12 text-center  mt-2">
 
-    {/* <div className="d-md-inline-block w-auto mb-3 me-md-3">
+                            <LocalForm onSubmit={(values) => handleSubmit(values)} className="text-center" style={{ marginTop: "70px" }}>
+                                {addHolidayFailedErrMess ? <p className="text-center text-danger mt-2">{addHolidayFailedErrMess}</p> : <></>}
+
+                                {/* <div className="d-md-inline-block w-auto mb-3 me-md-3">
         <Control.select model=".day" name="day" className="form-select" defaultValue="Saturday" >
             <option>Saturday</option>
             <option>Sunday</option>
@@ -257,20 +254,20 @@ function CenterHolidays(props) {
             <option>Friday</option>
         </Control.select>
     </div> */}
-    <div className="d-md-inline-block w-auto mb-3 me-md-3">
-        <div className="input-group">
-            <Control model=".date" type="date" className="form-control" />
-        </div>
-    </div>
+                                <div className="d-md-inline-block w-auto mb-3 me-md-3">
+                                    <div className="input-group">
+                                        <Control model=".date" type="date" className="form-control" />
+                                    </div>
+                                </div>
 
-    <div className="d-md-inline-block w-auto mb-3">
+                                <div className="d-md-inline-block w-auto mb-3">
 
-        <Button variant="outline-success mb-1" type="submit ">Add</Button>
-    </div>
+                                    <Button variant="outline-success mb-1" type="submit ">Add</Button>
+                                </div>
 
 
-</LocalForm>
-</Col>
+                            </LocalForm>
+                        </Col>
                     </HideForType>
 
                     <Col className="col-md-12 pe-md-4 mb-4 pe-0" style={{ marginTop: '35px' }}>
@@ -290,9 +287,9 @@ function CenterHolidays(props) {
                             {emptyMessage ? <tbody>
                                 <tr>
                                     {/* <HideForType type={["Nurse"]}> */}
-                                        <td colSpan={2}>
-                                            {emptyMessage}
-                                        </td>
+                                    <td colSpan={2}>
+                                        {emptyMessage}
+                                    </td>
                                     {/* </HideForType> */}
                                     {/* <HideForType type={["Admin"]}>
                                         <td colSpan={2}>

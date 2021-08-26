@@ -14,7 +14,7 @@ function AppointmentAvailableTimes(props) {
     const [tagsIsLoading, setTagsIsLoading] = useState(true)
     const [adderValue, setAdderValue] = useState()
     const daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    
+
     useEffect(() => {
         const getAvailableTimes = (date, day, doctorId) => {
             fetch(baseUrl + `api/appointments/empty_time/doctorId/${doctorId}/day/${day}/date/${date}`, {
@@ -105,7 +105,7 @@ function AppointmentAvailableTimes(props) {
         var minutes = date.split(':')[1];
         var ampm = hours >= 12 ? 'pm' : 'am';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         minutes = minutes < 10 ? minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
@@ -145,7 +145,7 @@ function AppointmentAvailableTimes(props) {
         obj.day = daysInWeek[new Date(props.appointmentForm.date).getDay()]
         obj.date = props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-')
         obj.type = props.appointmentForm.type
-        obj.status = "Pending"
+        obj.status = "Accepted"
         obj.description = props.appointmentForm.description
         obj.startTime = activeTimeButton
         obj.endTime = addMinutes(activeTimeButton, adderValue)
@@ -192,9 +192,9 @@ function AppointmentAvailableTimes(props) {
                 </Col>
                 <Col md={10}>
                     <div className="timesContainer ">
-                        {availableTimesList.map((time, index) => (
-                            <Button className={activeTimeButton === time ? 'active m-2' : 'm-2'} variant="outline-secondary" onClick={() => setActiveTimeButton(time)} key={index}>{formatAMPM(time)}</Button>
-                        ))}
+                        {availableTimesList.length>0 ?availableTimesList.map((time, index) => (
+                            <Button key={index} className={activeTimeButton === time ? 'active m-2' : 'm-2'} variant="outline-secondary" onClick={() => setActiveTimeButton(time)}>{formatAMPM(time)}</Button>
+                        )) : <p className="text-danger p-3">the day is full please try to reverse in another day</p>}
                     </div>
                 </Col>
             </Row>

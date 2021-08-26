@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+/* eslint-disable react/jsx-pascal-case */
+import React from 'react';
 import { Button, Col, FormGroup, FormLabel, Modal, Row } from 'react-bootstrap';
 import { Control, LocalForm } from 'react-redux-form';
 import { withRouter } from 'react-router-dom';
 import { updateDoctorDetail } from '../redux/Actions/DoctorActions';
-import { baseUrl } from '../shared/baseUrl';
 import { connect } from 'react-redux';
 
 function EditPeronalInfoDoctor(props) {

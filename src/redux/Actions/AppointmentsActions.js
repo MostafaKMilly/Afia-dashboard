@@ -1,4 +1,3 @@
-import APPOINTMENTS from '../../shared/appointments'
 import { baseUrl } from '../../shared/baseUrl'
 import * as ActionTypes from './ActionTypes'
 
@@ -8,8 +7,8 @@ export const loadAppointments = (appointments) => ({
     payload: appointments
 })
 
-const updateAppointment =(payload) => ({
-    type : ActionTypes.UPDATE_APPOINTMENT ,
+const updateAppointment = (payload) => ({
+    type: ActionTypes.UPDATE_APPOINTMENT,
     payload
 })
 
@@ -29,17 +28,17 @@ export const postAppointment = (appointment) => ({
 })
 
 const loadAccpetedAppointments = (payload) => ({
-    type : ActionTypes.LOAD_ACCEPTED_APPOINTMENTS , 
+    type: ActionTypes.LOAD_ACCEPTED_APPOINTMENTS,
     payload
 })
 
 const LoadAcceptedAppointmentFailed = (payload) => ({
-    type : ActionTypes.LOAD_ACCEPTED_APPOINTMENT_FAILED , 
+    type: ActionTypes.LOAD_ACCEPTED_APPOINTMENT_FAILED,
     payload
 })
 
 export const clearErrorMessages = (payload) => ({
-    type : ActionTypes.CLEAR_APPOINTMENT_ERROR_MESSAGES,
+    type: ActionTypes.CLEAR_APPOINTMENT_ERROR_MESSAGES,
     payload
 })
 
@@ -54,7 +53,7 @@ export const rejectAppointment = (id) => ({
 })
 
 export const deleteAppointment = (payload) => ({
-    type : ActionTypes.DELETE_APPOINTMENT , 
+    type: ActionTypes.DELETE_APPOINTMENT,
     payload
 })
 
@@ -86,9 +85,9 @@ export const fetchPendingAppointments = (clinicId) => (dispatch) => {
         .catch(e => dispatch(appointmentsFailed(e.message)))
 }
 
-export const fetchPendingAppointmentsByDate = (clinicId , date) => (dispatch) => {
+export const fetchPendingAppointmentsByDate = (clinicId, date) => (dispatch) => {
     dispatch(loadingAppointments())
-    fetch(baseUrl + 'api/appointments/clinicId/' + clinicId+'/date/'+date, {
+    fetch(baseUrl + 'api/appointments/clinicId/' + clinicId + '/date/' + date, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -143,13 +142,13 @@ export const updateAppointmetns = (doctorId) => (dispatch) => {
 }
 
 export const changePendingAppointments = (payload) => ({
-    type : ActionTypes.CHANGE_PENDING_APPOINTMENTS , 
+    type: ActionTypes.CHANGE_PENDING_APPOINTMENTS,
     payload
 })
 
-export const updateAppointmetnsByDate = (doctorId,date) => (dispatch) => {
+export const updateAppointmetnsByDate = (doctorId, date) => (dispatch) => {
     dispatch(loadingAppointments())
-    fetch(baseUrl + 'api/appointments/doctorId/' + doctorId+'/date/'+date, {
+    fetch(baseUrl + 'api/appointments/doctorId/' + doctorId + '/date/' + date, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -176,41 +175,41 @@ export const updateAppointmetnsByDate = (doctorId,date) => (dispatch) => {
 }
 
 export const getAllAcceptedAppointmentsForDoctor = (doctorId) => dispatch => {
-    return fetch (baseUrl + 'api/appointments/accepted/doctorId/'+doctorId , {
-        method : "GET" ,
-        headers : {
+    return fetch(baseUrl + 'api/appointments/accepted/doctorId/' + doctorId, {
+        method: "GET",
+        headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
     })
-    .then(response => {
-        if (response.ok) {
-            return response
-        }
-        else {
-            let error = new Error("Error " + response.status + ":" + response.statusText)
-            error.response = response
-            throw error
-        }
-    }, err => {
-        let error = new Error(err.message)
-        throw error;
-    })
-    .then(response => response.json())
-    .then(appoitnmetns => dispatch(loadAccpetedAppointments(appoitnmetns)))
-    .catch(e => dispatch(LoadAcceptedAppointmentFailed(e.message)))
+        .then(response => {
+            if (response.ok) {
+                return response
+            }
+            else {
+                let error = new Error("Error " + response.status + ":" + response.statusText)
+                error.response = response
+                throw error
+            }
+        }, err => {
+            let error = new Error(err.message)
+            throw error;
+        })
+        .then(response => response.json())
+        .then(appoitnmetns => dispatch(loadAccpetedAppointments(appoitnmetns)))
+        .catch(e => dispatch(LoadAcceptedAppointmentFailed(e.message)))
 }
 
-export const updateAcceptAppointment =  (values , appointmentId) => dispatch => {
-    fetch(baseUrl + 'api/appointments/id/'+appointmentId , {
-        method : "PATCH" , 
+export const updateAcceptAppointment = (values, appointmentId) => dispatch => {
+    fetch(baseUrl + 'api/appointments/id/' + appointmentId, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body : JSON.stringify(values)
+        body: JSON.stringify(values)
     }).then(response => {
         if (response.ok) {
             return response
@@ -224,19 +223,19 @@ export const updateAcceptAppointment =  (values , appointmentId) => dispatch => 
         let error = new Error(err.message)
         throw error;
     })
-        .then(() => dispatch(updateAppointment({appointmentId , ...values })))
+        .then(() => dispatch(updateAppointment({ appointmentId, ...values })))
         .catch((error) => console.log(error))
 }
 
-export const updateAppointmentToGoneStatus =  (values , appointmentId) => dispatch => {
-    fetch(baseUrl + 'api/appointments/id/'+appointmentId , {
-        method : "PATCH" , 
+export const updateAppointmentToGoneStatus = (values, appointmentId) => dispatch => {
+    fetch(baseUrl + 'api/appointments/id/' + appointmentId, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body : JSON.stringify(values)
+        body: JSON.stringify(values)
     }).then(response => {
         if (response.ok) {
             return response
@@ -255,10 +254,10 @@ export const updateAppointmentToGoneStatus =  (values , appointmentId) => dispat
 }
 
 
-export const getAcceptedAppointmentForClinic = (clinicId , date) => dispatch => {
-    let requestUrl = date ? baseUrl + 'api/appointments/accepted/clinicId/' + clinicId + '/date=' + date : 
-    baseUrl + 'api/appointments/accepted/clinicId/' + clinicId
-    fetch(requestUrl ,{
+export const getAcceptedAppointmentForClinic = (clinicId, date) => dispatch => {
+    let requestUrl = date ? baseUrl + 'api/appointments/accepted/clinicId/' + clinicId + '/date=' + date :
+        baseUrl + 'api/appointments/accepted/clinicId/' + clinicId
+    fetch(requestUrl, {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
@@ -278,11 +277,11 @@ export const getAcceptedAppointmentForClinic = (clinicId , date) => dispatch => 
         let error = new Error(err.message)
         throw error;
     })
-    .then(response => response.json())
-    .then(appoitnmetns => dispatch(loadAccpetedAppointments(appoitnmetns)))
-    .catch(e => dispatch(LoadAcceptedAppointmentFailed(e.message)))
+        .then(response => response.json())
+        .then(appoitnmetns => dispatch(loadAccpetedAppointments(appoitnmetns)))
+        .catch(e => dispatch(LoadAcceptedAppointmentFailed(e.message)))
 }
 
 export const clearAccetptedAppointments = () => ({
-    type : ActionTypes.CLEAR_ACCPETED_APPOINTMENTS
+    type: ActionTypes.CLEAR_ACCPETED_APPOINTMENTS
 })

@@ -1,4 +1,4 @@
 export const intialClinicForm = {
-    name : '',
-    image : {}
+    name: '',
+    image: {}
 }

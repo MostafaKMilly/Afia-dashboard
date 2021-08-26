@@ -33,7 +33,7 @@ function ClinicsSection(props) {
                     <Button variant="outline-secondary" className="btn-sm" onClick={() => nextPath(`/dashboard/clinics/${clinic.clinic.id}`)}>Detail</Button>
                 </Media.Body>
             </Media>
-            
+
 
         </Col>
     ))
@@ -68,10 +68,10 @@ function ClinicsSection(props) {
                         clinics
                     </BreadcrumbItem>
                     <HideForType type={["Nurse"]}>
-                    <Button onClick={() => nextPath(`${path}/add`)} style={{
-                        "backgroundColor": "#ff2e63f2", "border": "1px solid gray",
-                        "marginBottom": "-13px", "marginRight": "7px"
-                    }}><span className="fa fa-plus"></span></Button>
+                        <Button onClick={() => nextPath(`${path}/add`)} style={{
+                            "backgroundColor": "#ff2e63f2", "border": "1px solid gray",
+                            "marginBottom": "-13px", "marginRight": "7px"
+                        }}><span className="fa fa-plus"></span></Button>
                     </HideForType>
                 </Breadcrumb>
                 <Container fluid >
@@ -83,7 +83,7 @@ function ClinicsSection(props) {
                             <Col xs={12}>
                                 <Container fluid className="mb-2 mt-4">
                                     <Row className="ms-md-5">
-                                        {clinics.length ? clinicsList : <ErrorAlert messege="there are no clinics" color="white"/>}
+                                        {clinics.length ? clinicsList : <ErrorAlert messege="there are no clinics" color="white" />}
                                     </Row>
                                 </Container>
 

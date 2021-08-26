@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Col, Jumbotron, Row, Container, Image, Card, useAccordionToggle, Accordion, Pagination, Alert } from 'react-bootstrap';
+import { Breadcrumb, Col, Row, Container, Image, Card, useAccordionToggle, Accordion, Pagination, Alert } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { baseUrl } from '../../shared/baseUrl';
@@ -53,14 +53,14 @@ function ClinicDetail(props) {
     const [doctorsByClinic, setDoctorsByClinic] = useState([])
     const [doctorIsLoading, setDoctorIsLoading] = useState(true)
     const [errMess, setErrMess] = useState(null)
-    const [workingDayError , setWorkingDayError] = useState()
-    const [workingDays , setWorkingDays] = useState([])
-    const [statistics , setStatistics] = useState()
-    const [statisticsIsLoading , setStatisticsIsLoading] = useState(true)
-    const [appointmentsPerWeek , setAppointmentPerWeek] = useState([])
-    const [appointmentsPerWeekIsLoading , setAppointmentsPerWeekIsLoading] = useState(true)
-    const [patientStatistics,setPatientStatistics] = useState([])
-    const [patientStatisticsIsLoading,setPatientStatisticsIsLoading] = useState(true)
+    const [workingDayError, setWorkingDayError] = useState()
+    const [workingDays, setWorkingDays] = useState([])
+    const [statistics, setStatistics] = useState()
+    const [statisticsIsLoading, setStatisticsIsLoading] = useState(true)
+    const [appointmentsPerWeek, setAppointmentPerWeek] = useState([])
+    const [appointmentsPerWeekIsLoading, setAppointmentsPerWeekIsLoading] = useState(true)
+    const [patientStatistics, setPatientStatistics] = useState([])
+    const [patientStatisticsIsLoading, setPatientStatisticsIsLoading] = useState(true)
 
     const getWorkingDay = (doctorId) => {
         return fetch(baseUrl + 'api/doctors/work_days/id/' + doctorId, {
@@ -90,7 +90,7 @@ function ClinicDetail(props) {
             })
     }
     useEffect(() => {
-        const getDoctorsForClinic = () => fetch(baseUrl + 'api/doctors/clinic/'+props.clinic.clinic.id, {
+        const getDoctorsForClinic = () => fetch(baseUrl + 'api/doctors/clinic/' + props.clinic.clinic.id, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -122,116 +122,116 @@ function ClinicDetail(props) {
             })
         getDoctorsForClinic()
         const getStatistics = () => {
-        return fetch(baseUrl + 'api/statistics/clinic/'+props.clinic.clinic.id , {
-        method : "GET" ,
-        headers: {
-                "Content-Type": "application/json",
-                'Accept': "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            }
-    })
-     .then(response => {
-                if (response.ok) {
-                    return response
+            return fetch(baseUrl + 'api/statistics/clinic/' + props.clinic.clinic.id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Accept': "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
-                }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
             })
-            .then(response => response.json())
-            .then(statistics => {
-                setStatistics(statistics)
-                setStatisticsIsLoading(false)
-            })
-            .catch(error => {
-                setErrMess(error.message)
-                setStatisticsIsLoading(false)
-            })
-    }
-    getStatistics()
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+                .then(statistics => {
+                    setStatistics(statistics)
+                    setStatisticsIsLoading(false)
+                })
+                .catch(error => {
+                    setErrMess(error.message)
+                    setStatisticsIsLoading(false)
+                })
+        }
+        getStatistics()
         const getAppointmentsPerWeek = () => {
-        return fetch(baseUrl + 'api/statistics/done_appointments_per_week/id/'+props.clinic.clinic.id , {
-        method : "GET" ,
-        headers: {
-                "Content-Type": "application/json",
-                'Accept': "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            }
-    })
-     .then(response => {
-                if (response.ok) {
-                    return response
+            return fetch(baseUrl + 'api/statistics/done_appointments_per_week/id/' + props.clinic.clinic.id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Accept': "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+                .then(statistics => {
+                    setAppointmentPerWeek(statistics)
+                    setAppointmentsPerWeekIsLoading(false)
+                })
+                .catch(error => {
+                    setErrMess(error.message)
+                    setAppointmentsPerWeekIsLoading(false)
+                })
+        }
+        getAppointmentsPerWeek()
+        const getPatientPerMonth = () => {
+            fetch(baseUrl + 'api/statistics/monthly_patient_per_year/id/' + props.clinic.clinic.id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Accept': "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
             })
-            .then(response => response.json())
-            .then(statistics => {
-                setAppointmentPerWeek(statistics)
-                setAppointmentsPerWeekIsLoading(false)
-            })
-            .catch(error => {
-                setErrMess(error.message)
-                setAppointmentsPerWeekIsLoading(false)
-            })
-    }
-    getAppointmentsPerWeek()
-    const getPatientPerMonth = () => {
-        fetch(baseUrl + 'api/statistics/monthly_patient_per_year/id/'+props.clinic.clinic.id ,{
-            method : "GET",
-            headers: {
-                "Content-Type": "application/json",
-                'Accept': "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            }
-    })
-     .then(response => {
-                if (response.ok) {
-                    return response
-                }
-                else {
-                    let error = new Error(response.statusText)
-                    error.response = response
-                    throw error
-                }
-            }, err => {
-                let error = new Error(err.message)
-                throw error;
-            })
-            .then(response => response.json())
-            .then(patientsStatistics => {
-                setPatientStatistics(patientsStatistics)
-                setPatientStatisticsIsLoading(false)
-            })
-            .catch(error => {
-                setErrMess(error.message)
-                setPatientStatisticsIsLoading(false)
-            })
-    }
-    getPatientPerMonth()
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    }
+                    else {
+                        let error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                }, err => {
+                    let error = new Error(err.message)
+                    throw error;
+                })
+                .then(response => response.json())
+                .then(patientsStatistics => {
+                    setPatientStatistics(patientsStatistics)
+                    setPatientStatisticsIsLoading(false)
+                })
+                .catch(error => {
+                    setErrMess(error.message)
+                    setPatientStatisticsIsLoading(false)
+                })
+        }
+        getPatientPerMonth()
     }, [])
     function formatAMPM(date) {
         var hours = date.split(':')[0]
         var minutes = date.split(':')[1];
         var ampm = hours >= 12 ? 'pm' : 'am';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         minutes = minutes < 10 ? minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
     }
-    if (props.clinics.isLoading || doctorIsLoading || props.statisticsIsLoading ||appointmentsPerWeekIsLoading || patientStatisticsIsLoading) {
+    if (props.clinics.isLoading || doctorIsLoading || statisticsIsLoading || props.statisticsIsLoading || appointmentsPerWeekIsLoading || patientStatisticsIsLoading) {
         return <Loading />
     }
     const lastIndex = currentPage * itemsPerPage
@@ -251,16 +251,15 @@ function ClinicDetail(props) {
     const CustomToggle = ({ children, eventKey }) => {
         const decoratedOnClick = useAccordionToggle(eventKey)
         return (
-            <span className="fa fa-angle-down me-2" type="button" onClick={() =>
-                {
-                    getWorkingDay(eventKey).then((workingDays) => setWorkingDays(workingDays))
-                    decoratedOnClick()
-                }
+            <span className="fa fa-angle-down me-2" type="button" onClick={() => {
+                getWorkingDay(eventKey).then((workingDays) => setWorkingDays(workingDays))
+                decoratedOnClick()
+            }
             }></span>
         )
     }
     let workingDaysValues = workingDays ? workingDays.map((workingDay) => (
-        <p>
+        <p key={workingDay.id}>
             <span>{workingDay.day + ' : '}</span>
             <span>{formatAMPM(workingDay.startTime) + ' to '}</span>
             <span>{formatAMPM(workingDay.endTime)}</span>
@@ -273,7 +272,7 @@ function ClinicDetail(props) {
                 <Card.Text className="mb-0">
                     <div className="media align-items-center ">
                         <Image className="mr-3" src={doctor.photo === null ? 'assets/images/doctor.svg' :
-                                                props.doctor.photo.url} width="50" alt="Generic placeholder image" />
+                            props.doctor.photo.url} width="50" alt="Generic placeholder image" />
                         <div className="media-body">
                             <h5 className="mt-0">{doctor.doctor.firstName + ' ' + doctor.doctor.lastName}</h5>
                         </div>
@@ -308,37 +307,37 @@ function ClinicDetail(props) {
     ))
 
     const chartData = patientStatistics.map((statistics) => ({
-        month : statistics.name.slice(0,3) , patientsCount : statistics.count
+        month: statistics.name.slice(0, 3), patientsCount: statistics.count
     }))
 
 
-  /*   const chartData = [
-        {
-            month: "Jan", patientsCount: 20
-        }, {
-            month: "Feb", patientsCount: 30
-        }, {
-            month: "Mar", patientsCount: 10
-        }, {
-            month: "Apr", patientsCount: 30
-        }, {
-            month: "May", patientsCount: 25
-        }, {
-            month: "Jun", patientsCount: 60
-        }, {
-            month: "Jul", patientsCount: 20
-        }, {
-            month: "Aug", patientsCount: 10
-        }, {
-            month: "Sep", patientsCount: 10
-        }, {
-            month: "Oct", patientsCount: 29
-        }, {
-            month: "Nov", patientsCount: 20
-        }, {
-            month: "Dec", patientsCount: 10
-        }
-    ]; */
+    /*   const chartData = [
+          {
+              month: "Jan", patientsCount: 20
+          }, {
+              month: "Feb", patientsCount: 30
+          }, {
+              month: "Mar", patientsCount: 10
+          }, {
+              month: "Apr", patientsCount: 30
+          }, {
+              month: "May", patientsCount: 25
+          }, {
+              month: "Jun", patientsCount: 60
+          }, {
+              month: "Jul", patientsCount: 20
+          }, {
+              month: "Aug", patientsCount: 10
+          }, {
+              month: "Sep", patientsCount: 10
+          }, {
+              month: "Oct", patientsCount: 29
+          }, {
+              month: "Nov", patientsCount: 20
+          }, {
+              month: "Dec", patientsCount: 10
+          }
+      ]; */
     const data = [
         { day: 'Su', appointments: appointmentsPerWeek.Sunday },
         { day: 'Mo', appointments: appointmentsPerWeek.Monday },
@@ -349,28 +348,28 @@ function ClinicDetail(props) {
         { day: 'Sa', appointments: appointmentsPerWeek.Saturda },
     ];
     const { classes } = props;
-      const ErrorAlert = () => {
-    if (errMess) {
-        return <Alert variant="danger" className="mt-2 mb-1" style={{
-         width: "fit-content",
-         margin: "0 auto",
-         position : "absolute",
-         top: "2%",
-        transform: "translate(-50% , 0)"
-        ,left: "50%"
-        ,zIndex: 1
-     }} dismissible onClose={() =>setErrMess(undefined)}>
-         <Alert.Heading>Error !</Alert.Heading>
-         {errMess}
-     </Alert>
+    const ErrorAlert = () => {
+        if (errMess) {
+            return <Alert variant="danger" className="mt-2 mb-1" style={{
+                width: "fit-content",
+                margin: "0 auto",
+                position: "absolute",
+                top: "2%",
+                transform: "translate(-50% , 0)"
+                , left: "50%"
+                , zIndex: 1
+            }} dismissible onClose={() => setErrMess(undefined)}>
+                <Alert.Heading>Error !</Alert.Heading>
+                {errMess}
+            </Alert>
+        }
+        else {
+            return <></>
+        }
     }
-    else {
-      return <></>
-    }
-  }
     return (
         <div className="mt-2">
-        <ErrorAlert/>
+            <ErrorAlert />
             <Breadcrumb >
                 <Breadcrumb.Item className="pl-3" href="#">
                     <Link to={`/dashboard`}>
@@ -486,13 +485,13 @@ function ClinicDetail(props) {
                             <div className="bg-white mb-3">
                                 <h5 style={{ fontWeight: 450 }} className="text-center p-4">Doctors</h5>
                                 <Accordion>
-                                    {doctorsList.length !==0 ? doctorsList : <div className="text-center">
+                                    {doctorsList.length !== 0 ? doctorsList : <div className="text-center">
                                         <span className="fa fa-exclamation-triangle" style={{
-                                                fontSize: "48px",
-                                                color: "#f75151"
+                                            fontSize: "48px",
+                                            color: "#f75151"
                                         }}></span>
                                         <p className="mt-3">There are no doctors for this clinic</p>
-                                        </div>}
+                                    </div>}
                                 </Accordion>
                                 <center>
                                     <div className="text-center mt-2">

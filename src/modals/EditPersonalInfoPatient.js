@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+/* eslint-disable react/jsx-pascal-case */
+import React from 'react';
 import { Button, Col, FormGroup, FormLabel, Modal, Row } from 'react-bootstrap';
 import { Control, LocalForm } from 'react-redux-form';
 import { withRouter } from 'react-router-dom';
-import { baseUrl } from '../shared/baseUrl';
 import { connect } from 'react-redux';
 import { updatePatientDetail } from '../redux/Actions/PatientAction';
 
@@ -54,8 +54,8 @@ function EditPeronalInfoPatient(props) {
                                 <Control.select name="gender" model=".gender" className="form-select"
                                     defaultValue={props.patient.patient.gender}
                                 >
-                                <option>Male</option>
-                                <option>Female</option>
+                                    <option>Male</option>
+                                    <option>Female</option>
                                 </Control.select>
                             </FormGroup>
                             <FormGroup as={Col}>

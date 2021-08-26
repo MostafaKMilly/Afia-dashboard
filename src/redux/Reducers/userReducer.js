@@ -13,11 +13,11 @@ export const User = (state = {
             return { ...state, loggedIn: false, userData: {}, errMess: null }
         case ActionTypes.LOG_FAILED:
             return { ...state, loggedIn: false, errMess: action.payload, userData: {} }
-        case ActionTypes.FAILED_FETCH_USER_DATA :
+        case ActionTypes.FAILED_FETCH_USER_DATA:
             localStorage.clear()
             return { ...state, loggedIn: false, errMess: action.payload, userData: {} }
-        case ActionTypes.PATIENTS_FAILED :
-            return {...state , errMess : action.payload}
+        case ActionTypes.PATIENTS_FAILED:
+            return { ...state, errMess: action.payload }
         default:
             return state
     }

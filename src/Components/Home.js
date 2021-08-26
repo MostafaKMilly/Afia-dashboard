@@ -24,9 +24,9 @@ class Home extends Component {
             errMess: null,
             currentPage: 1,
             itemsPerPage: 5,
-            pendingAppointments : [],
-            pendingAppointmentsErrMess : undefined,
-            pendingAppointmentsIsLoading : true
+            pendingAppointments: [],
+            pendingAppointmentsErrMess: undefined,
+            pendingAppointmentsIsLoading: true
         }
         this.handleClick = this.handleClick.bind(this)
     }
@@ -54,9 +54,9 @@ class Home extends Component {
             .then(response => response.json())
     }
 
-    getPendingAppointments () {
-        return fetch(baseUrl + 'api/statistics/clinics/pending_appointments' , {
-            method : "GET",
+    getPendingAppointments() {
+        return fetch(baseUrl + 'api/statistics/clinics/pending_appointments', {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 'Accept': "application/json",
@@ -81,7 +81,6 @@ class Home extends Component {
     componentDidMount() {
         this.getStatistics().then((statistics) => {
             this.setState({ statistics })
-            console.log(this.state.statistics)
             this.setState({ statisticsIsLoading: false })
         })
             .catch(error => {
@@ -89,11 +88,11 @@ class Home extends Component {
                 this.setState({ statisticsIsLoading: false })
             })
         this.getPendingAppointments().then((pendingAppointments) => {
-            this.setState({pendingAppointments , pendingAppointmentsIsLoading : false})
+            this.setState({ pendingAppointments, pendingAppointmentsIsLoading: false })
         })
-        .catch((error) => {
-            this.setState({pendingAppointmentsErrMess : error.message , pendingAppointmentsIsLoading : false})
-        })
+            .catch((error) => {
+                this.setState({ pendingAppointmentsErrMess: error.message, pendingAppointmentsIsLoading: false })
+            })
 
     }
     handleClick(event) {
@@ -103,7 +102,7 @@ class Home extends Component {
         let count = 0
         this.state.pendingAppointments.forEach((pendingAppointment) => {
             if (pendingAppointment.name === clinicName) {
-                count=pendingAppointment.count
+                count = pendingAppointment.count
             }
         })
         return count
@@ -131,7 +130,7 @@ class Home extends Component {
             this.state.statistics.DoneAppointment.totalAcceptedAppointment * 100) : 0
 
         let totalDoneAppointments = this.state.statistics.DoneAppointmentPerWeek.totalDoneAppointments
-        const data = [
+        const data = totalDoneAppointments ? [
             { day: 'Su', appointments: Math.ceil(this.state.statistics.DoneAppointmentPerWeek.Sunday / totalDoneAppointments * 100) },
             { day: 'Mo', appointments: Math.ceil(this.state.statistics.DoneAppointmentPerWeek.Monday / totalDoneAppointments * 100) },
             { day: 'Tu', appointments: Math.ceil(this.state.statistics.DoneAppointmentPerWeek.Tuesday / totalDoneAppointments * 100) },
@@ -139,7 +138,7 @@ class Home extends Component {
             { day: 'Th', appointments: Math.ceil(this.state.statistics.DoneAppointmentPerWeek.Thursday / totalDoneAppointments * 100) },
             { day: 'Fr', appointments: Math.ceil(this.state.statistics.DoneAppointmentPerWeek.Friday / totalDoneAppointments * 100) },
             { day: 'Sa', appointments: Math.ceil(this.state.statistics.DoneAppointmentPerWeek.Saturday / totalDoneAppointments * 100) },
-        ];
+        ] : []
         const ErrorAlert = () => {
             return <Alert variant="danger">
                 <span className="fa fa-exclamation-triangle me-2"></span>
@@ -173,11 +172,11 @@ class Home extends Component {
                         </Col> :
                             <Col className="col-12 col-md-6 text-center text-md-right">
 
-                                
+
                                 <HideForType type={["Nurse"]}>
-                                <button className="btn me-2 mb-2 mb-md-0 text-white" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/appointments`)}>
-                                    Pending Appointments
-                                </button>
+                                    <button className="btn me-2 mb-2 mb-md-0 text-white" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/appointments`)}>
+                                        Pending Appointments
+                                    </button>
                                     <button className="btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/clinics/add`)}>
                                         Add Clinics
                                     </button>
@@ -189,9 +188,9 @@ class Home extends Component {
                                     <button className="btn me-2 mb-2 mb-md-0 text-white" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/addAppointments`)}>
                                         Add appointment
                                     </button>
-                                <button className=" btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/patients/add`)}>
-                                    Add Patient
-                                </button>
+                                    <button className=" btn me-2 text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/patients/add`)}>
+                                        Add Patient
+                                    </button>
                                     <button className="btn text-white mb-2 mb-md-0" style={{ backgroundColor: "#ff2e63f2" }} onClick={() => nextPath(`${this.props.match.url}/calender`)}>
                                         Calender
                                     </button>
@@ -351,17 +350,17 @@ class Home extends Component {
                         <Col className="col-12 col-md-4 mb-3 mb-md-0">
                             <Paper className="pb-4">
                                 <h6 className="MuiTypography-h6 pt-2 pb-1">Pending Appointments</h6>
-                                <ol class="list-group list-group-flush">
+                                <ol className="list-group list-group-flush">
                                     {this.props.clinics.clinics.length ? clinicsList.map((clinic) => (
-                                        <li class="list-group-item d-flex justify-content-between align-items-start" key={clinic.clinic.id}>
-                                            <div class="ms-2 me-auto">
+                                        <li className="list-group-item d-flex justify-content-between align-items-start" key={clinic.clinic.id}>
+                                            <div className="ms-2 me-auto">
                                                 <div style={{ fontWeight: 500 }}>{clinic.clinic.name}</div>
                                             </div>
-                                            <span class="badge rounded-pill" style={{background : "rgb(52 66 146)"}}>{this.checkIfHavePendingAppointments(clinic.clinic.name)}</span>
+                                            <span className="badge rounded-pill" style={{ background: "rgb(52 66 146)" }}>{this.checkIfHavePendingAppointments(clinic.clinic.name)}</span>
                                         </li>
-                                    )) : <p className="lead text-danger" style={{paddingTop : "116px" , paddingBottom : "112px"}}>there are no clinics</p>}
+                                    )) : <p className="lead text-danger" style={{ paddingTop: "116px", paddingBottom: "112px" }}>there are no clinics</p>}
                                 </ol>
-                                <center style={{overflow : "auto", maxWidth : "75%" ,overflowY: "hidden"}} className="mt-3">
+                                <center style={{ overflow: "auto", maxWidth: "75%", overflowY: "hidden" }} className="mt-3">
                                     <div className="text-center">
                                         <Pagination className="mb-0">{items}</Pagination>
                                     </div>
@@ -373,24 +372,24 @@ class Home extends Component {
                                 paddingRight: "68px",
                                 paddingLeft: "68px"
                             }}>
-                                {isNaN(dataPieChart[0].area) && isNaN(dataPieChart[1].area) ? <p className="lead text-danger" style={{paddingTop : "174px" , paddingBottom : "174px"}}>There are no patients</p> :
-                                   <Chart
-                                   data={dataPieChart}
-                                   height="380"
-                               >
-                                   <PieSeries
-                                       valueField="area"
-                                       argumentField="gender"
-                                       innerRadius={0.9}
+                                {isNaN(dataPieChart[0].area) && isNaN(dataPieChart[1].area) ? <p className="lead text-danger" style={{ paddingTop: "174px", paddingBottom: "174px" }}>There are no patients</p> :
+                                    <Chart
+                                        data={dataPieChart}
+                                        height="380"
+                                    >
+                                        <PieSeries
+                                            valueField="area"
+                                            argumentField="gender"
+                                            innerRadius={0.9}
 
-                                   />
-                                   <Title
-                                       text="Patients"
-                                   />
-                                   <Animation />
-                               </Chart>
+                                        />
+                                        <Title
+                                            text="Patients"
+                                        />
+                                        <Animation />
+                                    </Chart>
                                 }
-                             
+
                                 <div style={{
                                     position: "absolute",
                                     top: "44px",

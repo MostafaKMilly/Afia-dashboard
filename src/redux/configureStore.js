@@ -5,7 +5,7 @@ import { User } from './Reducers/userReducer'
 import thunk from 'redux-thunk'
 import logger from 'redux-logger'
 import { Patients } from './Reducers/patientReducer'
-import {Appointments} from './Reducers/appointmentReducer'
+import { Appointments } from './Reducers/appointmentReducer'
 import { createForms } from 'react-redux-form'
 import { intialDotorForm } from './Forms/doctorform'
 import { intialClinicForm } from './Forms/clinicForm'
@@ -20,19 +20,19 @@ export const configureStore = () => {
             doctors: Doctors,
             clinics: Clinics,
             user: User,
-            patients : Patients ,
-            appointments : Appointments,
-            center : Center,
-            doctorRegisterStatus : DoctorRegisterStatus,
-            patientRegisterStatus : PatientRegisterStatus, 
-            ...createForms ({
-                doctorForm : intialDotorForm ,
-                clinicForm : intialClinicForm,
-                patientForm : intialPatientForm,
-                appointmentForm : intialApppointmentForm
+            patients: Patients,
+            appointments: Appointments,
+            center: Center,
+            doctorRegisterStatus: DoctorRegisterStatus,
+            patientRegisterStatus: PatientRegisterStatus,
+            ...createForms({
+                doctorForm: intialDotorForm,
+                clinicForm: intialClinicForm,
+                patientForm: intialPatientForm,
+                appointmentForm: intialApppointmentForm
             })
         }),
-        applyMiddleware(thunk , logger) 
+        applyMiddleware(thunk/* , logger */)
     );
     return store
 }

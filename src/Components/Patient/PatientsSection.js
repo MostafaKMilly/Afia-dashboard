@@ -12,12 +12,12 @@ import { deleteDoctor } from '../../redux/Actions/DoctorActions';
 import BootstrapTable from "react-bootstrap-table-next"
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
-import {Columns} from '../../helpers/PatientsTableColumns'
-import {pageButtonRenderer} from '../../helpers/pageButtonRenderer'
+import { Columns } from '../../helpers/PatientsTableColumns'
+import { pageButtonRenderer } from '../../helpers/pageButtonRenderer'
 import HideForType from '../../helpers/HideForType';
 
 function PatientSection(props) {
-    let {path , url } = useRouteMatch()
+    let { path, url } = useRouteMatch()
     const nextPath = (path) => {
         props.history.push(path)
     }
@@ -29,7 +29,7 @@ function PatientSection(props) {
             setShowReset(true)
         }
     }
-    
+
 
     const actionsFormatter = (cell, row) => {
         return (
@@ -43,8 +43,8 @@ function PatientSection(props) {
                             <div>
                                 <Button variant="link" onClick={() => nextPath(`${path}/${row.patient.id}`)}>
                                     View
-                            </Button>
-                            
+                                </Button>
+
                             </div>
                         </Popover.Content>
                     </Popover>
@@ -56,7 +56,7 @@ function PatientSection(props) {
     const columns = Columns(actionsFormatter)
     const customTotal = (from, to, size) => (
         <span className="react-bootstrap-table-pagination-total ml-2">
-            Showing { from} to { to} of { size} Results
+            Showing {from} to {to} of {size} Results
         </span>
     );
     const options = {
@@ -102,11 +102,11 @@ function PatientSection(props) {
                     <Breadcrumb.Item className="pl-3" href="#">
                         <Link to="/dashboard">
                             Home
-                    </Link>
+                        </Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item className="mr-auto" active href="#">
                         Patients
-                </Breadcrumb.Item>
+                    </Breadcrumb.Item>
                 </Breadcrumb>
                 <Container fluid >
                     <div className="pageContainer">
@@ -150,12 +150,12 @@ function PatientSection(props) {
                                                     </Container>
                                                 </Col>
                                                 <Col xs="auto" className="customBtnGroup">
-                                                <HideForType type={["Admin"]}>
-                                                <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
-                                                        <span className="fas fa-user-plus"></span>
+                                                    <HideForType type={["Admin"]}>
+                                                        <Button className="btn1  mr-2" variant="outline-secondary" onClick={() => nextPath(`${path}/add`)}>
+                                                            <span className="fas fa-user-plus"></span>
                                                             Add
-                                                    </Button>
-                                    </HideForType>
+                                                        </Button>
+                                                    </HideForType>
                                                     <ExportCSVButton {...props.csvProps} className="btn2 text-white">
                                                         Export CSV
                                                     </ExportCSVButton>

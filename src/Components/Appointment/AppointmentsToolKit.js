@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, Breadcrumb, Button, Col, Card, Container, Image, OverlayTrigger, Pagination, Popover, Row, Alert } from 'react-bootstrap'
+import { Breadcrumb, Button, Col, Card, Container, Image, OverlayTrigger, Pagination, Popover, Row, Alert } from 'react-bootstrap'
 import { Control, LocalForm } from 'react-redux-form';
 import { Link, withRouter } from 'react-router-dom'
 import ErrorAlert from '../../helpers/ErrorAlert';
@@ -16,7 +16,7 @@ function AppointmentsToolKit(props) {
     const [itemsPerPage, setItemsPerPage] = useState(5)
     const [showReset, setShowReset] = useState(false)
     const [searchErrMess, setSearchErrMess] = useState()
-
+    const [searchValue, setSearchValue] = useState([])
     const getAppointments = (type, date) => {
         setAppointmentsIsLoading(true)
         fetch(baseUrl + `api/appointments/type/${type}/date/${date}`, {
@@ -59,7 +59,7 @@ function AppointmentsToolKit(props) {
         setCurrentPage(parseInt(event.target.id, 10))
     }
     const handleSearch = (values) => {
-        if (values.searchQuery?.length > 0) {
+        if (searchValue?.length > 0) {
             let patient = props.patients.patients.filter((patient) => {
                 let str = patient.patient.firstName + ' ' + patient.patient.lastName
                 return str.includes(values.searchQuery)
@@ -69,19 +69,19 @@ function AppointmentsToolKit(props) {
                 return
             }
             let list = appointments.filter((appointment) => appointment.patientId === patient.patient.id)
-            console.log(list)
-            if (list.length ===0 ) {
+            if (list.length === 0) {
                 setSearchErrMess("there is no patient with this name")
                 return
             }
             setSearchedAppointments(list)
         }
     }
-    const handleChange = (values) => {
-        if (values.searchQuery?.length > 0) {
+    const handleChange = (value) => {
+        setSearchValue(value)
+        if (value.length > 0) {
             setShowReset(true)
         }
-        else if (values.searchQuery?.length === 0) {
+        else if (value.length === 0) {
             setSearchedAppointments([...appointments])
             setShowReset(false)
         }
@@ -185,7 +185,7 @@ function AppointmentsToolKit(props) {
     }
     return (
         <div className="mt-2">
-            
+
             <Breadcrumb>
                 <Breadcrumb.Item className="pl-3 mt-1" href="#">
                     <Link to={`/dashboard`}>
@@ -202,7 +202,7 @@ function AppointmentsToolKit(props) {
                 </Breadcrumb.Item>
             </Breadcrumb>
             <Container fluid >
-            <ErrorAlertComponents />
+                <ErrorAlertComponents />
                 <div className="pageContainer" style={{ position: "relative" }}>
                     <div className="appointmentsButton mt-4 pt-1">
 
@@ -259,7 +259,7 @@ function AppointmentsToolKit(props) {
                         </OverlayTrigger>
 
                     </div>
-                   
+
                     <Row className="mb-4">
                         <Col xs={12} className="mt-3 text-center">
                             <h4>{props.type + "  Appointments"}</h4>
@@ -272,15 +272,17 @@ function AppointmentsToolKit(props) {
                                             {getItem()}
                                         </div>
                                         <div className="mt-2 mb-2">
-                                            <LocalForm model="searchBox" className="text-center" onSubmit={(values) => handleSearch(values)} onChange={(values) => handleChange(values)}>
+                                            <LocalForm model="searchBox" className="text-center" onSubmit={(values) => handleSearch(values)} >
                                                 <Row style={{ alignItems: "flex-end" }} className="mb-3 mt-3 justify-content-md-center">
                                                     <Col className="col-12 col-md-6 mb-2 mb-md-0 order-1 order-md-1" style={{ position: "relative" }}>
-                                                        <Control type="text" placeholder="search.." className="form-control" model=".searchQuery" />
+                                                        <Control type="text" value={searchValue} placeholder="search.." className="form-control" model=".searchQuery"
+                                                            onChange={(event) => handleChange(event.target.value)} />
                                                         {showReset ? <Button variant="link" className="me-3" style={{ position: "absolute", top: "0", right: "0" }}
                                                             onClick={() => {
                                                                 setShowReset(false)
                                                                 setSearchErrMess(undefined)
                                                                 setSearchedAppointments([...appointments])
+                                                                setSearchValue('')
                                                             }}
                                                         >Reset</Button> : <></>}
                                                     </Col>

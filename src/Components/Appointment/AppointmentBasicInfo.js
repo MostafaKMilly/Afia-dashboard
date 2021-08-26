@@ -119,7 +119,7 @@ function AppointmentBasicInfo(props) {
         props.changeDoctorId(null)
         setDoctors([])
         props.resetDate()
-        if (parseInt(id)=== 0) {
+        if (parseInt(id) === 0) {
             props.changeClinicId(null)
             props.changeDoctorId(null)
             return
@@ -158,8 +158,7 @@ function AppointmentBasicInfo(props) {
     }
     const DateComponent = (propsValus) => {
         useEffect(() => {
-            if (parseInt(propsValus.doctorId) && validDates.length ===0) {
-                console.log(validDates)
+            if (parseInt(propsValus.doctorId) && validDates.length === 0) {
                 getValidDates(parseInt(propsValus.doctorId)).then((workingDays) => {
                     let arr = []
                     workingDays.forEach((workingDay) => {
@@ -167,7 +166,7 @@ function AppointmentBasicInfo(props) {
                     })
                     setValidDatesList(arr)
                 })
-                .catch(() => {})
+                    .catch(() => { })
             }
         }, [])
         return <DatePicker {...propsValus} includeDates={validDates}
@@ -177,7 +176,7 @@ function AppointmentBasicInfo(props) {
     }
 
     const patientsList = filterdArray.map((patient) => (
-        <p className="list-group-item list-group-item-action m-0" type="button" onClick={handleClick}>{patient.patient.user.username}</p>
+        <p className="list-group-item list-group-item-action m-0" key={patient.patient.id} type="button" onClick={handleClick}>{patient.patient.user.username}</p>
     ))
 
     const clinicsSelect = props.clinics.clinics.map((clinic) => (
@@ -195,7 +194,7 @@ function AppointmentBasicInfo(props) {
         props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-') >= new Date().toLocaleDateString('pt-br').split('/').reverse().join('-') ? false : true
     return (
         <Col md={12}>
-            <Form model="appointmentForm" className="p-4" onSubmit={(values) => console.log(values)}>
+            <Form model="appointmentForm" className="p-4">
                 <Row className="form-group g-2 align-items-center" >
                     <Col md={2}>
                         <FormLabel>Patient username :</FormLabel>

@@ -97,8 +97,8 @@ class Dashboard extends Component {
                             <Route path={`${this.props.match.path}/appointments/rejected`} component={() => <AppointmentsToolKit type="Rejected" />} />
                             <Route path={`${this.props.match.path}/appointments/done`} component={() => <AppointmentsToolKit type="Done" />} />
                             <Route path={`${this.props.match.path}/appointments/gone`} component={() => <AppointmentsToolKit type="Gone" />} />
-                            <Route path={`${this.props.match.path}/appointments/cancelled`} component={() => <AppointmentsToolKit type="Cancelled"/>} />
-                            <Route path={`${this.props.match.path}/appointments/accepted`} component={() => <AppointmentsToolKit type="Accepted"/>} />
+                            <Route path={`${this.props.match.path}/appointments/cancelled`} component={() => <AppointmentsToolKit type="Cancelled" />} />
+                            <Route path={`${this.props.match.path}/appointments/accepted`} component={() => <AppointmentsToolKit type="Accepted" />} />
                         </div>
                     </div>
                 </>

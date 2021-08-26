@@ -1,6 +1,7 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from 'react';
-import { Row, Container, Col, Image, Form, Button, Table, Modal, FormGroup, FormLabel, Alert, Pagination } from 'react-bootstrap';
-import { withRouter, Link } from 'react-router-dom';
+import { Row, Container, Col, Image, Button, Table, Modal, FormGroup, FormLabel, Alert, Pagination } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { clearErrMess, deleteWorkingDay, updateWorkingDay } from '../../redux/Actions/CenterActions';
 import { Control, LocalForm } from 'react-redux-form'
@@ -37,7 +38,7 @@ function AdminComponent(props) {
             throw error;
         })
             .then(response => response.json())
-            
+
     }
     useEffect(() => {
         getAdmins().then((admins) => {
@@ -71,7 +72,7 @@ function AdminComponent(props) {
             throw error;
         })
             .then(response => response.json())
-            
+
     }
     const updateAdmin = (adminId, values) => {
         return fetch(baseUrl + 'api/admins/' + adminId, {
@@ -118,7 +119,7 @@ function AdminComponent(props) {
             let error = new Error(err.message)
             throw error;
         })
-        .then(response => response.json())
+            .then(response => response.json())
     }
     const handleClick = (event) => {
         setCurrentPage(parseInt(event.target.id, 10))
@@ -154,9 +155,9 @@ function AdminComponent(props) {
                 tempoArray[i] = { ...tempoArray[i], ...values }
                 setAdmins(tempoArray)
             })
-            .catch(error => {
-                setError(error.message)
-            })
+                .catch(error => {
+                    setError(error.message)
+                })
             setEditShowModal(false)
         }
     }
@@ -170,9 +171,9 @@ function AdminComponent(props) {
             tempoArray.push(admin.AdminData)
             setAdmins(tempoArray)
         })
-        .catch(error => {
-            setError(error.message)
-        })
+            .catch(error => {
+                setError(error.message)
+            })
         setAddShowModal(false)
     }
     const handleDelete = (adminId) => {
@@ -180,10 +181,10 @@ function AdminComponent(props) {
             let tempArray = admins.filter((admin) => admin.id !== adminId)
             setAdmins(tempArray)
         })
-        .catch(error => {
-            setError(error.message)
-            setIsLoading(false)
-        })
+            .catch(error => {
+                setError(error.message)
+                setIsLoading(false)
+            })
     }
     /*  const selectedAdminValues = admins?.filter((Admin) => Admin.id ===selectedAdmin)[0]
      let defaultUserName = selectedAdminValues ? selectedAdminValues.username : undefined 
@@ -288,7 +289,7 @@ function AdminComponent(props) {
                             <tbody>
                                 {adminsList}
                             </tbody>
-                            {admins.length ===0 ? <tbody>
+                            {admins.length === 0 ? <tbody>
                                 <tr>
                                     <td colSpan={3}>
                                         {"there are no admins"}

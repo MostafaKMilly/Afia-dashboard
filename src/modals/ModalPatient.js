@@ -1,26 +1,24 @@
 import React from 'react';
 import { Modal, Form, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import {actions } from 'react-redux-form';
 import { addPatient, closePatientDialog } from '../redux/Actions/PatientAction';
 
 function ModalPatient(props) {
     const handleSubmit = (event) => {
         event.preventDefault()
-        let requestData = {...props.data}
+        let requestData = { ...props.data }
         requestData.user = { ...requestData.user, type: "Patient" }
-        console.log(requestData)
         props.addPatient(requestData)
         props.handleClose()
     }
-    
+
     return (
         <Modal show={props.patients.modelDialogIsOpen} onHide={props.handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Confirm Register</Modal.Title>
             </Modal.Header>
             <Form onSubmit={handleSubmit}>
-            <Modal.Body>
+                <Modal.Body>
                     <div className="separator  mb-2">
                         Patient Name
                     </div>
@@ -34,7 +32,7 @@ function ModalPatient(props) {
                         <Form.Group as={Col}>
                             <Form.Label>
                                 Middle Name :
-                                </Form.Label>
+                            </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.middleName} />
                         </Form.Group>
                         <Form.Group as={Col}>
@@ -51,19 +49,19 @@ function ModalPatient(props) {
                         <Form.Group as={Col}>
                             <Form.Label>
                                 address :
-                                </Form.Label>
+                            </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.address} />
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>
-                                Phone Number : 
-                                </Form.Label>
+                                Phone Number :
+                            </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.phone} />
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>
-                                Home Number : 
-                                </Form.Label>
+                                Home Number :
+                            </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.number} />
                         </Form.Group>
                     </Form.Row>
@@ -79,19 +77,19 @@ function ModalPatient(props) {
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>
-                             Birthday :
+                                Birthday :
                             </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.birthday} />
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>
-                            Length :
+                                Length :
                             </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.length} />
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>
-                            Weight :
+                                Weight :
                             </Form.Label>
                             <Form.Control plaintext readOnly value={props.data.weight} />
                         </Form.Group>
@@ -119,15 +117,15 @@ function ModalPatient(props) {
                             <Form.Control plaintext readOnly value={props.data.user.password} />
                         </Form.Group>
                     </Form.Row>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={props.handleClose}>
-                    Edit
-                </Button>
-                <Button className="loginBtn" type="submit">
-                    Save Changes
-                </Button>
-            </Modal.Footer>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={props.handleClose}>
+                        Edit
+                    </Button>
+                    <Button className="loginBtn" type="submit">
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
             </Form>
         </Modal>
     );
@@ -136,7 +134,7 @@ function ModalPatient(props) {
 
 const mapStateToProps = (state) => ({
     patients: state.patients,
-    patientRegisterStatus : state.patientRegisterStatus
+    patientRegisterStatus: state.patientRegisterStatus
 })
 const mapDispatchToProps = (dispatch) => ({
     addPatient: (patientInfo) => dispatch(addPatient(patientInfo)),

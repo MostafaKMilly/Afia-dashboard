@@ -109,15 +109,15 @@ class Login extends Component {
                 <Modal.Title>Contact Us</Modal.Title>
               </Modal.Header>
               <Modal.Body className="text-center">
-              <Image src="assets\images\logo (1).svg" className="mb-2" width="110" height="110" fluid />
+                <Image src="assets\images\logo (1).svg" className="mb-2" width="110" height="110" fluid />
                 <p>
-              If you forget your password feel free to contact us :)
-              </p>
+                  If you forget your password feel free to contact us :)
+                </p>
                 <div>
-                      <span className="fa fa-phone me-2"></span> +963943565925
+                  <span className="fa fa-phone me-2"></span> +963943565925
                 </div>
                 <div>
-                      <span className="fa fa-inbox me-2"></span> mostafamilly6@gmail.com
+                  <span className="fa fa-inbox me-2"></span> mostafamilly6@gmail.com
                 </div>
               </Modal.Body>
               <Modal.Footer>

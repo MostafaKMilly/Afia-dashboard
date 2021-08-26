@@ -1,5 +1,6 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from 'react';
-import { Container, Breadcrumb, Button, Row, Col, Image, Form, Modal, FormGroup, FormLabel, Pagination } from 'react-bootstrap'
+import { Container, Breadcrumb, Button, Row, Col, Image, Modal, FormLabel, Pagination } from 'react-bootstrap'
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import Loading from '../Loading';
@@ -157,30 +158,30 @@ function DoctorDetail(props) {
             .then(response => response.json())
     }
 
-      /*   const deleteHoliday = (holidayId) => {
-            return fetch(baseUrl + 'api/doctors/holidays/id/' + holidayId, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Accept': "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                },
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response
-                    }
-                    else {
-                        let error = new Error(response.statusText)
-                        error.response = response
-                        throw error
-                    }
-                }, err => {
-                    let error = new Error(err.message)
-                    throw error;
-                })
-                .then(response => response.json())
-        } */
+    /*   const deleteHoliday = (holidayId) => {
+          return fetch(baseUrl + 'api/doctors/holidays/id/' + holidayId, {
+              method: "DELETE",
+              headers: {
+                  "Content-Type": "application/json",
+                  'Accept': "application/json",
+                  "Authorization": `Bearer ${localStorage.getItem("token")}`
+              },
+          })
+              .then(response => {
+                  if (response.ok) {
+                      return response
+                  }
+                  else {
+                      let error = new Error(response.statusText)
+                      error.response = response
+                      throw error
+                  }
+              }, err => {
+                  let error = new Error(err.message)
+                  throw error;
+              })
+              .then(response => response.json())
+      } */
 
     const updateTags = (doctorId, values) => {
         return fetch(baseUrl + 'api/doctors/tags/id/' + doctorId, {
@@ -349,11 +350,11 @@ function DoctorDetail(props) {
         return patient.patient.firstName + ' ' + patient.patient.lastName
     }
     let timeline = !errorMess ? todayAppointments.map((appointment => (
-        <div class="timeline-step">
-            <div class="timeline-content" data-toggle="popover" data-trigger="hover">
-                <div class="inner-circle"></div>
-                <p class="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
-                <p class="h6 text-muted mb-0 mb-lg-0">
+        <div className="timeline-step" key={appointment.id}>
+            <div className="timeline-content" data-toggle="popover" data-trigger="hover">
+                <div className="inner-circle"></div>
+                <p className="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
+                <p className="h6 text-muted mb-0 mb-lg-0">
                     <PatientsName patientId={appointment.patientId} />
                 </p>
             </div>
@@ -361,13 +362,6 @@ function DoctorDetail(props) {
     ))) : <p style={{ padding: "50px" }}>{errorMess}</p>
     let clinicId = props.clinics.clinics.filter((clinic) =>
         clinic.clinic.id === parseInt(props.doctor.doctor.clinicId, 10))[0].clinic.id
-    let workingDays = workingDaysList?.length ? workingDaysList.map((workingDay) => (
-        <p>
-            <span>{workingDay.day + ' : '}</span>
-            <span>{formatAMPM(workingDay.startTime) + ' to '}</span>
-            <span>{formatAMPM(workingDay.endTime)}</span>
-        </p>
-    )) : <p>{workingDayError || "there is no working days"}</p>
 
     const handleSubmitHoliday = (values) => {
         if (values.date && values.date >= new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
@@ -388,23 +382,23 @@ function DoctorDetail(props) {
             setHolidaysErrMess("holiday is invalid")
         }
     }
-     /* const handleDeleteHoliday = (holidayId) => {
-         setHolidaysErrMess(undefined)
-         deleteHoliday(holidayId).then(() => {
-             let tempArray = holidays.filter((holiday) => holiday.id !== holidayId)
-             setHolidays(tempArray)
-         })
-             .catch((error) => {
-                 setHolidaysErrMess(error.message)
-             })
-     }
- */
+    /* const handleDeleteHoliday = (holidayId) => {
+        setHolidaysErrMess(undefined)
+        deleteHoliday(holidayId).then(() => {
+            let tempArray = holidays.filter((holiday) => holiday.id !== holidayId)
+            setHolidays(tempArray)
+        })
+            .catch((error) => {
+                setHolidaysErrMess(error.message)
+            })
+    }
+*/
     const handleUpdateWorkingDay = (values) => {
         if (values.endTime < values.startTime) {
             setWorkingDaysModalErrMess("time is invalid")
             return
         }
-        let obj = { startTime: values.startTime.length === 8 ? values.startTime : values.startTime+':00' , endTime: values.endTime.length === 8 ? values.endTime : values.endTime+':00' }
+        let obj = { startTime: values.startTime.length === 8 ? values.startTime : values.startTime + ':00', endTime: values.endTime.length === 8 ? values.endTime : values.endTime + ':00' }
         setWorkingDaysModalErrMess(undefined)
         updateWorkingDay(obj, values.day, props.doctor.doctor.id).then(() => {
             let index = workingDaysList.findIndex((workingDay) => workingDay.day === values.day)
@@ -429,7 +423,6 @@ function DoctorDetail(props) {
     }
 
     const handleAddWorkingDays = (values) => {
-        console.log(values)
         setWorkingDaysModalErrMess(undefined)
         if (!values.day || !values.endTime || !values.startTime || values.endTime < values.startTime || values.endTime === values.startTime) {
             setWorkingDaysModalErrMess("time is invalid")
@@ -552,7 +545,7 @@ function DoctorDetail(props) {
                                     <Row>
                                         <Col className="pt-3 ml-4 pb-3">
                                             <h5 className="mb-3">Today Appointments</h5>
-                                            <div class="timeline-steps aos-init aos-animate">
+                                            <div className="timeline-steps aos-init aos-animate">
                                                 {timeline}
                                             </div>
                                         </Col>
@@ -572,11 +565,11 @@ function DoctorDetail(props) {
                             <h4 className="mb-3">Working Days</h4>
                             {workingDaysListItems}
                             <center>
-                                    <div className="text-center mt-2">
-                                        <Pagination>{itemsList}</Pagination>
-                                    </div>
+                                <div className="text-center mt-2">
+                                    <Pagination>{itemsList}</Pagination>
+                                </div>
 
-                                </center>
+                            </center>
                         </div>
                         <div className="pe-4 ps-4 pb-4 pt-2 bg-white mt-4 text-center">
                             <div className="profileEditIcons me-3 mt-2">
@@ -587,10 +580,10 @@ function DoctorDetail(props) {
                             <Image src="assets/images/Blood donation-rafiki.svg" className="img-fluid mt-2 mb-1" style={{ "maxWidth": "48%" }} alt={props.doctor.doctor.firstName} />
                             <h5 className="mb-3">Sessions duration</h5>
                             {props.doctor.tag !== null ?
-                                <ul class="list-group list-group-flush gap-0">
-                                    <li class="list-group-item border-bottom-0">Check : {props.doctor.tag.check + 'm'}</li>
-                                    <li class="list-group-item border-bottom-0">Consultation : {props.doctor.tag.consultation + 'm'}</li>
-                                    <li class="list-group-item border-bottom-0">Review : {props.doctor.tag.review + 'm'}</li>
+                                <ul className="list-group list-group-flush gap-0">
+                                    <li className="list-group-item border-bottom-0">Check : {props.doctor.tag.check + 'm'}</li>
+                                    <li className="list-group-item border-bottom-0">Consultation : {props.doctor.tag.consultation + 'm'}</li>
+                                    <li className="list-group-item border-bottom-0">Review : {props.doctor.tag.review + 'm'}</li>
                                 </ul>
                                 : <p>there are no sessions duration for this doctor</p>}
 
@@ -604,10 +597,10 @@ function DoctorDetail(props) {
                             <h5 className="mb-3 mt-3"><span className="fa fa-calendar-day me-2"></span>Holidays</h5>
 
                             {
-                                <ul class="list-group list-group-flush gap-0">
+                                <ul className="list-group list-group-flush gap-0">
                                     {holidaysList.length ? holidaysList.map((holiday) => (
-                                        <li class="list-group-item border-bottom-0" key={holiday.id}>{holiday.day + '  :      ' + holiday.date}</li>
-                                    )) : <li class="list-group-item border-bottom-0 text-danger" key={0}>There are no holidays</li>}
+                                        <li className="list-group-item border-bottom-0" key={holiday.id}>{holiday.day + '  :      ' + holiday.date}</li>
+                                    )) : <li className="list-group-item border-bottom-0 text-danger" key={0}>There are no holidays</li>}
                                 </ul>
                             }
                             {holidays?.length === 0 ? <></> :
@@ -634,9 +627,9 @@ function DoctorDetail(props) {
                             <h4 className="font-weight-light text-center">Holidays</h4>
                             {holidaysErrMess && holidays.length ? <p className="mt-2 text-danger text-center">{holidaysErrMess}</p> : <></>}
                             {
-                                <ul class="list-group list-group-flush gap-0 text-center mt-2 mb-2 ms-0 me-0">
+                                <ul className="list-group list-group-flush gap-0 text-center mt-2 mb-2 ms-0 me-0">
                                     {holidays.length ? holidays.map((holiday) => (
-                                        <li class="list-group-item border-bottom-0" key={holiday.id}>{holiday.day + '  :      ' + holiday.date}
+                                        <li className="list-group-item border-bottom-0" key={holiday.id}>{holiday.day + '  :      ' + holiday.date}
                                             {/*  <span className="fa fa-trash-alt fa-lg" style={{
                                                 position: "absolute",
                                                 right: "21%",
@@ -646,7 +639,7 @@ function DoctorDetail(props) {
                                                 cursor: "pointer"
                                             }} onClick={() => handleDeleteHoliday(holiday.id)} ></span> */}
                                         </li>
-                                    )) : <li class="list-group-item border-bottom-0 text-danger" key={0}>There are no holidays</li>}
+                                    )) : <li className="list-group-item border-bottom-0 text-danger" key={0}>There are no holidays</li>}
                                 </ul>
                             }
                             <LocalForm model="holidayForm" className="text-center" onSubmit={handleSubmitHoliday}>
@@ -795,7 +788,7 @@ function DoctorDetail(props) {
 
                                 </LocalForm>
 
-                            )) : <p class="mt-4 text-danger text-center" key={0}>There are no working days</p>}
+                            )) : <p className="mt-4 text-danger text-center" key={0}>There are no working days</p>}
 
                             <LocalForm onSubmit={(values) => handleAddWorkingDays(values)} className="text-center" style={{ marginTop: "70px" }}>
 

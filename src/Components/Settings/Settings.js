@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Breadcrumb, Col, Container, Row, Image, Form, Button } from 'react-bootstrap';
+import { Breadcrumb, Col, Container, Row } from 'react-bootstrap';
 import { Link, Route, withRouter, Switch, NavLink, Redirect } from 'react-router-dom';
 import AddWorkingDays from './AddWorkingDays';
 import ProfileInfo from './ProfileInfo';
@@ -8,14 +8,10 @@ import Loading from '../Loading';
 import { connect } from 'react-redux';
 import { fetchCenterDays } from '../../redux/Actions/CenterActions';
 import NurseComponent from './NurseComponent';
-import AdminComponent from './AdminComponent';
 import HideForType from '../../helpers/HideForType';
 import CenterHolidays from './CenterHolidays';
 
 function Settings(props) {
-    const nextPath = (path) => {
-        props.history.push(path)
-    }
     useEffect(() => {
         props.fetchCenterDays()
     }, [])
@@ -43,7 +39,7 @@ function Settings(props) {
                         <Col className="col-2 col-md-3 p-0" style={{
                             borderRight: '1px solid #b8bdc2', height: 'auto', minHeight: '100vh'
                         }}>
-                            <div class="list-group list-group-flush">
+                            <div className="list-group list-group-flush">
                                 <NavLink to={props.match.path} exact className="list-group-item list-group-item-action  text-md-left text-center" activeClassName="active">
                                     <span className="fa fa-info-circle me-md-4 me-0"></span> <span className="d-md-inline d-none">Proflie Info</span>
                                 </NavLink>
@@ -57,7 +53,7 @@ function Settings(props) {
                                     <NavLink to={`${props.match.path}/nurses`} exact className="list-group-item list-group-item-action text-md-left text-center" activeClassName="active">
                                         <span className="fa fa-user-nurse me-md-4 me-0"></span> <span className="d-md-inline d-none">Nurses</span>
                                     </NavLink>
-                                      
+
                                 </HideForType>
                                 <NavLink to={`${props.match.path}/centerHolidays`} exact className="list-group-item list-group-item-action text-md-left text-center" activeClassName="active">
                                     <span className="fa fa-home me-md-4 me-0"></span> <span className="d-md-inline d-none">Center Holidays</span>
@@ -70,7 +66,7 @@ function Settings(props) {
                                 <Route exact path={`${props.match.path}/addWorkingDays`} component={() => <AddWorkingDays />} />
                                 <Route exact path={`${props.match.path}/workingDays`} component={() => <WorkingDays />} />
                                 <Route exact path={`${props.match.path}/nurses`} component={() => <NurseComponent />} />
-                                <Route exact path={`${props.match.path}/centerHolidays`} component={() => <CenterHolidays />} />                        
+                                <Route exact path={`${props.match.path}/centerHolidays`} component={() => <CenterHolidays />} />
                                 <Redirect exact to="/dashboard" />
                             </Switch>
                         </Col>

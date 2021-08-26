@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, Alert, Breadcrumb, Button, Card, Col, Container, OverlayTrigger, Popover, Row, useAccordionToggle } from 'react-bootstrap';
+import { Accordion, Alert, Breadcrumb, Button, Card, Col, Container, Modal, OverlayTrigger, Popover, Row, useAccordionToggle } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom'
 import { acceptAppointment, changePendingAppointments, fetchPendingAppointments, fetchPendingAppointmentsByDate, rejectAppointment, updateAppointmetns, updateAppointmetnsByDate } from '../../redux/Actions/AppointmentsActions';
@@ -30,8 +30,9 @@ function Appointments(props) {
     let [showReset, setShowReset] = useState(false)
     let [searchValue, setSearchValue] = useState()
     let [autoAcceptErrMess, setAutoAcceptErrMess] = useState()
+    const [autoAcceptedList, setAutoAcceptedAutoList] = useState([])
+    const [showAcceptModal, setShowAcceptModal] = useState(false)
     const [searchErrMess, setSearchErrMess] = useState()
-
     const nextPath = (path) => {
         props.history.push(path)
     }
@@ -224,13 +225,6 @@ function Appointments(props) {
                 setDoctorsIslLoading(false)
             })
         getDoctorsForClinic()
-        /* getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, curday())
-            .then(
-                appointments => setTodayAppointments(appointments)
-            )
-            .catch(error => {
-                settodayTimeLineErrMess(error.message)
-            }) */
         props.fetchPendingAppointments(props.clinics.clinics[0]?.clinic?.id)
     }, [])
     const CustomToggle = ({ children, eventKey, date }) => {
@@ -333,7 +327,7 @@ function Appointments(props) {
         setUpdatedDate(date)
     }
     let timeline = !todayTimeLineErrMess ? sortedTimeLine.map((appointment => (
-        <div className="timeline-step">
+        <div className="timeline-step" key={appointment.id}>
             <div className="timeline-content" data-toggle="popover" data-trigger="hover">
                 <div className="inner-circle"></div>
                 <p className="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
@@ -361,7 +355,7 @@ function Appointments(props) {
     })
 
     let timeLineFoappointment = !appointmentsTimeLineErrMess ? sortedAppointmentsTimeLine.map((appointment => (
-        <div className="timeline-step">
+        <div className="timeline-step" key={appointment.id}>
             <div className="timeline-content" data-toggle="popover" data-trigger="hover">
                 <div className="inner-circle"></div>
                 <p className="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
@@ -410,7 +404,7 @@ function Appointments(props) {
                                 settodayTimeLineErrMess(error.message)
                             })
                     }
-                    else if (date){
+                    else if (date) {
                         getClinicTimeLine(props.clinics.clinics[0]?.clinic?.id, date).then((appointments) => {
                             settodayTimeLineErrMess(undefined)
                             setTodayAppointments(appointments)
@@ -430,7 +424,6 @@ function Appointments(props) {
     const handleReject = (event) => appointmentId => {
         event.preventDefault()
         let values = { status: "Rejected" }
-        console.log(values, appointmentId)
         rejectAppointment(values, appointmentId).then(() => {
             props.rejectAppointment(appointmentId)
         })
@@ -484,7 +477,7 @@ function Appointments(props) {
         if (props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || props.clinics.isLoading || clinicsIsLoading) {
             return <Loading />
         }
-        
+
         return <DatePicker selected={date} includeDates={validDateList} {...propsValus} onChange={(date) => {
             propsValus.onChange(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
             handleChangeDate(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
@@ -520,8 +513,7 @@ function Appointments(props) {
                                     <p>{"to"}</p>
                                 </Col>
                                 <Col md="auto">
-                                    <Control type="time" model=".endTime" className="form-control" id={appointment.id} defaultValue={appointment.endTime}
-                                        onChange={(event) => console.log(event)} />
+                                    <Control type="time" model=".endTime" className="form-control" id={appointment.id} defaultValue={appointment.endTime}/>
                                 </Col>
                                 <Col md="auto" className="mt-3 mt-md-0">
                                     <Control model=".date" className="form-control" component={DateComponent} id={appointment.id} mapProps={{ dateValue: appointment.date, doctorId: appointment.doctorId }} defaultValue={appointment.date} />
@@ -567,7 +559,7 @@ function Appointments(props) {
         </Card>
     ))
     let error = false
-   
+
     if (props.appointments.errMess) {
         error = true
     }
@@ -579,26 +571,12 @@ function Appointments(props) {
         settodayTimeLineErrMess(undefined)
         setTodayAppointments([])
         let doctorId = event.target[event.target.selectedIndex].id
-        if (doctorId == 0) {
+        if (doctorId === 0) {
             props.fetchPendingAppointments(SelectedClinic || props.clinics.clinics[0]?.clinic?.id)
-           /*  getClinicTimeLine(SelectedClinic || props.clinics.clinics[0]?.clinic?.id, curday()).then((appointments) => {
-                settodayTimeLineErrMess(undefined)
-                setTodayAppointments(appointments)
-            })
-                .catch(error => {
-                    settodayTimeLineErrMess(error.message)
-                }) */
             setSelectedDoctor(undefined)
         }
         else {
             setSelectedDoctor(doctorId)
-            /* getDoctorTimeLine(doctorId, curday()).then((appointments) => {
-                settodayTimeLineErrMess(undefined)
-                setTodayAppointments(appointments)
-            })
-                .catch(error => {
-                    settodayTimeLineErrMess(error.message)
-                }) */
             props.updateAppointments(doctorId)
         }
     }
@@ -613,14 +591,6 @@ function Appointments(props) {
         let doctorArray = props.doctors.doctors.filter((doctor) => doctor.doctor.clinicId == clinicId)
         setDoctors(doctorArray)
         props.fetchPendingAppointments(clinicId)
-        /* getClinicTimeLine(clinicId, curday()).then((appointments) => {
-            settodayTimeLineErrMess(undefined)
-            setTodayAppointments(appointments)
-        }
-        )
-            .catch(error => {
-                settodayTimeLineErrMess(error.message)
-            }) */
     }
     let clinicSelectors = clinics.map((clinic) => (
         <option key={clinic.clinic.id} id={clinic.clinic.id}>{clinic.clinic.name}</option>
@@ -684,7 +654,7 @@ function Appointments(props) {
                 })
         }
         else if (SelectedClinic) {
-            getClinicTimeLine(SelectedClinic,event.target.value).then((appointments) => {
+            getClinicTimeLine(SelectedClinic, event.target.value).then((appointments) => {
                 settodayTimeLineErrMess(undefined)
                 setTodayAppointments(appointments)
             })
@@ -777,17 +747,21 @@ function Appointments(props) {
 
     const handleAutoAccept = (event) => {
         event.preventDefault()
+        setAutoAcceptedAutoList([])
         let list = []
         getAvailableTimes(date, daysInWeek[new Date(date).getDay()], selectedDoctor)
             .then((availableTimes) => {
                 availableTimes.forEach((availableTime) => {
-                    let startTime = availableTime.startTime.slice(0,5)
+                    let startTime = availableTime.startTime.slice(0, 5)
                     props.appointments.appointments.forEach((appointment) => {
                         let diff = (new Date(`Wed Aug 25 2021 ${appointment.endTime}`) -
                             new Date(`Wed Aug 25 2021 ${appointment.startTime}`)) / 60000
                         let endTime = addMinutes(startTime, diff)
-                        if (endTime < availableTime.endTime.slice(0,5) && !list.filter((item) => item.id === appointment.id)[0]) {
-                            list.push({ id: appointment.id, startTime, endTime , doctorId :appointment.doctorId , date : appointment.date , day : appointment.day })
+                        if (endTime < availableTime.endTime.slice(0, 5) && !list.filter((item) => item.id === appointment.id)[0]) {
+                            list.push({
+                                id: appointment.id, startTime, endTime, doctorId: appointment.doctorId, date: appointment.date, day: appointment.day,
+                                patientId: appointment.patientId
+                            })
                             startTime = endTime
                         }
                         else {
@@ -795,13 +769,51 @@ function Appointments(props) {
                         }
                     })
                 })
-                list.forEach((item) => {
-                    handleAccept({startTime : item.startTime , endTime : item.endTime , date : item.date} , item.id , item.doctorId)
-                })
-                
+                if (list.length > 0) {
+                    setAutoAcceptedAutoList(list)
+                    setShowAcceptModal(true)
+                }
+                else {
+                    setAutoAcceptErrMess("the day is full")
+                }
             })
             .catch((error) => setAutoAcceptErrMess(error.message))
     }
+
+    const handleAcceptAutoSaveModal = (event) => {
+        event.preventDefault()
+        let list = [...autoAcceptedList]
+        list.forEach((item) => {
+            handleAccept({ startTime: item.startTime, endTime: item.endTime, date: item.date }, item.id, item.doctorId)
+        })
+        setShowAcceptModal(false)
+    }
+    const autoAcceptTimeLine = autoAcceptedList.concat(todayAppointments).sort((a, b) => {
+        if (a.startTime < b.startTime) {
+            return -1
+        }
+        if (a.startTime > b.startTime) {
+            return 1
+        }
+        return 0
+    })
+        .map((appointment => (
+            <div className="timeline-step">
+                <div className="timeline-content" data-toggle="popover" data-trigger="hover">
+                    <div className="inner-circle"></div>
+                    <p className="h6 mt-3 mb-1">{formatAMPM(appointment.startTime) + ' -> ' + formatAMPM(appointment.endTime)}</p>
+                    <p className="h6 text-muted mb-1">
+                        <PatientsName patientId={appointment.patientId} />
+                    </p>
+                    {
+                        !selectedDoctor ? <p className="h6  mb-0 mb-lg-0" style={{ color: "#ff3467" }}>
+                            <DoctorName doctorId={appointment.doctorId} />
+                        </p> : <></>
+                    }
+
+                </div>
+            </div>
+        )))
     return (
         <div className="mt-2">
             <ErrorAlertComponents />
@@ -969,6 +981,26 @@ function Appointments(props) {
                         </Col> : <></>}
                     </Row>
                 </div>
+                <Modal size="xl" show={showAcceptModal} onHide={() => setShowAcceptModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            Confirm auto
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className="timeline-steps aos-init aos-animate">
+                            {autoAcceptTimeLine}
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowAcceptModal(false)}>
+                            Close
+                        </Button>
+                        <Button className="loginBtn" onClick={handleAcceptAutoSaveModal}>
+                            Accept
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Container>
         </div>
     );

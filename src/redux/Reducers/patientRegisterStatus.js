@@ -8,8 +8,8 @@ export const PatientRegisterStatus = (
         errMess: null,
         isFileLoading: null,
         patientFileErrMess: null,
-        isMedicalFileLoading : null ,
-        medicalFileErrMess : null
+        isMedicalFileLoading: null,
+        medicalFileErrMess: null
     },
     action
 ) => {
@@ -40,6 +40,8 @@ export const PatientRegisterStatus = (
             return { ...state, isMedicalFileLoading: false, medicalFileErrMess: null }
         case ActionTypes.LOAD_PATIENT_MEDICAL_FILE_FAILED:
             return { ...state, isMedicalFileLoading: false, medicalFileErrMess: action.payload }
+        case ActionTypes.RESET_PATIENT_FILE_ERR_MESS:
+            return { ...state, patientFileErrMess: null }
         default:
             return state
     }

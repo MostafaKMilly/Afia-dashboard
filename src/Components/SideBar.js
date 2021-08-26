@@ -63,7 +63,7 @@ const Sidebar = (props) => {
                   Calender
                 </CDBSidebarMenuItem>
               </NavLink>
-              
+
             </CDBSidebarMenu>
 
           </CDBSidebarContent>

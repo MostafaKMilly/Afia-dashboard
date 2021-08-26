@@ -262,7 +262,6 @@ function PatientDetail(props) {
     }
     const LoadingFileAlert = () => {
         if (showLoadingAlert) {
-            console.log("mostafa")
             if ((props.patientRegisterStatus.isFileLoading && !props.patientRegisterStatus.patientFileErrMess) ||
                 (props.patientRegisterStatus.isMedicalFileLoading && !props.patientRegisterStatus.medicalFileErrMess)) {
                 return <Alert variant="primary" className="mt-2 mb-1" style={{
@@ -373,10 +372,10 @@ function PatientDetail(props) {
                                 <h5 style={{ fontWeight: 350 }} className="text-center p-3 mb-1">
                                     <span className="fa fa-capsules me-2"></span>Medicines</h5>
                                 {!medciensErrMess ?
-                                    <ul class="list-inline ps-3 pe-3 text-center">
+                                    <ul className="list-inline ps-3 pe-3 text-center">
                                         {
                                             medcinesList.map((medcine) => (
-                                                <li class="list-inline-item me-2 mb-3">{medcine}</li>
+                                                <li className="list-inline-item me-2 mb-3" key={medcine.id}>{medcine}</li>
                                             ))
                                         }
                                     </ul>

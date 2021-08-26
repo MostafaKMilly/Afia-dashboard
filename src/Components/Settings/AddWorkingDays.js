@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { useState } from 'react';
-import { Row, Container, Col, Image, Form, Button, FormLabel, Alert } from 'react-bootstrap';
-import { Control, LocalForm, actions, Errors } from 'react-redux-form'
+import { Row, Container, Col, Image, Button, Alert } from 'react-bootstrap';
+import { Control, LocalForm, actions } from 'react-redux-form'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { addCenterWorkingDays, clearErrorMessages } from '../../redux/Actions/CenterActions';

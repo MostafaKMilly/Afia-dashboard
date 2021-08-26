@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, Form, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { addDoctor, addDoctorFailed, closeDoctorDialog } from '../redux/Actions/DoctorActions';
-import { actions } from 'react-redux-form';
 
 function ModalDoctor(props) {
     const handleSubmit = (event) => {
@@ -17,13 +16,12 @@ function ModalDoctor(props) {
             consultation: parseInt(requestData.tags.consultation)
         }
         requestData.clinicId = parseInt(requestData.clinicId)
-        console.log(requestData)
         if (!requestData.clinicId) {
             props.addDoctorFailed("please add clinic before add doctor")
             props.handleClose()
             return
         }
-        
+
         props.addDoctor(requestData)
         props.handleClose()
     }
@@ -142,15 +140,15 @@ function ModalDoctor(props) {
                                 Sessions duration Information
                             </div>
                             <ul className="list-unstyled text-center" id="sessionsList">
-                               <li>
-                                  {'check : ' +props.data.tags.check} 
-                               </li>
-                               <li>
-                                  {'consultation : ' +props.data.tags.consultation} 
-                               </li>
-                               <li>
-                                  {'review : ' +props.data.tags.review} 
-                               </li>
+                                <li>
+                                    {'check : ' + props.data.tags.check}
+                                </li>
+                                <li>
+                                    {'consultation : ' + props.data.tags.consultation}
+                                </li>
+                                <li>
+                                    {'review : ' + props.data.tags.review}
+                                </li>
                             </ul>
                         </Form.Group>
                     </Form.Row>
@@ -177,7 +175,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     addDoctor: (doctorInfo) => dispatch(addDoctor(doctorInfo)),
     handleClose: () => dispatch(closeDoctorDialog()),
-    addDoctorFailed : (error) => dispatch(addDoctorFailed(error))
+    addDoctorFailed: (error) => dispatch(addDoctorFailed(error))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalDoctor)

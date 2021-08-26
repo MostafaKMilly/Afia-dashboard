@@ -5,7 +5,7 @@ export const Patients = (state = {
     patients: [],
     errMess: null,
     modelDialogIsOpen: false,
-    patientUpdateErrMess : null ,
+    patientUpdateErrMess: null,
 }, action) => {
     switch (action.type) {
         case ActionTypes.LOAD_PATIENTS:
@@ -26,7 +26,7 @@ export const Patients = (state = {
         case ActionTypes.CLOSE_PATIENT_DIALOG:
             return { ...state, modelDialogIsOpen: false }
         case ActionTypes.UPDATE_PATIENT_FAILED:
-            return { ...state , patientUpdateErrMess: action.payload }
+            return { ...state, patientUpdateErrMess: action.payload }
         default:
             return state
     }

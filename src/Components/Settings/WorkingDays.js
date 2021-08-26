@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Container, Col, Image, Form, Button, Table, Modal, FormGroup, FormLabel, Alert } from 'react-bootstrap';
+import { Row, Container, Col, Image, Button, Table, Modal, FormGroup, Alert } from 'react-bootstrap';
 import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { clearErrMess, deleteWorkingDay, updateWorkingDay } from '../../redux/Actions/CenterActions';
@@ -13,7 +13,7 @@ function WorkingDays(props) {
         var minutes = date.split(':')[1];
         var ampm = hours >= 12 ? 'pm' : 'am';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         minutes = minutes < 10 ? minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
@@ -36,9 +36,6 @@ function WorkingDays(props) {
     let emptyMessage
     if (props.center.workingDays.length === 0) {
         emptyMessage = "There are no working days for center"
-    }
-    const nextPath = (path) => {
-        props.history.push(path)
     }
     const handleSubmit = (values) => {
         if (values.openTime === undefined || values.closeTime === undefined) {

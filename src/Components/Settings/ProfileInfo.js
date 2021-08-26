@@ -1,8 +1,7 @@
 import React from 'react';
-import { Row, Container, Col, Image, Form, Button } from 'react-bootstrap';
+import { Row, Container, Col, Image, Form } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { baseUrl } from '../../shared/baseUrl';
 import HideForType from '../../helpers/HideForType'
 
 function ProfileInfo(props) {
@@ -31,10 +30,10 @@ function ProfileInfo(props) {
                 return user.photo.url
             }
         }
-        else if (user.user.type==="Nurse") {
+        else if (user.user.type === "Nurse") {
             return 'assets/images/nurse.svg'
         }
-        else if (user.user.type ==="Admin") {
+        else if (user.user.type === "Admin") {
             return 'assets/images/admin.svg'
         }
     }
@@ -46,7 +45,7 @@ function ProfileInfo(props) {
                     <Col className="col-12 text-center">
                         <div style={{ position: 'relative', width: '132px', margin: '0 auto' }}>
                             <Image roundedCircle width={132} src={loadPhoto(props.user.userData)}></Image>
-                            <HideForType type={["Nurse" , "Admin"]}>
+                            <HideForType type={["Nurse", "Admin"]}>
                                 <span className="fa fa-camera" type="button" style={{
                                     position: "absolute",
                                     bottom: "16%",
@@ -62,7 +61,7 @@ function ProfileInfo(props) {
                                     <Form.Label>
                                         User name
                                         :</Form.Label>
-                                    <Form.Control className="form-control" readOnly value={props.user.userData.user.username}/>
+                                    <Form.Control className="form-control" readOnly value={props.user.userData.user.username} />
                                 </Form.Group>
                                 <Form.Group as={Col} className="pe-4 pe-0 col-md-5">
                                     <Form.Label>
