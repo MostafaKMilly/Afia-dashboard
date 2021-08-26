@@ -209,8 +209,8 @@ function DoctorDetail(props) {
             .then(response => response.json())
     }
 
-    const updateWorkingDay = (values, day, doctorId) => {
-        return fetch(baseUrl + `api/doctors/work_days/id/${doctorId}/day/${day}`, {
+    const updateWorkingDay = (values, day, workingDayId, doctorId) => {
+        return fetch(baseUrl + `api/doctors/work_days/id/${doctorId}/day/${day}/workingDayId/${workingDayId}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -364,7 +364,8 @@ function DoctorDetail(props) {
         clinic.clinic.id === parseInt(props.doctor.doctor.clinicId, 10))[0].clinic.id
 
     const handleSubmitHoliday = (values) => {
-        if (values.date && values.date >= new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
+        let day = workingDaysList.filter((workingDay) => workingDay.day === daysInWeek[new Date(values.date).getDay()])[0]
+        if (values.date && values.date >= new Date().toLocaleDateString('pt-br').split('/').reverse().join('-') && day) {
             let day = daysInWeek[new Date(values.date).getDay()]
             let doctorId = props.doctor.doctor.id
             values = { ...values, day, doctorId }
@@ -393,15 +394,26 @@ function DoctorDetail(props) {
             })
     }
 */
-    const handleUpdateWorkingDay = (values) => {
-        if (values.endTime < values.startTime) {
+    const handleUpdateWorkingDay = (values , workingDayId) => {
+        setWorkingDaysModalErrMess(undefined)
+        if (values.endTime < values.startTime || values.endTime === values.startTime) {
             setWorkingDaysModalErrMess("time is invalid")
+            return
+        }
+        let exist = false
+        workingDaysList.forEach((workingDay) => {
+            if (workingDay.day === values.day && workingDay.id !== workingDayId && workingDay.startTime.slice(0, 5) <= values.startTime && workingDay.endTime.slice(0, 5) >= values.endTime) {
+                exist = true
+            }
+        })
+        if (exist) {
+            setWorkingDaysModalErrMess("working day is invalid !")
             return
         }
         let obj = { startTime: values.startTime.length === 8 ? values.startTime : values.startTime + ':00', endTime: values.endTime.length === 8 ? values.endTime : values.endTime + ':00' }
         setWorkingDaysModalErrMess(undefined)
-        updateWorkingDay(obj, values.day, props.doctor.doctor.id).then(() => {
-            let index = workingDaysList.findIndex((workingDay) => workingDay.day === values.day)
+        updateWorkingDay(obj, values.day ,workingDayId, props.doctor.doctor.id).then(() => {
+            let index = workingDaysList.findIndex((workingDay) => workingDay.id === workingDayId)
             let tempArray = [...workingDaysList]
             tempArray[index] = { ...tempArray[index], startTime: values.startTime, endTime: values.endTime, day: values.day }
             setWorkingDaysList(tempArray)
@@ -618,7 +630,7 @@ function DoctorDetail(props) {
             <EditPeronalInfoDoctor showModal={showModal} setShowModal={setShowModal} doctor={props.doctor} />
             <Modal scrollable show={showHolidayModal} onHide={() => setShowHolidayModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Holidays</Modal.Title>
+                    <Modal.Title>Add Holidays</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
@@ -757,7 +769,7 @@ function DoctorDetail(props) {
                             <h4 className="font-weight-light text-center mt-3 mb-4">Working days</h4>
                             {workingDaysModalErrMess ? <p className="mt-2 mb-3 text-danger text-center">{workingDaysModalErrMess}</p> : <></>}
                             {workingDaysList?.length ? workingDaysList.map((workingDay) => (
-                                <LocalForm onSubmit={(values) => handleUpdateWorkingDay(values)} className="text-center" key={workingDay.id}>
+                                <LocalForm onSubmit={(values) => handleUpdateWorkingDay(values , workingDay.id)} className="text-center" key={workingDay.id}>
 
                                     <div className="d-md-inline-block w-auto mb-3 me-md-3">
                                         <Control.select model=".day" name="day" disabled className="form-select" defaultValue={workingDay.day}>

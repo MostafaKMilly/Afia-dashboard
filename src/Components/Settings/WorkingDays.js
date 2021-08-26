@@ -106,8 +106,7 @@ function WorkingDays(props) {
                 <Row>
                     <Col className="col-12 text-center mb-3">
                         <div style={{ position: 'relative', width: '132px', margin: '0 auto' }}>
-                            <Image roundedCircle width={146} src='.\assets\images\logo (1).svg'></Image>
-
+                            <Image width={146} src='.\assets\images\logo (1).svg'></Image>
                         </div>
                     </Col>
                     <Col className="col-md-12 pe-md-4 pe-0" style={{ marginTop: '35px' }}>

@@ -38,7 +38,7 @@ function DoctorForm(props) {
             return
         }
 
-        if ((day !== '' && endTime !== '' && startTime !== '') && startTime < endTime) {
+        if ((day !== '' && endTime !== '' && startTime !== '' && startTime !== endTime) && startTime < endTime) {
             props.addToWorkingDays({ ...props.doctorForm.workingDays })
         }
 
@@ -87,7 +87,7 @@ function DoctorForm(props) {
             <span style={{ "color": "grey" }} className="ml-3 mr-2">{'->'}</span>
             <span className="fa fa-clock ml-4 mr-4" style={{ "color": "grey" }}></span>
             {formatAMPM(item.endTime)}
-            <span className="fa fa-trash-alt ml-4" style={{ "color": "#ff2e63f2" }} onClick={(i) => handleRemove(i)} type="button"></span>
+            <span className="fa fa-trash-alt ml-4" style={{ "color": "#ff2e63f2" }} onClick={() => handleRemove(i)} type="button"></span>
         </li>
     ))
     const ErrorAlert = () => {

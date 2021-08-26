@@ -298,7 +298,9 @@ function Calender(props) {
   })
   let openTime = parseInt(array[0]?.openTime.split(':')[0])
   let endTime = parseInt(array2[0]?.closeTime.split(':')[0])
-
+  if (array2[1]?.closeTime.split(':')[0] !== '00') {
+    endTime += 1
+  }
   const schedulerData = props.appointments.acceptedAppointment.map((appointment) => {
     return ({
       startDate: appointment.date + 'T' + appointment.startTime, endDate: appointment.date + 'T' + appointment.endTime,
@@ -354,10 +356,21 @@ function Calender(props) {
       if (object.doctorId) {
         appointment = { ...appointment, doctorId: object.doctorId }
       }
+      if (object.date === new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
+        if (appointment.startTime.slice(0, 5) < new Date().toLocaleTimeString('en-GB', {
+          hour12: false,
+          hour: "numeric",
+          minute: "numeric"
+        })) {
+          props.setErrorMessages("time is invalid !")
+          return
+        }
+      }
       getWorkingDay(appointment.doctorId).then((workingDays) => {
         let valid = false
         workingDays.forEach((workingDay) => {
-          if (workingDay.day === object.day && object.date === workingDay.date && appointment.startTime >= workingDay.startTime && appointment.endTime <= workingDay.endTime) {
+          if (workingDay.day === object.day && object.date === workingDay.date &&
+            appointment.startTime.slice(0, 5) >= workingDay.startTime.slice(0, 5) && appointment.endTime.slice(0, 5) <= workingDay.endTime.slice(0, 5)) {
             valid = true
             return
           }

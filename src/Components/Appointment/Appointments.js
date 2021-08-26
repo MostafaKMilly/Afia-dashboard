@@ -370,7 +370,25 @@ function Appointments(props) {
         return 'Dr. ' + doctor.doctor.firstName + ' ' + doctor.doctor.lastName
     }
     const handleAccept = (values, appointmentId, doctorId) => {
-        let valuesObject = { ...values, day: daysInWeek[new Date(values.date).getDay()], status: 'Accepted' }
+        setAcceptAppointmentErrMess(undefined)
+        let valuesObject = {
+            ...values, day: daysInWeek[new Date(values.date).getDay()], status: 'Accepted'
+            , startTime: values.startTime.length === 8 ? values.startTime.slice(0, 5) : values.startTime
+            , endTime: values.endTime.length === 8 ? values.endTime.slice(0, 5) : values.endTime
+        }
+        if (valuesObject.startTime >= valuesObject.endTime) {
+            setAcceptAppointmentErrMess("time is invalid please try another one")
+            return
+        }
+        if (values.date === new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')
+            && valuesObject.startTime < new Date().toLocaleTimeString('en-GB', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            })) {
+            setAcceptAppointmentErrMess("time is invalid please try another one")
+            return
+        }
         getAvailableTimes(valuesObject.date, valuesObject.day, doctorId)
             .then((availableTimes) => {
                 let valid = false
@@ -513,7 +531,7 @@ function Appointments(props) {
                                     <p>{"to"}</p>
                                 </Col>
                                 <Col md="auto">
-                                    <Control type="time" model=".endTime" className="form-control" id={appointment.id} defaultValue={appointment.endTime}/>
+                                    <Control type="time" model=".endTime" className="form-control" id={appointment.id} defaultValue={appointment.endTime} />
                                 </Col>
                                 <Col md="auto" className="mt-3 mt-md-0">
                                     <Control model=".date" className="form-control" component={DateComponent} id={appointment.id} mapProps={{ dateValue: appointment.date, doctorId: appointment.doctorId }} defaultValue={appointment.date} />
@@ -535,7 +553,7 @@ function Appointments(props) {
                         </div>
                         <div className="d-md-none d-block">
                             <HideForType type={["Admin"]}>
-                                <button className="acceptButton me-2" type="submit">
+                                <button className="acceptButton me-2 mb-2" type="submit">
                                     <span className="fa fa-check me-2"></span>Accept</button>
                             </HideForType>
                             <CustomToggle eventKey={appointment.id} date={appointment.date}>Expand</CustomToggle>
@@ -751,15 +769,22 @@ function Appointments(props) {
         let list = []
         getAvailableTimes(date, daysInWeek[new Date(date).getDay()], selectedDoctor)
             .then((availableTimes) => {
+                if (date === new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
+                    availableTimes = availableTimes.filter((availableTime) => availableTime.startTime.slice(0, 5) >= new Date().toLocaleTimeString('en-GB', {
+                        hour12: false,
+                        hour: "numeric",
+                        minute: "numeric"
+                    }))
+                }
                 availableTimes.forEach((availableTime) => {
                     let startTime = availableTime.startTime.slice(0, 5)
                     props.appointments.appointments.forEach((appointment) => {
                         let diff = (new Date(`Wed Aug 25 2021 ${appointment.endTime}`) -
                             new Date(`Wed Aug 25 2021 ${appointment.startTime}`)) / 60000
                         let endTime = addMinutes(startTime, diff)
-                        if (endTime < availableTime.endTime.slice(0, 5) && !list.filter((item) => item.id === appointment.id)[0]) {
+                        if (endTime <= availableTime.endTime.slice(0, 5) && !list.filter((item) => item.id === appointment.id)[0]) {
                             list.push({
-                                id: appointment.id, startTime, endTime, doctorId: appointment.doctorId, date: appointment.date, day: appointment.day,
+                                id: appointment.id, startTime: startTime + ':00', endTime: endTime + ':00', doctorId: appointment.doctorId, date: appointment.date, day: appointment.day,
                                 patientId: appointment.patientId
                             })
                             startTime = endTime

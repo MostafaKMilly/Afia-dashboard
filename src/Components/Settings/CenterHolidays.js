@@ -164,8 +164,14 @@ function CenterHolidays(props) {
     } */
     const handleSubmit = (values) => {
         setAddHolidayFailedErrMess(undefined)
+        setErrMess(undefined)
         if (!values.date || values.date < new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
             setAddHolidayFailedErrMess("Date is invalid")
+            return
+        }
+        let holiday = holidays.filter((holiday) => holiday.date === values.date)[0]
+        if (holiday) {
+            setAddHolidayFailedErrMess("Holiday must be unique")
             return
         }
         let obj = { ...values, day: daysInWeek[new Date(values.date).getDay()] }

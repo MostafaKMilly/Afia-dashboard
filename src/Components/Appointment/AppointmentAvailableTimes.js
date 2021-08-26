@@ -173,14 +173,22 @@ function AppointmentAvailableTimes(props) {
     }
     let disabled = activeTimeButton ? false : true
 
-    const availableTimesList = []
+    let availableTimesList = []
     availableTimes.forEach((obj) => {
-        let currentTime = obj.startTime
+        let currentTime = obj.startTime.slice(0, 5)
         while (addMinutes(currentTime, adderValue) < obj.endTime) {
             availableTimesList.push(currentTime)
             currentTime = addMinutes(currentTime, adderValue)
         }
     })
+    if (props.appointmentForm.date.toLocaleDateString('pt-br').split('/').reverse().join('-')
+        === new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
+        availableTimesList = availableTimesList.filter((availableTime) => availableTime >= new Date().toLocaleTimeString('en-GB', {
+            hour12: false,
+            hour: "numeric",
+            minute: "numeric"
+        }))
+    }
 
     return (
         <Col md={12}>
@@ -192,7 +200,7 @@ function AppointmentAvailableTimes(props) {
                 </Col>
                 <Col md={10}>
                     <div className="timesContainer ">
-                        {availableTimesList.length>0 ?availableTimesList.map((time, index) => (
+                        {availableTimesList.length > 0 ? availableTimesList.map((time, index) => (
                             <Button key={index} className={activeTimeButton === time ? 'active m-2' : 'm-2'} variant="outline-secondary" onClick={() => setActiveTimeButton(time)}>{formatAMPM(time)}</Button>
                         )) : <p className="text-danger p-3">the day is full please try to reverse in another day</p>}
                     </div>
