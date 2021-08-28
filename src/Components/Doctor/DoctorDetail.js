@@ -533,7 +533,7 @@ function DoctorDetail(props) {
                                                 <span className="fa fa-language mr-2"></span> {props.doctor.doctor.language}
                                             </div>
                                             <div className="mb-2">
-                                                <span className="fa fa-phone mr-2"></span> {props.doctor.doctor.phoneNumber}
+                                                <span className="fa fa-phone mr-2"></span> {'0'+props.doctor.doctor.phoneNumber}
                                             </div>
                                             <div>
                                                 <span className="fa fa-inbox mr-2"></span>{props.doctor.doctor.user.email}

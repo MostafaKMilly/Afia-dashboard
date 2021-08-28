@@ -227,6 +227,9 @@ function Appointments(props) {
         getDoctorsForClinic()
         props.fetchPendingAppointments(props.clinics.clinics[0]?.clinic?.id)
     }, [])
+    if (props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || props.clinics.isLoading || clinicsIsLoading) {
+        return <Loading />
+    }
     const CustomToggle = ({ children, eventKey, date }) => {
         const decoratedOnClick = useAccordionToggle(eventKey)
         return (
@@ -492,9 +495,6 @@ function Appointments(props) {
             }
 
         }, [])
-        if (props.patients.isLoading || props.doctors.isLoading || doctorsIsLoading || props.clinics.isLoading || clinicsIsLoading) {
-            return <Loading />
-        }
 
         return <DatePicker selected={date} includeDates={validDateList} {...propsValus} onChange={(date) => {
             propsValus.onChange(date.toLocaleDateString('pt-br').split('/').reverse().join('-'))
@@ -770,6 +770,23 @@ function Appointments(props) {
         getAvailableTimes(date, daysInWeek[new Date(date).getDay()], selectedDoctor)
             .then((availableTimes) => {
                 if (date === new Date().toLocaleDateString('pt-br').split('/').reverse().join('-')) {
+                   availableTimes.forEach((availableTime , index) => {
+                        if (new Date().toLocaleTimeString('en-GB', {
+                            hour12: false,
+                            hour: "numeric",
+                            minute: "numeric"
+                        }) >= availableTime.startTime.slice(0, 5) && new Date().toLocaleTimeString('en-GB', {
+                            hour12: false,
+                            hour: "numeric",
+                            minute: "numeric"
+                        }) <= availableTime.endTime.slice(0, 5) ) {
+                            availableTimes[index] = {...availableTimes[index] , startTime :new Date().toLocaleTimeString('en-GB', {
+                                hour12: false,
+                                hour: "numeric",
+                                minute: "numeric"
+                            })+':00' , endTime :  availableTime.endTime}
+                        }
+                   })
                     availableTimes = availableTimes.filter((availableTime) => availableTime.startTime.slice(0, 5) >= new Date().toLocaleTimeString('en-GB', {
                         hour12: false,
                         hour: "numeric",

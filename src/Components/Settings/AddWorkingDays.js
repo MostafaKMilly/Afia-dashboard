@@ -79,7 +79,7 @@ function AddWorkingDays(props) {
                     width: "fit-content",
                     margin: "0 auto"
                 }} onClose={() => setShow(false)} dismissible>
-                    <Alert.Heading>Error !</Alert.Heading>
+                    <Alert.Heading>Success</Alert.Heading>
                     <p>
                         Center working added successfully :)
                     </p>
