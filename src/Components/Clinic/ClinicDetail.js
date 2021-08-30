@@ -272,7 +272,7 @@ function ClinicDetail(props) {
                 <Card.Text className="mb-0">
                     <div className="media align-items-center ">
                         <Image className="mr-3" src={doctor.photo === null ? 'assets/images/doctor.svg' :
-                            props.doctor.photo.url} width="50" alt="Generic placeholder image" />
+                            doctor.photo.url} width="50" alt="Generic placeholder image" />
                         <div className="media-body">
                             <h5 className="mt-0">{doctor.doctor.firstName + ' ' + doctor.doctor.lastName}</h5>
                         </div>
