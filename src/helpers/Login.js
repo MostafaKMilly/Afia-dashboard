@@ -129,7 +129,7 @@ class Login extends Component {
           </Container>
 
         </div>
-        <div className="loginFooter">
+        <div className="loginFooter d-md-block d-none">
           <p>© Copyright 2021 Afia Clinics</p>
         </div>
       </div>

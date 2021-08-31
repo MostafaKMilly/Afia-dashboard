@@ -96,43 +96,43 @@ class Header extends Component {
 
                 <Navbar.Collapse id="responsive-navbar-nav" >
                     <Nav>
-                        <Nav.Link eventKey="1" as="span">
+                        <Nav.Link eventKey="1" as="span" className="mt-1">
                             <Link to={`${url}`} className="planeLink" >
                                 Dashboard
                             </Link>
                         </Nav.Link>
-                        <Nav.Link eventKey="2" as="span">
+                        <Nav.Link eventKey="2" as="span" className="mt-1">
                             <Link to={`${url}/doctors`} className="planeLink" >
                                 Doctors
                             </Link>
                         </Nav.Link>
-                        <Nav.Link eventKey="3" as="span">
+                        <Nav.Link eventKey="3" as="span" className="mt-1">
                             <Link to={`${url}/patients`} className="planeLink" >
                                 Patients
                             </Link>
                         </Nav.Link>
-                        <Nav.Link eventKey="4" as="span">
+                        <Nav.Link eventKey="4" as="span" className="mt-1">
                             <Link to={`${url}/clinics`} className="planeLink" >
                                 Clinics
                             </Link>
                         </Nav.Link>
-                        <Nav.Link eventKey="5" as="span">
+                        <Nav.Link eventKey="5" as="span" className="mt-1">
                             <Link to={`${url}/appointments`} className="planeLink" >
                                 Apppointments
                             </Link>
                         </Nav.Link>
-                        <Nav.Link eventKey="6" as="span">
+                        <Nav.Link eventKey="6" as="span" className="mt-1">
                             <Link to={`${url}/calender`} className="planeLink" >
                                 Calender
                             </Link>
                         </Nav.Link>
-                        <Nav.Link eventKey="7" as="span">
+                        <Nav.Link eventKey="7" as="span" className="mt-1">
                             <Link to={`${url}/settings`} className="planeLink" >
                                 Settings
                             </Link>
                         </Nav.Link>
                         <HideForType type={["Nurse"]}>
-                            <Nav.Link eventKey="8" as="span">
+                            <Nav.Link eventKey="8" as="span" className="mt-1">
                                 <Link to={`${url}/Logs`} className="planeLink" >
                                     Logs
                                 </Link>
