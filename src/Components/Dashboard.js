@@ -25,6 +25,7 @@ import { fetchCenterDays } from '../redux/Actions/CenterActions';
 import AppointmentForm from './Appointment/AppointmentForm';
 import Logs from './Logs';
 import AppointmentsToolKit from './Appointment/AppointmentsToolKit';
+import Reviews from './Reviews';
 
 class Dashboard extends Component {
     componentDidMount() {
@@ -94,6 +95,7 @@ class Dashboard extends Component {
                             <Route exact path={`${this.props.match.path}/calender`} component={() => <Calender />} />
                             <Route path={`${this.props.match.path}/settings`} component={() => <Settings />} />
                             <Route path={`${this.props.match.path}/logs`} component={() => <Logs />} />
+                            <Route path={`${this.props.match.path}/reviews`} component={() => <Reviews />} />
                             <Route path={`${this.props.match.path}/appointments/rejected`} component={() => <AppointmentsToolKit type="Rejected" />} />
                             <Route path={`${this.props.match.path}/appointments/done`} component={() => <AppointmentsToolKit type="Done" />} />
                             <Route path={`${this.props.match.path}/appointments/gone`} component={() => <AppointmentsToolKit type="Gone" />} />

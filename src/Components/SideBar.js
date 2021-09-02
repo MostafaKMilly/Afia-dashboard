@@ -8,6 +8,7 @@ import {
   CDBSidebarMenuItem,
 } from 'cdbreact';
 import { NavLink, useRouteMatch } from 'react-router-dom';
+import HideForType from '../helpers/HideForType'
 
 const Sidebar = (props) => {
   let { path, url } = useRouteMatch()
@@ -63,21 +64,17 @@ const Sidebar = (props) => {
                   Calender
                 </CDBSidebarMenuItem>
               </NavLink>
-
+              <HideForType type={["Nurse"]}>
+                <NavLink to={`${url}/reviews`} style={{ color: 'inherit' }}
+                  className="text-decoration-none" activeClassName="activeClicked">
+                  <CDBSidebarMenuItem icon="star-half-alt">
+                    Reviews
+                  </CDBSidebarMenuItem>
+                </NavLink>
+              </HideForType>
             </CDBSidebarMenu>
-
           </CDBSidebarContent>
-
           <CDBSidebarFooter>
-            {/* <div
-              className="sidebar-btn-wrapper"
-              style={{
-                padding: '20px 5px',
-              }}
-            >
-              
-              <img src="/assets/images/logo.png" className="mr-auto d-inline-block align-top" width="40" height="40" alt="logo"></img>
-            </div> */}
             <CDBSidebarMenu>
               <NavLink to={`${url}/settings`} style={{ color: 'inherit' }}
                 className="text-decoration-none" activeClassName="activeClicked">
