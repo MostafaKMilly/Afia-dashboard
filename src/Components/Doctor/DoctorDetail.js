@@ -656,12 +656,12 @@ function DoctorDetail(props) {
                             }
                             <LocalForm model="holidayForm" className="text-center" onSubmit={handleSubmitHoliday}>
                                 <Row style={{ alignItems: "flex-end" }} className="mb-3 mt-3">
-                                    <Col className="col-md-2 text-right">
+                                    <Col className="col-md-2 col-12 text-md-right text-center">
                                         <FormLabel>
                                             Date :
                                         </FormLabel>
                                     </Col>
-                                    <Col className="col-md-10">
+                                    <Col className="col-md-10 col-12">
                                         <Control type="date" className="form-control" model=".date" />
                                     </Col>
                                 </Row>

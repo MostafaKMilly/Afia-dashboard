@@ -146,7 +146,6 @@ class Home extends Component {
             </Alert>
         }
 
-
         const lastIndex = this.state.currentPage * this.state.itemsPerPage
         const firstIndex = lastIndex - this.state.itemsPerPage
         const clinicsList = this.props.clinics.clinics.slice(firstIndex, lastIndex)
@@ -165,8 +164,6 @@ class Home extends Component {
                         <Col className="col-12 col-md-6 text-center text-md-left mb-3 mb-md-0">
                             <h2 style={{ fontWeight: 450 }}>Overview</h2>
                         </Col>
-
-
                         {this.props.center.errMess ? <Col className="col-12 col-md-auto offset-md-1 ms-md-auto text-center text-md-right">
                             <ErrorAlert />
                         </Col> :
@@ -198,37 +195,8 @@ class Home extends Component {
 
                             </Col>
                         }
-
-
                     </Row>
                     <Row className="row-content">
-                        <Col className="col-12 col-md-3 mb-3 mb-md-0">
-                            <Card>
-                                <Card.Header className="bg-primary text-white text-left p-3 pl-4 lead" style={{ fontSize: '19px' }}>Done Appointments</Card.Header>
-                                <Card.Body>
-                                    <Card.Text className="d-flex">
-                                        <div className={`c100 ${'p' + doneAppointmentsPrecentage} small me-3`}>
-                                            <span className="fa fa-calendar-check fa-lg text-primary"></span>
-                                            <div className="slice">
-                                                <div className="bar"></div>
-                                                <div className="fill"></div>
-                                            </div>
-                                        </div>
-                                        <div className="text-center cardPrecentageDetail" >
-                                            <h2 style={{ fontWeight: 400 }} >
-                                                {this.state.statistics.DoneAppointment.count}
-                                            </h2>
-                                            <p className="lead">Total</p>
-                                        </div>
-                                        <div className="precentage">
-                                            {doneAppointmentsPrecentage + '%'}
-                                        </div>
-
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-
-                        </Col>
                         <Col className="col-12 col-md-3 mb-3 mb-md-0">
                             <Card>
                                 <Card.Header className="text-white text-left p-3 pl-4 lead" style={{
@@ -260,7 +228,6 @@ class Home extends Component {
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
-
                         </Col>
                         <Col className="col-12 col-md-3 mb-3 mb-md-0">
                             <Card>
@@ -293,7 +260,31 @@ class Home extends Component {
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
+                        </Col>
+                        <Col className="col-12 col-md-3 mb-3 mb-md-0">
+                            <Card>
+                                <Card.Header className="bg-primary text-white text-left p-3 pl-4 lead" style={{ fontSize: '19px' }}>Done Appointments</Card.Header>
+                                <Card.Body>
+                                    <Card.Text className="d-flex">
+                                        <div className={`c100 ${'p' + 100} small me-3`}>
+                                            <span className="fa fa-calendar-check fa-lg text-primary"></span>
+                                            <div className="slice">
+                                                <div className="bar"></div>
+                                                <div className="fill"></div>
+                                            </div>
+                                        </div>
+                                        <div className="text-center cardPrecentageDetail" >
+                                            <h2 style={{ fontWeight: 400 }} >
+                                                {this.state.statistics.DoneAppointment.count}
+                                            </h2>
+                                            <p className="lead">Total</p>
+                                        </div>
+                                        <div className="precentage">
+                                        </div>
 
+                                    </Card.Text>
+                                </Card.Body>
+                            </Card>
                         </Col>
                         <Col className="col-12 col-md-3 mb-3 mb-md-0">
                             <Card>
@@ -325,7 +316,6 @@ class Home extends Component {
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
-
                         </Col>
                     </Row>
                     <Row className="row-content">
@@ -389,7 +379,6 @@ class Home extends Component {
                                         <Animation />
                                     </Chart>
                                 }
-
                                 <div style={{
                                     position: "absolute",
                                     top: "44px",
@@ -406,7 +395,6 @@ class Home extends Component {
                                             marginLeft: "8px",
                                             marginBottom: "-3px"
                                         }}>
-
                                         </div>
                                     </div>
                                     <div className="me-1">
@@ -419,7 +407,6 @@ class Home extends Component {
                                             marginLeft: "8px",
                                             marginBottom: "-3px"
                                         }}>
-
                                         </div>
                                     </div>
                                 </div>
