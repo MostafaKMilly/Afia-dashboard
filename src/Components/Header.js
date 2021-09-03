@@ -127,12 +127,17 @@ class Header extends Component {
                             </Link>
                         </Nav.Link>
                         <Nav.Link eventKey="7" as="span" className="mt-1">
+                            <Link to={`${url}/reviews`} className="planeLink" >
+                                Reviews
+                            </Link>
+                        </Nav.Link>
+                        <Nav.Link eventKey="8" as="span" className="mt-1">
                             <Link to={`${url}/settings`} className="planeLink" >
                                 Settings
                             </Link>
                         </Nav.Link>
                         <HideForType type={["Nurse"]}>
-                            <Nav.Link eventKey="8" as="span" className="mt-1">
+                            <Nav.Link eventKey="9" as="span" className="mt-1">
                                 <Link to={`${url}/Logs`} className="planeLink" >
                                     Logs
                                 </Link>
