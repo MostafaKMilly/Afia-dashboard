@@ -7,6 +7,7 @@ import { actions } from 'react-redux-form';
 function ModalClinic(props) {
     const handleSubmit = (event) => {
         event.preventDefault()
+        return
         let requestData = { ...props.data }
         const formData = new FormData()
         formData.append('Photo', requestData.image[0])
