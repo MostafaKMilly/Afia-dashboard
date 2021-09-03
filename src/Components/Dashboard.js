@@ -26,6 +26,7 @@ import AppointmentForm from './Appointment/AppointmentForm';
 import Logs from './Logs';
 import AppointmentsToolKit from './Appointment/AppointmentsToolKit';
 import Reviews from './Reviews';
+import { Redirect } from 'react-router-dom';
 
 class Dashboard extends Component {
     componentDidMount() {
@@ -101,6 +102,7 @@ class Dashboard extends Component {
                             <Route path={`${this.props.match.path}/appointments/gone`} component={() => <AppointmentsToolKit type="Gone" />} />
                             <Route path={`${this.props.match.path}/appointments/cancelled`} component={() => <AppointmentsToolKit type="Cancelled" />} />
                             <Route path={`${this.props.match.path}/appointments/accepted`} component={() => <AppointmentsToolKit type="Accepted" />} />
+                            <Redirect to={`${this.props.match.path}`} /> 
                         </div>
                     </div>
                 </>

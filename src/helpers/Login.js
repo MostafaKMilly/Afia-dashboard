@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
-import { Button, Col, Container, FormLabel, Image, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Container, FormLabel, Image, Modal, Nav, Navbar, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { fetchUser } from '../redux/Actions/userActions';
@@ -57,13 +57,16 @@ class Login extends Component {
               <Col md={5} className="p-4">
                 <h5>Welocme back</h5>
                 <h3 className="mt-2 mb-4">Login to your account</h3>
+                <Button variant="link" className="mt-0 mb-0 pb-0 ps-0 pt-0 pe-0 pb-2" onClick={() => this.props.history.push('/home')}>
+                  {'< Return to home'}
+                </Button>
                 {errMess ? <LoginFailed messege={errMess} /> : <></>}
                 <LocalForm onSubmit={(values) => this.handleSubmit(values)}
-                  style={{ "marginTop": "41px" }}
+                  style={{ "marginTop": "11px" }}
                 >
                   <Row className="form-group">
                     <Col>
-                      <Control.text type="text" model=".username" name="username"
+                      <Control.text type="text" defaultValue="mostafakmilly" model=".username" name="username"
                         placeholder="Login with username"
                         className="p-4 mb-3 form-control"
                       />
@@ -71,7 +74,7 @@ class Login extends Component {
                   </Row>
                   <Row className="form-group">
                     <Col>
-                      <Control.text type="password" name="password" model=".password"
+                      <Control.text type="password" defaultValue="12345678" name="password" model=".password"
                         placeholder="Password"
                         className="p-4 mb-3 form-control"
                       />
@@ -79,13 +82,13 @@ class Login extends Component {
                   </Row>
                   <Row className=" form-group pl-4">
                     <Col xs={6}>
-                      <FormLabel check>
+                      <FormLabel check="true">
                         <Control.checkbox defaultChecked={true} model=".rememberMe" name="rememberMe" className="form-check-input" />
                         Remember me
                       </FormLabel>
                     </Col>
                     <Col xs={6} className="ml-auto text-right">
-                      <Button variant="link" className="mt-0 mb-0 pb-0 pt-0 pb-2" onClick={() => this.handleOpenModal()}>
+                      <Button variant="link" className="mt-0 mb-0 pb-0 pt-0 pe-0 pb-2" onClick={() => this.handleOpenModal()}>
                         Forget password ?
                       </Button>
                     </Col>
@@ -130,7 +133,7 @@ class Login extends Component {
 
         </div>
         <div className="loginFooter d-md-block d-none">
-          <p>© Copyright 2021 Afia Clinics</p>
+          <p>© Copyright {new Date().getFullYear()} Afia Clinics</p>
         </div>
       </div>
 

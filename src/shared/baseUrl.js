@@ -1,1 +1,1 @@
-export const baseUrl ="https://afia-clinics.cleverapps.io/";
+export const baseUrl ="http://localhost:5000/";

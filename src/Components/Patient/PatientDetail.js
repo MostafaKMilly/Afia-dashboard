@@ -471,7 +471,7 @@ function PatientDetail(props) {
                                     <BootstrapTable
                                         wrapperClasses="table-responsive"
                                         noDataIndication="Table is Empty"
-                                        keyField='Appointment.id'
+                                        keyField='id'
                                         data={sessions}
                                         columns={sessionsColumns}
                                         expandRow={expandRow}

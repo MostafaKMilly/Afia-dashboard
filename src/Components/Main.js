@@ -11,8 +11,8 @@ class Main extends Component {
         }
         return (
             <Switch>
-                <Route path="/dashboard" component={Dashboard} />
-                <Redirect from="/" to="/dashboard" />
+                <Route path={`${this.props.match.path}`} component={Dashboard} />
+                <Redirect from={`${this.props.match.path}`} to="/dashboard" />
             </Switch>
         );
     }

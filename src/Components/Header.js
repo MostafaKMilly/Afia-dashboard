@@ -83,7 +83,7 @@ class Header extends Component {
                                     <Button variant="link" onClick={(event) => {
                                         event.preventDefault()
                                         this.props.logUserOut()
-                                        this.props.history.push('/')
+                                        this.props.history.push('/dashboard')
                                     }}>Logout</Button>
                                 </Popover.Content>
                             </Popover>
