@@ -45,7 +45,7 @@ function LandingPage(props) {
     ]
     const handleSubmitMessage = (values) => {
         if (values.phone || values.name || values.message) {
-            window.location.href = 'mailto:mostafamilly6@gmail.com?subject=' + values.name + ' (' + values.phone + ')' + '&body=' + values.message;
+            window.location.href = 'mailto:mostafamilly6@gmail.com?subject=' + values.name + ' (' + values.phone + ')&body=' + values.message;
         }
     }
     const scrollWithOffset = (el) => {
@@ -94,7 +94,6 @@ function LandingPage(props) {
                                     props.history.push('/dashboard')
                                 }}>Demo</Nav.Link>
                             </Nav.Item>
-
                         </Nav>
                         <Nav as={Scrollspy} items={['contact']} currentClassName="activeContactButton">
                             <div className="d-md-flex d-none me-3">
@@ -135,8 +134,6 @@ function LandingPage(props) {
                 <svg xmlns="http://www.w3.org/2000/svg" className="waves" viewBox="0 0 1440 320"><path fill="#fff" fill-opacity="1" d="M0,96L80,106.7C160,117,320,139,480,144C640,149,800,139,960,122.7C1120,107,1280,85,1360,74.7L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path></svg>
             </header>
             <section id="features">
-
-
                 <section className="mainServices row-content">
                     <Container>
                         <Row className="g-4">
@@ -189,7 +186,7 @@ function LandingPage(props) {
                             </Col>
                             <Col md="5" className="mb-5 order-md-last order-1">
                                 <h3>Patient Android App</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                                <p>In the patient application, we offer multiple services, such as the ability to download medical reports , book appointmetns and many more ..</p>
                                 <Button variant="outline-secondary">
                                     Soon on Google play <span className="fab fa-google-play ms-2" />
                                 </Button>
@@ -203,7 +200,7 @@ function LandingPage(props) {
                         <Row className="justify-content-center align-items-center">
                             <Col md="6" className="mb-5">
                                 <h3>Doctor Android App</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                                <p>In this application, the doctor can respond to consultations , add medical information during medical session and show schedule appointments.</p>
                                 <Button variant="outline-light">
                                     Soon on Google play <span className="fab fa-google-play ms-2" />
                                 </Button>

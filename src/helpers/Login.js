@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
-import { Button, Col, Container, FormLabel, Image, Modal, Nav, Navbar, Row } from 'react-bootstrap';
+import { Button, Col, Container, FormLabel, Image, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { fetchUser } from '../redux/Actions/userActions';
